@@ -211,7 +211,7 @@ export default function Declined() {
                 Resume
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-                Reinstate
+                Cover Letter
               </th>
               <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
                 Rating

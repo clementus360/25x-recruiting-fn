@@ -104,7 +104,7 @@ export default function UserRegistration() {
             <main className="flex min-h-screen flex-col justify-between py-56 pl-24 pr-16">
                 <div className="flex flex-col gap-12">
                     <div className="flex flex-col gap-2">
-                        <h1 className="text-3xl font-bold">Company Registration</h1>
+                        <h1 className="text-3xl font-bold">User Registration</h1>
                     </div>
 
                     <form onSubmit={handleRegisterCompanyOwner} className="flex flex-col gap-4">

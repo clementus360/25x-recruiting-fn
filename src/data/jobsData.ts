@@ -13,6 +13,7 @@ export async function getJobs(
         fromDate?: string;
         toDate?: string;
         presetTimeFrame?: string
+        sortingOptions?: string
     } = {}
 ) {
     try {
@@ -20,8 +21,9 @@ export async function getJobs(
         const queryParams = new URLSearchParams({
             page: page.toString(),
             // Always include status and visibility, even if their value is "All"
-            status: filters.status || "All",
+            status: filters.status || "Open",
             visibility: filters.visibility || "All",
+            sortingOptions: filters.sortingOptions || "DESC",
             ...(filters.jobName && { jobName: filters.jobName }),
             ...(filters.hiringManagerId && { hiringManagerId: filters.hiringManagerId }),
             ...(filters.fromDate && { fromDate: filters.fromDate }),
@@ -351,7 +353,7 @@ export async function getDeclinedForJob(
         }).toString();
 
         // Construct the full URL with query parameters
-        const url = `${API_BASE_URL}/api/v1/declined/list-all-candidates${jobId}?${queryParams}`;
+        const url = `${API_BASE_URL}/api/v1/declined/list-all-declined${jobId}?${queryParams}`;
 
         console.log(url);
 

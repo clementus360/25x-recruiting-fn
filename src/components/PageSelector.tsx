@@ -19,7 +19,9 @@ function PageNumber({ number, selected, setCurrentPage }: { number: number, sele
 
 export default function PageSelector({ pageNumber, changePage }: { pageNumber: number, changePage: (page: number) => void }) {
     const [page, setPage] = useState(1);
-    const [showAllPages, setShowAllPages] = useState(false); // Track ellipsis state
+    const [showAllPages, setShowAllPages] = useState(false); // Track ellipsis state'
+
+    console.log("Page number: ", pageNumber)
 
     const handleSetPage = (number: number) => {
         setPage(number);

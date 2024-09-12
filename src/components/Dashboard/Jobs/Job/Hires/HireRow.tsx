@@ -1,18 +1,20 @@
 import Image from "next/image";
 import NoteIcon from "@/assets/note.svg";
+import PhoneIcon from "@/assets/phone.svg";
+import EmailIcon from "@/assets/email.svg";
 
 import { NotesOverlay } from "@/components/Dashboard/NotesOverlay";
 import DisplayRating from "@/components/DisplayRating";
 import { useError } from "@/context/ErrorContext";
 import { getCommentsForApplicant, HireOrDeclineCandidate } from "@/data/jobsData";
-import { ApplicantRowProps } from "@/types/applicationTypes";
+import { HireRowProps } from "@/types/applicationTypes";
 import { UserComment } from "@/types/jobTypes";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSuccess } from "@/context/SuccessContext";
 import Link from "next/link";
 
-export const HireRow: React.FC<ApplicantRowProps> = ({
+export const HireRow: React.FC<HireRowProps> = ({
     applicant,
     selectedRows,
     page,
@@ -90,7 +92,16 @@ export const HireRow: React.FC<ApplicantRowProps> = ({
                     {applicant.createdDate}
                 </td>
                 <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
-                    {applicant.applicantName}
+                <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                            <Image src={PhoneIcon} alt="phone" className="w-3 h-3" />
+                            <p>{applicant.phone}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Image src={EmailIcon} alt="email" className="w-3 h-3" />
+                            <p>{applicant.email}</p>
+                        </div>
+                    </div>
                 </td>
                 <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
                     <DisplayRating

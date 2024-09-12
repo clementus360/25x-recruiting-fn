@@ -69,3 +69,11 @@ export interface ApplicantRowProps {
   handleLoad: (load: boolean) => void;
 }
 
+export interface HireRowProps {
+  applicant: DBTestApplicant;
+  page: number;
+  selectedRows: number[];
+  handleSelectRow: (applicantId: number) => void;
+  handleLoad: (load: boolean) => void;
+}
+

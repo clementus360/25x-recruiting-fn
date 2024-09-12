@@ -137,8 +137,8 @@ export const DeclinedRow: React.FC<ApplicantRowProps> = ({
                 </td>
             </tr>
 
-            <div className="absolute text-start px-4 py-2 w-max bg-accent text-white text-nowrap before:content-[''] before:absolute before:right-[-8px] before:top-1/2 before:transform before:-translate-y-1/2 before:border-y-[1.2rem] before:border-y-transparent before:border-l-[8px] before:border-l-accent">
-                <p>More Qualified Candidates Selected</p>
+            <div className="absolute text-start px-2 py-1 w-max bg-gray-400 text-white text-nowrap before:content-[''] before:absolute before:right-[-8px] before:top-1/2 before:transform before:-translate-y-1/2 before:border-y-[0.8rem] before:border-y-transparent before:border-l-[8px] before:border-l-gray-400">
+                <p className="text-xs">More Qualified Candidates Selected</p>
             </div>
 
             <div className="spacer h-[4rem]"></div>

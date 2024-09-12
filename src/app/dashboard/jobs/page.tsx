@@ -16,11 +16,12 @@ import { useSuccess } from "@/context/SuccessContext";
 import { useCompany } from "@/context/CompanyContext";
 import Link from "next/link";
 import { getHiringManagers } from "@/data/users";
+import { NoResultsPage } from "@/components/Dashboard/NoResultsPage";
 
 export default function DashboardJobs() {
   const [hiringManagers, setHiringManagers] = useState([])
   const [filterList, setFilterList] = useState<{ [key: string]: boolean }>({});
-  const [order, setOrder] = useState<string>("");
+  const [order, setOrder] = useState<string>("DESC");
   const [search, setSearch] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -48,7 +49,8 @@ export default function DashboardJobs() {
         hiringManagerId: filterList["hiringManagerId"] ? filterList.hiringManagerId.toString() : undefined,
         fromDate: typeof filterList["fromDate"] === "string" ? filterList.fromDate : undefined,
         toDate: typeof filterList["toDate"] === "string" ? filterList.toDate : undefined,
-        presetTimeFrame: typeof filterList["presetTimeFrame"] === "string" ? filterList.presetTimeFrame: undefined, 
+        presetTimeFrame: typeof filterList["presetTimeFrame"] === "string" ? filterList.presetTimeFrame : undefined,
+        sortingOptions: typeof order === "string" ? order : undefined
       };
 
       try {
@@ -61,6 +63,9 @@ export default function DashboardJobs() {
 
         const jobsData = await getJobs(companyId, token, currentPage, filtersParams);
         setJobs(jobsData.jobs);
+
+        console.log("Jobs:", jobsData.pageCount)
+
         setTotalPages(jobsData.pageCount)
       } catch (err) {
         setError("Failed to load jobs");
@@ -70,7 +75,7 @@ export default function DashboardJobs() {
     };
 
     fetchJobs();
-  }, [filterList, search, currentPage, companyInfo]);
+  }, [filterList, search, order, currentPage, companyInfo]);
 
   useEffect(() => {
     const fetchHiringManagers = async () => {
@@ -90,8 +95,6 @@ export default function DashboardJobs() {
         }
 
         const data = await getHiringManagers(companyId, token);
-
-        console.log("Data:", data)
 
         setHiringManagers(data);
         setTotalPages(data.pageCount);
@@ -194,11 +197,8 @@ export default function DashboardJobs() {
                   <p className="font-bold">Sort by</p>
                 </div>
                 <select onChange={handleOrderChange} name="sort" id="sort" className="bg-none text-primary">
-                  <option value="name-a-z">Name: A to Z</option>
-                  <option value="date-most-recent">Date: Most recent</option>
-                  <option value="candidate-count">Candidate Count</option>
-                  <option value="applicant-count">Applicant Count</option>
-                  <option value="hires-count">Hires Count</option>
+                  <option value="DESC">Date: Most recent</option>
+                  <option value="ASC">Date: Oldest</option>
                 </select>
               </div>
               <p className="text-grey lg:block">{jobs.length} Results</p>
@@ -208,7 +208,7 @@ export default function DashboardJobs() {
               {loading ? (
                 <p>Loading...</p>
               ) : error ? (
-                <p className="text-red-500">{error}</p>
+                <p></p>
               ) : (
                 jobs.map((job, idx) => {
                   return (<JobCard key={job.id} {...job} />
@@ -217,7 +217,11 @@ export default function DashboardJobs() {
               )}
             </div>
 
-            <PageSelector pageNumber={totalPages} changePage={handleChangeCurrentPage} />
+            {jobs.length <= 0 &&
+              <NoResultsPage />
+            }
+
+            <PageSelector pageNumber={totalPages || 0} changePage={handleChangeCurrentPage} />
           </div>
         </section>
       </section>

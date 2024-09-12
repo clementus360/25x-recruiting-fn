@@ -19,11 +19,9 @@ export default function FilterSection({
   const [toDate, setToDate] = useState("");
   const [timeframe, setTimeframe] = useState("All");
 
-  console.log(managers)
-
   useEffect(() => {
     // Reset all filter states when filters are cleared
-    setJobStatus("All");
+    setJobStatus("Open");
     setJobVisibility("All");
     setHiringManagerId(null);
     setFromDate("");
