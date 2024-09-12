@@ -28,35 +28,12 @@ export default function CandidateCard({
     handleSelectRow: (candidateId: number) => void;
     handleLoad: (load: boolean) => void;
 }) {
-    const [jobs, setJobs] = useState<JobCardData[]>([]);
     const [isNotesOverlayOpen, setIsNotesOverlayOpen] = useState<boolean>(false);
     const [notes, setNotes] = useState<UserComment[]>();
     const { setError } = useError();
     const { setSuccess } = useSuccess();
     const { companyInfo } = useCompany();
     const [loadNotes, setLoadNotes] = useState(false)
-
-    useEffect(() => {
-        const fetchJobs = async () => {
-          setError("");
-
-          try {
-            const companyId = companyInfo?.id; // Replace with the actual company ID
-            const token = localStorage.getItem("accessToken"); // Replace with the actual token
-    
-            if (!companyId || !token) {
-              return;
-            }
-    
-            const jobsData = await getJobs(companyId, token, 1);
-            setJobs(jobsData.jobs);
-          } catch (err) {
-            setError("Failed to load jobs");
-          }
-        };
-    
-        fetchJobs();
-      }, [companyInfo]);
 
     useEffect(() => {
         const fetchNotes = async () => {
@@ -97,7 +74,7 @@ export default function CandidateCard({
     };
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between lg:items-center bg-lightBlue px-4 py-6 rounded-lg">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between lg:items-center bg-lightBlue px-4 py-6 lg:pr-24 rounded-lg">
             <div className="flex gap-8 items-center">
                 <input
                     type="checkbox"
@@ -150,21 +127,6 @@ export default function CandidateCard({
                             handleLoadNotes={handleLoadNotes}
                         />
                     )}
-                </div>
-
-                <div className="flex gap-2">
-                    <select
-                        value={selectedJob}
-                        onChange={(e) => handleMoveApplicant(candidate.id, e.target.value)}
-                        className="bg-primary hover:bg-opacity-90 w-24 truncate px-2 py-2 text-white text-xs font-semibold rounded-md"
-                    >
-                        <option value="" disabled>Move to</option>
-                        {jobs.map((job, index) => (
-                            <option key={index} value={job.title}>
-                                {job.title}
-                            </option>
-                        ))}
-                    </select>
                 </div>
             </div>
         </div>
