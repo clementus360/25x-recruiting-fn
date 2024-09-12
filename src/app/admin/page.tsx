@@ -28,10 +28,6 @@ export default function Admin() {
         }
     }, [router]);
 
-    if (!isLogged) {
-        return
-    }
-
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
@@ -63,7 +59,7 @@ export default function Admin() {
 
             if (!token) {
                 return;
-            } 
+            }
 
             await VerifyCompany(id, token);
             setCompanies((prevCompanies) =>
