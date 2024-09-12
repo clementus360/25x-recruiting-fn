@@ -1,13 +1,14 @@
 'use client'
 
-import { useEffect, useState } from "react";
-import ReactQuill from "react-quill";
+import { useEffect, useState, useMemo } from "react";
 import 'react-quill/dist/quill.snow.css';
 import { useFormData } from '@/context/FormDataContext'; // Import the context hook
+import dynamic from "next/dynamic";
 
 export default function JobDescription({ handleChangeStep, handleActiveSteps }: { handleChangeStep: (step: number) => void, handleActiveSteps: (steps: number) => void }) {
     const { formData, setFormData } = useFormData()!;
     const [error, setError] = useState<string | null>(null); // State for validation error
+    const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }),[]);
 
     const handleDescriptionChange = (value: string) => {
         setFormData((prev: any) => ({ ...prev, description: value })); // Update context state

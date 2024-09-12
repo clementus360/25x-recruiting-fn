@@ -68,7 +68,7 @@ export default function JobPreview() {
             setSuccess("Job added successfully.");
         } catch (err: any) {
             console.log(err)
-            setError("An error occurred while opening a new job.");
+            setError(`An error occurred while opening a new job: ${err}`);
         } finally {
             setLoading(false);
         }

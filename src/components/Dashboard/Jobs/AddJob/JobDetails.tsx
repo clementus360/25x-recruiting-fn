@@ -1,3 +1,5 @@
+'use client'
+
 import { Country, State, City, IState, ICity } from 'country-state-city';
 
 import { useEffect, useState } from "react";
@@ -565,7 +567,7 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
                         </label>
 
                         <label className="flex flex-col w-full gap-1">
-                            <p>State</p>
+                            <p>City</p>
                             <select
                                 className="w-full bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm h-full"
                                 name="city"
