@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -277,7 +277,7 @@ export default function OnboardingSignUp() {
                         >
                             <option value="">Select a security question</option>
                             <option value="What was the name of your first pet?">What was the name of your first pet?</option>
-                            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                            <option value="What is your mother's maiden name?">What is your mother&apos;s maiden name?</option>
                             <option value="What city were you born in?">What city were you born in?</option>
                         </select>
                         {errors.securityQuestion1 && <span className="text-red-500 text-xs">{errors.securityQuestion1}</span>}
@@ -328,7 +328,7 @@ export default function OnboardingSignUp() {
                         {errors.securityAnswer2 && <span className="text-red-500 text-xs">{errors.securityAnswer2}</span>}
                     </div>
 
-                    <p className="text-sm text-grey">Please review this website's Terms & Conditions below to understand how your personal information is processed and if you accept them, please check the box next to Accept Our Terms & Conditions. In addition, once you've reviewed our Privacy Policy, to understand how your personal information is processed, please check the box next to Review Our Policy and click Accept to continue.</p>
+                    <p className="text-sm text-grey">Please review this website&apos;s Terms & Conditions below to understand how your personal information is processed and if you accept them, please check the box next to Accept Our Terms & Conditions. In addition, once you&apos;ve reviewed our Privacy Policy, to understand how your personal information is processed, please check the box next to Review Our Policy and click Accept to continue.</p>
 
 
                     <div className="flex items-center gap-2">

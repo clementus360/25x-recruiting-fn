@@ -1,4 +1,4 @@
-"use client"; // Mark this component as a Client Component
+'use client'; // Mark this component as a Client Component
 
 import { Inter } from "next/font/google";
 import "./globals.css";

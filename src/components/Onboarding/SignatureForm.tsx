@@ -21,15 +21,15 @@ const SignatureForm = ({ onClose }: { onClose: () => void }) => {
         <div className="flex flex-col items-center gap-4">
             {/* Information Notice */}
             <div className="border p-4 text-sm text-gray-600">
-                You have been authorized to complete online documents in connection with either your employment or contractor agreement and receive legal notices throughout your employment or contractor agreement electronically. During this process, you will be asked to "sign" one or more of the online documents with an electronic signature. Please read the following carefully regarding the electronic signature/notice Process.
+                You have been authorized to complete online documents in connection with either your employment or contractor agreement and receive legal notices throughout your employment or contractor agreement electronically. During this process, you will be asked to &quot;sign&quot; one or more of the online documents with an electronic signature. Please read the following carefully regarding the electronic signature/notice Process.
                 <br /><br />
-                To create your electronic signature, sign your name in the box, type your name into"Signed by", and click both the "I Agree" box and the "Submit" button appearing at the bottom of the page.
+                To create your electronic signature, sign your name in the box, type your name into &quot;Signed by&quot;, and click both the &quot;I Agree&quot; box and the &quot;Submit&quot; button appearing at the bottom of the page.
                 <br /><br />
-                Your electronic signature will be applied when you click "I Agree" on certain additional documents in the onboarding or employment process.
+                Your electronic signature will be applied when you click &quot;I Agree&quot; on certain additional documents in the onboarding or employment process.
                 <br /><br />
                 Once the signature process is completed, your electronic signature will be binding as if you had physically signed the document by hand.
                 <br /><br />
-                If you do not agree to sign the document electronically, click the "I Do Not Agree" box and the "Submit" button. Paper copies may be available for you to complete at no charge by sending a request to support@myemployeejourney.com. The paper copies will be sent to you in the method provided by your employer representative and proper identification will be required before such information is provided.
+                If you do not agree to sign the document electronically, click the &quot;I Do Not Agree&quot; box and the &quot;Submit&quot; button. Paper copies may be available for you to complete at no charge by sending a request to support@myemployeejourney.com. The paper copies will be sent to you in the method provided by your employer representative and proper identification will be required before such information is provided.
                 <br /><br />
                 After you complete a document that requires your electronic signature and/or once all the documents have been completed and signed, you may immediately view, download or print the documents, or at a later time by logging in again using your Username and password.
                 <br /><br />

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { CompanyItem } from "@/components/Admin/CompanyItem";
 import { useError } from "@/context/ErrorContext";

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { GetCompanyData } from "@/data/users";
 import { CompanyData } from "@/types/authTypes";

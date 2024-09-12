@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import { DashboardNumbers } from "@/components/Dashboard/DashboardNumbers";
 import { RecentApplicationRow } from "@/components/Dashboard/RecentApplicationRow";

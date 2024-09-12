@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { GetUserData } from "@/data/users";
 import { User } from "@/types/profileTypes";

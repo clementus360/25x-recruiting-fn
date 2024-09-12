@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -176,7 +176,7 @@ export default function SignIn() {
               <p>{loading ? "Submitting..." : "Sign In"}</p>
             </button>
             <p className="text-sm font-light text-grey">
-              Don't have an account? <Link href={"/register"}><span className="font-bold text-primary">Register Company</span></Link>
+              Don&apos;t have an account? <Link href={"/register"}><span className="font-bold text-primary">Register Company</span></Link>
             </p>
           </div>
         </form>

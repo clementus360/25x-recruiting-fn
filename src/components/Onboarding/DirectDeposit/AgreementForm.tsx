@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 
@@ -21,7 +21,7 @@ const AgreementForm: React.FC<AgreementFormProps> = ({ onClose, onAgree }) => {
             {/* Agreement Text */}
             <div className="border p-4 text-sm text-gray-600 w-full">
                 <p>
-                    You have been authorized to complete online documents in connection with either your employment or contractor agreement and receive legal notices electronically. During this process, you will be asked to "sign" one or more online documents with an electronic signature. Please read the following carefully regarding the electronic signature/notice process.
+                    You have been authorized to complete online documents in connection with either your employment or contractor agreement and receive legal notices electronically. During this process, you will be asked to &quot;sign&quot; one or more online documents with an electronic signature. Please read the following carefully regarding the electronic signature/notice process.
                 </p>
             </div>
 

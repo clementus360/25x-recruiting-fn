@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import Image from "next/image";
 
@@ -61,7 +61,7 @@ export default function ApplicantResume() {
     return (
         <div className="flex items-center justify-center self-center bg-lightViolet border-[0.08rem] border-accent border-dashed w-full py-8 rounded-lg">
             <div className="flex flex-col items-center gap-2">
-                <p className="text-sm font-bold">There isn't a cover letter file for {applicant?.applicantName}.</p>
+                <p className="text-sm font-bold">There isn&apos;t a cover letter file for {applicant?.applicantName}.</p>
                 <button onClick={openUploadOverlay} className="flex gap-2 items-center bg-primary self-center justify-self-end h-max w-max px-4 py-2 text-white text-sm font-bold rounded-md">
                     <Image src={ImportIcon} height={14} width={14} alt={"search"} />
                     <p>Import Applicant Cover Letter</p>

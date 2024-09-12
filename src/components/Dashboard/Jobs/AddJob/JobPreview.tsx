@@ -1,3 +1,5 @@
+'use client'
+
 import { useRouter } from 'next/navigation';
 import { useFormData } from '@/context/FormDataContext';
 import { FaUserTie, FaDollarSign, FaBuilding, FaMapMarkerAlt, FaClipboardList } from 'react-icons/fa';

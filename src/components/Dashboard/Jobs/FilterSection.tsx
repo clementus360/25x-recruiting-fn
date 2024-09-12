@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Select from "@/components/Select";
 import { useEffect, useState } from "react";
