@@ -10,6 +10,7 @@ import { useCompany } from '@/context/CompanyContext';
 import { GetUsers } from '@/data/users';
 import { useError } from '@/context/ErrorContext';
 import { User } from '@/types/profileTypes';
+import { useLocalStorage } from '@/data/localStorage';
 
 export default function JobDetails({ handleChangeStep, handleActiveSteps }: { handleChangeStep: (step: number) => void, handleActiveSteps: (steps: number) => void }) {
     const { formData, setFormData } = useFormData()!;
@@ -24,12 +25,9 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
     const [loading, setLoading] = useState(false);
     const { setError } = useError();
     const { companyInfo } = useCompany();
-    const [isClient, setIsClient] = useState(false);
-    
-    useEffect(() => {
-        // Indicate that the component is running on the client side
-        setIsClient(true);
-    }, []);
+
+    // Use custom hook to interact with localStorage
+    const [accessToken] = useLocalStorage("accessToken", "");
 
     const validateInputs = (data: typeof formData) => {
         const newErrors = { ...initialErrors };
@@ -162,14 +160,10 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
     useEffect(() => {
         const fetchUsers = async () => {
 
-            if (!isClient) return;
-            
-            const accessToken = localStorage.getItem("accessToken");
-    
             if (!companyInfo || !accessToken) {
                 return;
             }
-    
+
             try {
                 const result = await GetUsers(companyInfo?.id, accessToken);
                 if (result) {

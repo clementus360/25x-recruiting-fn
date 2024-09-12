@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 import { AddJobSteps } from "@/data/constants";
@@ -14,6 +14,11 @@ import { FormDataProvider } from "@/context/FormDataContext";
 export default function AddJob() {
     const [currentStep, setCurrentStep] = useState(1)
     const [activeSteps, setActiveSteps] = useState(0);
+    const [isClient, setIsClient] = useState(false)
+
+    useEffect(() => {
+        setIsClient(true)
+    }, [])
 
     const handleActiveSteps = (steps: number) => {
         setActiveSteps(steps)
@@ -21,6 +26,10 @@ export default function AddJob() {
 
     const handleChangeStep = (step: number) => {
         setCurrentStep(step)
+    }
+
+    if (!isClient) {
+        return
     }
 
     return (

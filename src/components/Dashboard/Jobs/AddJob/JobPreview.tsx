@@ -8,6 +8,7 @@ import { useCompany } from '@/context/CompanyContext';
 import { useError } from '@/context/ErrorContext';
 import { useSuccess } from '@/context/SuccessContext';
 import { useEffect, useState } from 'react';
+import { useLocalStorage } from '@/data/localStorage';
 
 export default function JobPreview() {
     const { formData, setFormData } = useFormData()!; // Access the form data from context
@@ -16,12 +17,11 @@ export default function JobPreview() {
     const { setError } = useError();
     const { setSuccess } = useSuccess();
     const [loading, setLoading] = useState(false);
-    const [isClient, setIsClient] = useState(false);
-    
-    useEffect(() => {
-        // Indicate that the component is running on the client side
-        setIsClient(true);
-    }, []);
+
+    // Use the custom hook to interact with localStorage
+    const [accessToken] = useLocalStorage("accessToken", "");
+    const [, , removeFormData] = useLocalStorage("formData", null); // Ignore the set value function
+    const [, , removeFormDataTimestamp] = useLocalStorage("formDataTimestamp", null);
 
     const handleCancel = () => {
         // Reset the form data to the initial state
@@ -49,19 +49,14 @@ export default function JobPreview() {
             visibility: '',
         });
 
-        if (isClient) {
-            localStorage.removeItem('formData');
-            localStorage.removeItem('formDataTimestamp');
-        }
+        // Clear local storage using the custom hook
+        removeFormData();
+        removeFormDataTimestamp();
 
         router.push('/dashboard/jobs/');
     };
 
     const handleOpenJob = async () => {
-
-        if (!isClient) return;
-
-        const accessToken = localStorage.getItem("accessToken");
         const CompanyId = companyInfo?.id
 
         try {
