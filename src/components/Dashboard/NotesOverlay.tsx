@@ -65,7 +65,7 @@ export const NotesOverlay = ({
   return (
     <div className="relative">
       <div className="absolute -left-40 mt-2 z-50 bg-white p-4 rounded-lg shadow-lg w-full max-w-md sm:max-w-lg lg:w-96">
-        <h4 className="font-bold text-lg mb-4">Applicant Notes</h4>
+        <h4 className="font-bold text-lg mb-4">Applicant Comments</h4>
 
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <input
@@ -90,11 +90,11 @@ export const NotesOverlay = ({
                 key={idx}
                 className="relative flex flex-col items-start bg-lightViolet px-4 py-2 rounded-md text-sm"
               >
-                <div className="flex justify-between w-full">
-                  <p className="text-lg text-black">{note.comment}</p>
+                <div className="grid grid-cols-[20fr_1fr] gap-2 justify-between">
+                  <p className="text-lg text-black text-wrap text-left hyphens-auto overflow-clip">{note.comment}</p>
                   <button
-                    onClick={() => handleDeleteNote(idx.toString())}
-                    className="text-red-500 hover:text-red-700"
+                    onClick={() => handleDeleteNote(note.id.toString())}
+                    className="self-start text-red-500 hover:text-red-700"
                     aria-label="Delete Note"
                   >
                     <FiTrash2 size={16} />

@@ -85,6 +85,7 @@ export type ApplicantFormDataType = {
 };
 
 export interface UserComment {
+  id: number;
   comment: string;
   createdDate: string;
   names: string
