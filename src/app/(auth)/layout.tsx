@@ -19,11 +19,10 @@ export default function AuthLayout({
         const accessToken = localStorage.getItem("accessToken");
 
         // If there is no accessToken or it's invalid, redirect to the sign-in page
-        if (!accessToken) {
-            router.push("/sign-in");
-        } else {
-            router.push("/dashboard");// Validate the token
+        if (accessToken) {
+            router.push("/dashboard");
         }
+
     }, [router]);
 
     return (

@@ -19,19 +19,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-  const router = useRouter();
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-
-    // If there is no accessToken or it's invalid, redirect to the sign-in page
-    if (!accessToken) {
-      router.push("/sign-in");
-    } else {
-      // Validate the token
-    }
-  }, [router]);
-
   return (
     <html lang="en">
       <body className={inter.className}>
