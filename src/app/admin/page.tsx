@@ -5,6 +5,7 @@ import { useError } from "@/context/ErrorContext";
 import { useSuccess } from "@/context/SuccessContext";
 import { GetCompanies, VerifyCompany } from "@/data/admin";
 import { Company } from "@/types/adminTypes";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function Admin() {
@@ -12,6 +13,24 @@ export default function Admin() {
     const { setSuccess } = useSuccess();
     const [companies, setCompanies] = useState<Company[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isLogged, setIsLogged] = useState(false)
+    const router = useRouter();
+
+    useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
+
+        // If there is no accessToken or it's invalid, redirect to the sign-in page
+        if (!accessToken) {
+            router.push("/sign-in");
+        } else {
+            setIsLogged(true)
+            // Validate the token
+        }
+    }, [router]);
+
+    if (!isLogged) {
+        return
+    }
 
     useEffect(() => {
         const fetchCompanies = async () => {
