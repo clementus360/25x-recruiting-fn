@@ -1,13 +1,12 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-const Access_Token = process.env.NEXT_PUBLIC_ACCESS_TOKEN
 
-export async function GetCompanies() {
+export async function GetCompanies(token: string) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/v1/companies`, {
             method: "GET",
             headers: {
                 "Accept": "application/json",
-                "Authorization": `Bearer ${Access_Token}`,
+                "Authorization": `Bearer ${token}`,
             },
         });
 
@@ -31,14 +30,14 @@ const status = {
     status: "APPROVED"
 }
 
-export async function VerifyCompany(id: number) {
+export async function VerifyCompany(id: number, token: string) {
     try {
         const response = await fetch(`${API_BASE_URL}/api/v1/companies/${id}/verify-company`, {
             method: "POST",
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${Access_Token}`,
+                "Authorization": `Bearer ${token}`,
             },
             body: JSON.stringify(status)
         });

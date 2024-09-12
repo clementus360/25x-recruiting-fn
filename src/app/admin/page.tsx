@@ -35,7 +35,13 @@ export default function Admin() {
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const result = await GetCompanies();
+                const token = localStorage.getItem("accessToken"); // Replace with the actual token
+
+                if (!token) {
+                    return;
+                }
+
+                const result = await GetCompanies(token);
                 if (result) {
                     setCompanies(result);
                 } else {
@@ -53,7 +59,13 @@ export default function Admin() {
 
     const handleApprove = async (id: number) => {
         try {
-            await VerifyCompany(id);
+            const token = localStorage.getItem("accessToken"); // Replace with the actual token
+
+            if (!token) {
+                return;
+            } 
+
+            await VerifyCompany(id, token);
             setCompanies((prevCompanies) =>
                 prevCompanies.map((company) =>
                     company.id === id ? { ...company, status: "APPROVED" } : company
