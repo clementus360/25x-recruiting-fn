@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 
 import { AddJobSteps } from "@/data/constants";
 
-import JobDetails from "@/components/Dashboard/Jobs/AddJob/JobDetails";
-import JobDescription from "@/components/Dashboard/Jobs/AddJob/JobDescription";
-import JobPreview from "@/components/Dashboard/Jobs/AddJob/JobPreview";
+const JobDetails = dynamic(() => import("@/components/Dashboard/Jobs/AddJob/JobDetails"), { ssr: false })
+const JobDescription = dynamic(() => import("@/components/Dashboard/Jobs/AddJob/JobDescription"), { ssr: false })
+const JobPreview = dynamic(() => import("@/components/Dashboard/Jobs/AddJob/JobPreview"), { ssr: false })
+
 import { FormDataProvider } from "@/context/FormDataContext";
 
 export default function AddJob() {

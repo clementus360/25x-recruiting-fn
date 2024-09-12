@@ -7,7 +7,7 @@ import { OpenNewJob } from '@/data/jobsData';
 import { useCompany } from '@/context/CompanyContext';
 import { useError } from '@/context/ErrorContext';
 import { useSuccess } from '@/context/SuccessContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function JobPreview() {
     const { formData, setFormData } = useFormData()!; // Access the form data from context
@@ -16,6 +16,12 @@ export default function JobPreview() {
     const { setError } = useError();
     const { setSuccess } = useSuccess();
     const [loading, setLoading] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+    
+    useEffect(() => {
+        // Indicate that the component is running on the client side
+        setIsClient(true);
+    }, []);
 
     const handleCancel = () => {
         // Reset the form data to the initial state
@@ -43,14 +49,17 @@ export default function JobPreview() {
             visibility: '',
         });
 
-        // Clear local storage
-        localStorage.removeItem('formData');
-        localStorage.removeItem('formDataTimestamp');
+        if (isClient) {
+            localStorage.removeItem('formData');
+            localStorage.removeItem('formDataTimestamp');
+        }
 
         router.push('/dashboard/jobs/');
     };
 
     const handleOpenJob = async () => {
+
+        if (!isClient) return;
 
         const accessToken = localStorage.getItem("accessToken");
         const CompanyId = companyInfo?.id

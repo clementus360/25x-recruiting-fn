@@ -24,6 +24,12 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
     const [loading, setLoading] = useState(false);
     const { setError } = useError();
     const { companyInfo } = useCompany();
+    const [isClient, setIsClient] = useState(false);
+    
+    useEffect(() => {
+        // Indicate that the component is running on the client side
+        setIsClient(true);
+    }, []);
 
     const validateInputs = (data: typeof formData) => {
         const newErrors = { ...initialErrors };
@@ -152,28 +158,32 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
         }
     };
 
-    const fetchUsers = async () => {
-        const accessToken = localStorage.getItem("accessToken");
-
-        if (!companyInfo || !accessToken) {
-            return;
-        }
-
-        try {
-            const result = await GetUsers(companyInfo?.id, accessToken);
-            if (result) {
-                setUsers(result);
-            } else {
-                setError("Failed to fetch Users.");
-            }
-        } catch (error) {
-            setError("An error occurred while fetching Users.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
+        const fetchUsers = async () => {
+
+            if (!isClient) return;
+            
+            const accessToken = localStorage.getItem("accessToken");
+    
+            if (!companyInfo || !accessToken) {
+                return;
+            }
+    
+            try {
+                const result = await GetUsers(companyInfo?.id, accessToken);
+                if (result) {
+                    setUsers(result);
+                } else {
+                    setError("Failed to fetch Users.");
+                }
+            } catch (error) {
+                setError("An error occurred while fetching Users.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchUsers();
     }, [companyInfo]);
 
