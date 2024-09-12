@@ -24,6 +24,8 @@ export default function UserRegistration() {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [disabled, setDisabled] = useState(true);
+    const [changed, setChanged] = useState(false)
 
     const validateForm = (password: string) => {
         const newErrors: { [key: string]: string } = {};
@@ -52,6 +54,9 @@ export default function UserRegistration() {
     }, [password]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!changed) {
+            setChanged(true)
+        }
         setPassword(e.target.value);
     };
 
@@ -72,11 +77,27 @@ export default function UserRegistration() {
             setSuccess("Registration completed successfully.");
             router.push("/sign-in")
         } catch (err: any) {
-            setError("An error occurred while completing the registration.");
+            setError(`An error occurred while completing the registration: ${err}`);
         } finally {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const isFormValid = validateForm(password);
+
+        if (!isFormValid || loading) {
+            setDisabled(true);
+        } else {
+            setDisabled(false);
+        }
+    }, [password, loading]);
+
+    useEffect(() => {
+        if (changed) {
+            validateForm(password)
+        }
+    }, [password])
 
     return (
         <Suspense>
@@ -114,22 +135,23 @@ export default function UserRegistration() {
                         </div>
 
                         <div className="mt-6 flex flex-col gap-2">
-                            {loading && <Oval
-                                visible={true}
-                                height="40"
-                                width="40"
-                                color="#1579BE"
-                                secondaryColor="#1579BE"
-                                ariaLabel="oval-loading"
-                                wrapperStyle={{}}
-                                wrapperClass="flex items-center justify-center"
-                            />}
-                            <input
-                                className="bg-primary disabled:bg-grey hover:bg-opacity-80 cursor-pointer text-white font-semibold py-4 w-full rounded-lg"
+                            <button
+                                className="flex gap-2 items-center justify-center bg-primary disabled:bg-grey hover:bg-opacity-80 cursor-pointer text-white font-semibold py-4 w-full rounded-lg"
                                 type="submit"
-                                value={loading ? "Submitting..." : "Complete Registration"}
-                                disabled={loading}
-                            ></input>
+                                disabled={disabled}
+                            >
+                                {loading && <Oval
+                                    visible={true}
+                                    height="14"
+                                    width="14"
+                                    color="#ffffff"
+                                    secondaryColor="#ffffff"
+                                    ariaLabel="oval-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass="flex items-center justify-center"
+                                />}
+                                <p>{loading ? "Submitting..." : "Request Verification"}</p>
+                            </button>
                             <p className="text-sm font-light text-grey">
                                 Already have an account? <Link href={"/sign-in"}><span className="font-bold text-primary">Sign In</span></Link>
                             </p>

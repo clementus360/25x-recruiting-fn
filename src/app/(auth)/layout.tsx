@@ -22,7 +22,7 @@ export default function AuthLayout({
         if (accessToken) {
             router.push("/dashboard");
         }
-
+        
     }, [router]);
 
     return (

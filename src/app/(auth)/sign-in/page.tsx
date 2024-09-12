@@ -23,7 +23,7 @@ export default function SignIn() {
   const [disabled, setDisabled] = useState(true);
   const [changed, setChanged] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
-  const { fetchUserInfo } = useUser(); 
+  const { fetchUserInfo } = useUser();
   const { fetchCompanyInfo } = useCompany();
 
   const validateForm = () => {
@@ -66,7 +66,6 @@ export default function SignIn() {
     } else if (name === 'password') {
       setPassword(value);
     }
-    checkDisabled()
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -94,14 +93,15 @@ export default function SignIn() {
     }
   };
 
-  const checkDisabled = () => {
+  useEffect(() => {
+    const isFormValid = validateForm();
 
-    if (!validateForm() || loading) {
-      setDisabled(true)
+    if (!isFormValid || loading) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
     }
-
-    setDisabled(false)
-  }
+  }, [email, password, loading]);
 
   useEffect(() => {
     if (changed) {

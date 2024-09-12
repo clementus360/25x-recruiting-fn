@@ -86,7 +86,7 @@ export const DeclinedRow: React.FC<ApplicantRowProps> = ({
                     />
                 </td>
                 <td className="px-6 py-4 align-middle whitespace-nowrap text-sm font-bold text-accent">
-                <Link href={`/dashboard/applicant/${applicant.applicantId}/resume?jobId=${jobId}`}>{applicant.applicantName}</Link>
+                    <Link href={`/dashboard/applicant/${applicant.applicantId}/resume?jobId=${jobId}`}>{applicant.applicantName}</Link>
                 </td>
                 <td className="px-6 py-4 align-middle whitespace-nowrap text-sm font-light text-gray-500">
                     {applicant.createdDate}
@@ -113,10 +113,11 @@ export const DeclinedRow: React.FC<ApplicantRowProps> = ({
                     />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="w-full flex items-center justify-center gap-4">
+                    <div className="flex gap-2">
                         <button onClick={toggleNotesOverlay}>
                             <Image src={NoteIcon} alt={"note"} className="min-w-5 min-h-5" />
                         </button>
+                        <p>{notes?.length}</p>
                     </div>
                     {isNotesOverlayOpen && (
                         <NotesOverlay

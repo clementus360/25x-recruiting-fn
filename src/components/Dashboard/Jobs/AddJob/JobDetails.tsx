@@ -159,11 +159,11 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
 
     useEffect(() => {
         const fetchUsers = async () => {
-
+    
             if (!companyInfo || !accessToken) {
                 return;
             }
-
+    
             try {
                 const result = await GetUsers(companyInfo?.id, accessToken);
                 if (result) {

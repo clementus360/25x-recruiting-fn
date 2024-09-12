@@ -51,14 +51,6 @@ export default function SignUp() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const checkDisabled = () => {
-    if (!validateForm(formData) || loading) {
-      setDisabled(true)
-    }
-
-    setDisabled(false)
-  }
-
   // Validate on formData change
   useEffect(() => {
     if (changed) {
@@ -76,8 +68,6 @@ export default function SignUp() {
       ...prev,
       [name]: value,
     }));
-
-    checkDisabled()
   };
 
   const handlePhoneChange = (value: string | undefined) => {
@@ -114,6 +104,16 @@ export default function SignUp() {
       setError("Please fix the errors and try again.");
     }
   };
+
+  useEffect(() => {
+    const isFormValid = validateForm(formData);
+
+    if (!isFormValid || loading) {
+        setDisabled(true);
+    } else {
+        setDisabled(false);
+    }
+}, [formData, loading]);
 
   return (
     <main className="flex min-h-screen flex-col justify-between py-16 pl-24 pr-16">

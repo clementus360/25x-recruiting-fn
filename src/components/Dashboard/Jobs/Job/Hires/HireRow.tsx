@@ -100,10 +100,11 @@ export const HireRow: React.FC<ApplicantRowProps> = ({
                     />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex gap-4">
+                    <div className="flex gap-2">
                         <button onClick={toggleNotesOverlay}>
                             <Image src={NoteIcon} alt={"note"} className="min-w-5 min-h-5" />
                         </button>
+                        <p>{notes?.length}</p>
                     </div>
                     {isNotesOverlayOpen && (
                         <NotesOverlay
