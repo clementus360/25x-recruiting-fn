@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { useCompany } from "@/context/CompanyContext";
 import { useError } from "@/context/ErrorContext";
-import { GetCompanyData, GetUsers, UpdateUserProfile } from "@/data/users";
+import { GetCompanyData, UpdateUserProfile } from "@/data/users";
 
 
 export default function UserProfile() {
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [formData, setFormData] = useState({
     string: "", // User Name
     title: "",
@@ -17,7 +16,6 @@ export default function UserProfile() {
   const [oldPassword, setOldPassword] = useState(""); // Separate state for authorization
   const { setError } = useError();
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState([]);
   const { companyInfo } = useCompany();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,27 +54,6 @@ export default function UserProfile() {
     // Perform further actions here
   };
 
-  const fetchUsers = async () => {
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!companyInfo || !accessToken) {
-      return;
-    }
-
-    try {
-      const result = await GetUsers(companyInfo?.id, accessToken);
-      if (result) {
-        setUsers(result);
-      } else {
-        setError("An error occured while loading users.");
-      }
-    } catch (error) {
-      setError("An error occurred while loading users.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const fetchCompanyInfo = async () => {
     const accessToken = localStorage.getItem("accessToken");
 
@@ -102,14 +79,9 @@ export default function UserProfile() {
   };
 
   useEffect(() => {
-    fetchUsers();
     fetchCompanyInfo();
   }, [companyInfo]);
 
-  const handleCloseOverlay = () => {
-    setIsOverlayOpen(false);
-    fetchUsers();
-  };
 
   return (
     <main className="flex min-h-screen flex-col gap-16 py-16 w-full px-4 lg:px-40">
