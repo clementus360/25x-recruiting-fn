@@ -165,7 +165,7 @@ export async function UpdateUserProfile(updateData: UserUpdateData, token: strin
 
     } catch (error: any) {
         console.error("Error registering the company:", error.message);
-        throw error;
+        throw error.message;
     }
 }
 
@@ -215,8 +215,6 @@ export async function getHiringManagers(companyId: string, token: string) {
         }
 
         const data = await response.json();
-
-        console.log(data.hiringManagers)
 
         // Return the companies data
         return data.hiringManagers; // Assuming you only need the companies array

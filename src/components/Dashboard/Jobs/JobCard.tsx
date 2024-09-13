@@ -7,6 +7,8 @@ import Link from "next/link";
 import { JobCardData } from "@/types/jobTypes";
 
 export default function JobCard(props: JobCardData) {
+
+    console.log(props)
     const { id, title, applicantCount, candidateCount, city, hiringManager, createdDate, hiresCount, state, status, visibility } = props
 
     return (
@@ -42,11 +44,11 @@ export default function JobCard(props: JobCardData) {
                         <p className="text-sm font-bold lg:text-nowrap">Visibility: <span className="text-grey font-light">{visibility}</span></p>
                     </div>
 
-                    <Link className="w-full" href={`/dashboard/jobs/${id}/applicants`}><button className="flex w-full gap-2 items-center justify-center bg-primary hover:bg-opacity-80  h-max px-4 py-2 text-white text-sm font-bold rounded-md">
+                    <button className="flex w-full gap-2 items-center justify-center bg-primary hover:bg-opacity-80  h-max px-4 py-2 text-white text-sm font-bold rounded-md">
                         <Image src={LinkIcon} height={14} width={14} alt={"search"} />
                         <p className="text-xs">View job</p>
                     </button>
-                    </Link>
+
                 </div>
             </div>
         </Link>

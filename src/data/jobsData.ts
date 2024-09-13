@@ -35,7 +35,7 @@ export async function getJobs(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/jobs/${companyId}?${queryParams}`;
 
-        console.log(url)
+        
 
         const response = await fetch(url, {
             method: "GET",
@@ -92,7 +92,7 @@ export async function OpenNewJob(companyId: string, token: string, formData: For
 
         const url = `${API_BASE_URL}/api/v1/jobs/open-job/${companyId}?${queryParams}`
 
-        console.log(url)
+        
 
         const response = await fetch(url, {
             method: "POST",
@@ -133,7 +133,7 @@ export async function getApplicantsForJob(
     }
 ) {
     try {
-        console.log(filters)
+        
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -147,7 +147,7 @@ export async function getApplicantsForJob(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/applicants/list-all-applicants/${jobId}?${queryParams}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "GET",
@@ -193,7 +193,7 @@ export async function addCandidate(jobId: string, token: string, formData: Appli
         // Define the URL for the API endpoint
         const url = `${API_BASE_URL}/api/v1/candidates/add-candidate/${jobId}`;
 
-        console.log(url); // Log the URL for debugging purposes
+        ; // Log the URL for debugging purposes
 
         // Make the POST request to add the applicant
         const response = await fetch(url, {
@@ -235,7 +235,7 @@ export async function getCandidatesForJob(
     }
 ) {
     try {
-        console.log(filters)
+        
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -249,7 +249,7 @@ export async function getCandidatesForJob(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/candidates/list-single-job-candidates/${jobId}?${queryParams}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "GET",
@@ -288,7 +288,7 @@ export async function getHiresForJob(
     }
 ) {
     try {
-        console.log(filters)
+        
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -302,7 +302,7 @@ export async function getHiresForJob(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/hires/list-all-hires/${jobId}?${queryParams}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "GET",
@@ -341,7 +341,7 @@ export async function getDeclinedForJob(
     }
 ) {
     try {
-        console.log(filters)
+        
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -355,7 +355,7 @@ export async function getDeclinedForJob(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/declined/list-all-declined${jobId}?${queryParams}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "GET",
@@ -401,7 +401,7 @@ export async function addApplicant(jobId: string, token: string, formData: Appli
         // Define the URL for the API endpoint
         const url = `${API_BASE_URL}/api/v1/applicants/add-applicant/${jobId}`;
 
-        console.log(url); // Log the URL for debugging purposes
+        ; // Log the URL for debugging purposes
 
         // Make the POST request to add the applicant
         const response = await fetch(url, {
@@ -434,7 +434,7 @@ export async function getCommentsForApplicant(applicantId: number, token: string
     try {
         const url = `${API_BASE_URL}/api/v1/comments/list-comments/${applicantId}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "GET",
@@ -464,7 +464,7 @@ export async function addCommentToApplicant(applicantId: number, token: string, 
     try {
         const url = `${API_BASE_URL}/api/v1/comments/add-comment/${applicantId}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "POST",
@@ -497,7 +497,7 @@ export async function deleteComment(applicantId: number, token: string, commentI
     try {
         const url = `${API_BASE_URL}/api/v1/comments/comments/delete-comment/${applicantId}/${commentId}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "DELETE",
@@ -527,7 +527,7 @@ export async function editRating(applicantId: number, token: string, rating: num
     try {
         const url = `${API_BASE_URL}/api/v1/ratings/ratings/edit-rating/${applicantId}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "PATCH",
@@ -606,7 +606,7 @@ export async function getAllCandidates(
     }
 ) {
     try {
-        console.log(filters)
+        
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -620,7 +620,7 @@ export async function getAllCandidates(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/candidates/list-all-candidates?${queryParams}`;
 
-        console.log(url);
+        ;
 
         const response = await fetch(url, {
             method: "GET",
@@ -638,8 +638,6 @@ export async function getAllCandidates(
 
         const data = await response.json();
 
-        console.log("Candidates: ", data)
-
         // Return the candidate data
         return data;
     } catch (error: any) {
@@ -654,7 +652,7 @@ export async function getSingleJob(companyId: string, jobId: string, token: stri
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/jobs/${companyId}/list-single-job/${jobId}`;
 
-        console.log(url)
+        
 
         const response = await fetch(url, {
             method: "GET",
@@ -686,7 +684,7 @@ export async function getApplicantData(applicantId: string, token: string) {
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/applicants/${applicantId}`;
 
-        console.log(url)
+        
 
         // const response = await fetch(url, {
         //     method: "GET",

@@ -71,7 +71,6 @@ export default function JobPreview() {
             handleCancel()
             setSuccess("Job added successfully.");
         } catch (err: any) {
-            console.log(err)
             setError(`An error occurred while opening a new job`);
         } finally {
             setLoading(false);

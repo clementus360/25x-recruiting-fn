@@ -150,7 +150,6 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
 
     const handleSaveAndContinue = () => {
         const isValid = validateInputs(formData); // Validate inputs and update errors state
-        console.log(errors)
         if (isValid) {
             handleChangeStep(2); // Proceed to the next step if the form is valid
         }

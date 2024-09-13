@@ -75,7 +75,6 @@ export default function CompanyProfile() {
 
     try {
       await UpdateCompanyProfile(formData, accessToken);
-      console.log("Company Data Updated:", formData);
     } catch (error) {
       setError("An error occurred while updating company data.");
     } finally {

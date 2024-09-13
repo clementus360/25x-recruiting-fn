@@ -119,7 +119,6 @@ export const AddApplicantOverlay: React.FC<AddApplicantOverlayProps> = ({handleL
             handleLoad(true)
             onClose();
         } catch (error: any) {
-            console.log(error);
             setError(`An error occured while adding applicant`);
         }
     };

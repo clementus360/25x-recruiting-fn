@@ -55,8 +55,6 @@ export default function ApplicantLayout({
 
             const data = await getSingleJob(companyId, jobId, token);
 
-            console.log("Data:", data)
-
             setJob(data);
         } catch (error: any) {
             setError(`Error Fetching Job Info: ${error.message}`);

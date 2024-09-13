@@ -35,14 +35,15 @@ export interface User {
 }
 
 export interface UserUpdateData {
-    string: string,
+    firstName: string,
+    lastName: string,
     title: string,
     email: string,
     oldPassword: string,
     newPassword: string
 }
 
-export interface CompanyUpdateData{
+export interface CompanyUpdateData {
     companyName: string;
     website: string;
     ownerPhone: string;
@@ -53,7 +54,7 @@ export interface CompanyUpdateData{
     zip: string;
 }
 
-export interface CompanyData{
+export interface CompanyData {
     id: number;
     companyName: string;
     website: string;

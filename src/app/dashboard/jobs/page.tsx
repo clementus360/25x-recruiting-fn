@@ -41,8 +41,6 @@ export default function DashboardJobs() {
       setLoading(true);
       setError("");
 
-      console.log(filterList);
-
       const filtersParams = {
         status: typeof filterList["status"] === "string" ? filterList.status : undefined,
         visibility: typeof filterList["visibility"] === "string" ? filterList.visibility : undefined,
@@ -65,8 +63,6 @@ export default function DashboardJobs() {
         const jobsData = await getJobs(companyId, token, currentPage, filtersParams);
         setJobs(jobsData.jobs);
 
-        console.log("Jobs:", jobsData.pageCount)
-
         setTotalPages(jobsData.pageCount)
       } catch (err) {
         setError("An error occured while loading jobs");
@@ -83,8 +79,6 @@ export default function DashboardJobs() {
       try {
         const companyId = companyInfo?.id;
         const token = localStorage.getItem("accessToken");
-
-        console.log(companyInfo)
 
         if (!token) {
           setError("User is not authenticated");

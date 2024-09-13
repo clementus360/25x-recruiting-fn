@@ -39,8 +39,6 @@ export default function JobLayout({
     
             const data = await getSingleJob(companyId, jobId, token);
     
-            console.log("Data:", data)
-    
             setJob(data);
           } catch (error: any) {
             setError(`An error occured while loading job data`);

@@ -101,7 +101,6 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
             setSuccess("User invited successfully.");
             onClose();
         } catch (err: any) {
-            console.log(err)
             setError("An error occurred while inviting the user.");
         } finally {
             setLoading(false);

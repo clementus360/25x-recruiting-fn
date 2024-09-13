@@ -4,19 +4,21 @@ import { useEffect, useState } from "react";
 import { useCompany } from "@/context/CompanyContext";
 import { useError } from "@/context/ErrorContext";
 import { GetCompanyData, UpdateUserProfile } from "@/data/users";
+import { useUser } from "@/context/UserContext";
 
 
 export default function UserProfile() {
+  const { userInfo, userInfoLoading } = useUser();
   const [formData, setFormData] = useState({
-    string: "", // User Name
+    firstName: userInfo?.firstName || "",
+    lastName: userInfo?.lastName || "", // User Name
     title: "",
     email: "",
     newPassword: "",
   });
+
   const [oldPassword, setOldPassword] = useState(""); // Separate state for authorization
   const { setError } = useError();
-  const [loading, setLoading] = useState(false);
-  const { companyInfo } = useCompany();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,7 +32,7 @@ export default function UserProfile() {
     setOldPassword(e.target.value); // Handle old password separately
   };
 
-  const handleSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const accessToken = localStorage.getItem("accessToken");
@@ -45,42 +47,21 @@ export default function UserProfile() {
       return;
     }
 
-    UpdateUserProfile({
-      ...formData,
-      oldPassword: oldPassword,
-    }, accessToken)
+    try {
 
-    console.log("Form Data:", formData);
+      // await UpdateUserProfile({
+      //   ...formData,
+      //   oldPassword: oldPassword,
+      // }, accessToken)
+
+    } catch (err: any) {
+      console.log(err.message)
+      setError(`Error while updating user profile: ${err}`)
+    }
+
+
     // Perform further actions here
   };
-
-  const fetchCompanyInfo = async () => {
-    const accessToken = localStorage.getItem("accessToken");
-
-    if (!accessToken) {
-      return;
-    }
-
-    try {
-      const result = await GetCompanyData(accessToken);
-      if (result) {
-        setFormData((prevData) => ({
-          ...prevData,
-          username: result.username, // Set username
-        }));
-      } else {
-        setError("Failed to fetch company data.");
-      }
-    } catch (error) {
-      setError("An error occurred while fetching company data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCompanyInfo();
-  }, [companyInfo]);
 
 
   return (
@@ -91,13 +72,25 @@ export default function UserProfile() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           <label className="flex flex-col w-full gap-1">
-            <p>Username</p>
+            <p>First Name</p>
             <input
               className="w-full h-max bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm"
               type="text"
-              name="username"
-              placeholder="Username"
-              value={formData.string}
+              name="firstName"
+              placeholder="First name"
+              value={userInfo?.firstName}
+              onChange={handleChange}
+            />
+          </label>
+
+          <label className="flex flex-col w-full gap-1">
+            <p>Last Name</p>
+            <input
+              className="w-full h-max bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm"
+              type="text"
+              name="lastName"
+              placeholder="Last name"
+              value={userInfo?.lastName}
               onChange={handleChange}
             />
           </label>
