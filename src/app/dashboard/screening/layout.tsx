@@ -3,9 +3,9 @@
 import Image from "next/image";
 
 import ImportIcon from "@/assets/import.svg"
-import CandidateNavigation from "@/components/Dashboard/Candidates/CandidateNavigation";
 import { useState } from "react";
 import UploadOverlay from "@/components/UploadOverlay";
+import ScreeningNavigation from "@/components/Dashboard/Screening/ScreeningNavigation";
 
 export default function ScreeningLayout({
     children,
@@ -46,7 +46,7 @@ export default function ScreeningLayout({
 
             <section className="flex flex-col gap-8 pb-8 bg-white w-full rounded-md drop-shadow-sm overflow-hidden">
 
-                <CandidateNavigation />
+                <ScreeningNavigation />
                 {/* Page contnts will appear here */}
                 {children}
             </section>

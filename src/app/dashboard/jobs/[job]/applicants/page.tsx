@@ -59,7 +59,7 @@ export default function Applicants() {
       setApplicants(data.Applicants);
       setTotalPages(data.pageCount);
     } catch (error: any) {
-      setError(`Error fetching applicants: ${error.message}`);
+      setError(`An error occured while loading applicants`);
     } finally {
       setLoad(false); // Reset the load state
     }

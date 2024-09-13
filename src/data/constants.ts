@@ -202,7 +202,7 @@ export const navItems = [
     { name: 'Candidates', path: 'candidates' },
     { name: 'Hires', path: 'hires' },
     { name: 'Declined', path: 'declined' },
-    { name: 'Details', path: 'details' }
+    // { name: 'Details', path: 'details' }
 ]
 
 export const candidateNavItems = [

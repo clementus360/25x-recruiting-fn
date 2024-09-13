@@ -17,6 +17,7 @@ import { useCompany } from "@/context/CompanyContext";
 import Link from "next/link";
 import { getHiringManagers } from "@/data/users";
 import { NoResultsPage } from "@/components/Dashboard/NoResultsPage";
+import Select from "@/components/Select";
 
 export default function DashboardJobs() {
   const [hiringManagers, setHiringManagers] = useState([])
@@ -68,7 +69,7 @@ export default function DashboardJobs() {
 
         setTotalPages(jobsData.pageCount)
       } catch (err) {
-        setError("Failed to load jobs");
+        setError("An error occured while loading jobs");
       } finally {
         setLoading(false);
       }
@@ -99,7 +100,7 @@ export default function DashboardJobs() {
         setHiringManagers(data);
         setTotalPages(data.pageCount);
       } catch (error: any) {
-        setError(`Error fetching hiring managers: ${error.message}`);
+        setError(`Failed to load hiring managers`);
       }
     };
 
@@ -110,8 +111,8 @@ export default function DashboardJobs() {
     setCurrentPage(page);
   };
 
-  const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOrder(e.target.value);
+  const handleOrderChange = (value: string) => {
+    setOrder(value);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -191,15 +192,19 @@ export default function DashboardJobs() {
 
           <div className="flex flex-col gap-4">
             <div className="text-sm flex items-center justify-between lg:justify-end gap-8">
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-center">
                 <div className="flex gap-2">
                   <Image src={SortIcon} alt={"sort"} className="w-6 h-6" />
                   <p className="font-bold">Sort by</p>
                 </div>
-                <select onChange={handleOrderChange} name="sort" id="sort" className="bg-none text-primary">
-                  <option value="DESC">Date: Most recent</option>
-                  <option value="ASC">Date: Oldest</option>
-                </select>
+                <Select
+                  options={[
+                    { value: "DESC", label: "Date: Most recent" },
+                    { value: "ASC", label: "Date: Oldest" },
+                  ]}
+                  value={order || "DESC"} // Provide a default value
+                  onChange={(value) => handleOrderChange(value)}
+                />
               </div>
               <p className="text-grey lg:block">{jobs.length} Results</p>
             </div>

@@ -169,7 +169,7 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
                 if (result) {
                     setUsers(result);
                 } else {
-                    setError("Failed to fetch Users.");
+                    setError("Failed to fetch users.");
                 }
             } catch (error) {
                 setError("An error occurred while fetching Users.");

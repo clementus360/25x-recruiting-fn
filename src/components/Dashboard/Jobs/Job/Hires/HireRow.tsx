@@ -37,10 +37,10 @@ export const HireRow: React.FC<HireRowProps> = ({
             }
 
             await HireOrDeclineCandidate(applicant.applicantId, Number(jobId), page, token, "AdvanceToCandidate", " ");
-            setSuccess("Candidate hired successfully");
+            setSuccess("Moved to candidates successfully");
             handleLoad(true);
         } catch (error: any) {
-            setError(`Error Moving Applicant To Candidates: ${error.message}`);
+            setError(`Error moving applicant To candidates`);
         }
     };
 

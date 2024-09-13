@@ -32,7 +32,7 @@ export default function DisplayRating({ applicantId, rating, handleLoadRatings }
             setSuccess("Applicant Rating Changed Successfully")
             handleLoadRatings(true)
         } catch (error: any) {
-            setError(`Error changing rating: ${error.message}`);
+            setError(`An error occured while changing rating`);
         }
     }
 

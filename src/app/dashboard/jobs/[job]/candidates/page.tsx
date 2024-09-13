@@ -60,7 +60,7 @@ export default function Candidates() {
       setApplicants(data.Applicants);
       setTotalPages(data.pageCount);
     } catch (error: any) {
-      setError(`Error fetching applicants: ${error.message}`);
+      setError(`An error occured while loading candidates`);
     } finally {
       setLoad(false); // Reset the load state
     }

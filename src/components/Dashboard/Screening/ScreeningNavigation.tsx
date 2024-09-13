@@ -6,7 +6,7 @@ import { candidateNavItems } from "@/data/constants"
 import Select from "@/components/Select"
 import { useEffect, useState } from "react"
 
-export default function CandidateNavigation() {
+export default function ScreeningNavigation() {
     const [location, setLocation] = useState("FortMyers");
     const router = useRouter();
     const searchParams = useSearchParams();

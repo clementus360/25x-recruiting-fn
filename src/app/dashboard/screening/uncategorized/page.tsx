@@ -20,6 +20,11 @@ export default function Uncategorized() {
   const [isNotesOverlayOpen, setIsNotesOverlayOpen] = useState<number | null>(null);
   const [selectedJob, setSelectedJob] = useState<string>("");
   const [availableJobs, setAvailableJobs] = useState();
+  const [order, setOrder] = useState<string>("DESC");
+
+  const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setOrder(e.target.value);
+  };
 
   const handleSelectRow = (applicantId: number) => {
     setSelectedRows(prev =>
@@ -48,16 +53,18 @@ export default function Uncategorized() {
 
   return (
     <section className="flex flex-col gap-4 px-8 overflow-x-scroll">
-      <div className="text-sm flex items-center justify-end gap-8">
-        <div className="flex gap-2">
-          <Image src={SortIcon} alt={"sort"} className="w-6 h-6" />
-          <p className="font-bold">Sort by</p>
+      <div className="text-sm flex items-center justify-between lg:justify-end gap-8">
+        <div className="flex gap-4">
+          <div className="flex gap-2">
+            <Image src={SortIcon} alt={"sort"} className="w-6 h-6" />
+            <p className="font-bold">Sort by</p>
+          </div>
+          <select onChange={handleOrderChange} name="sort" id="sort" className="bg-none text-primary">
+            <option value="DESC">Date: Most recent</option>
+            <option value="ASC">Date: Oldest</option>
+          </select>
         </div>
-        <select name="sort" id="sort" className="bg-none text-primary">
-          <option value="date-most-recent">Date: Most Recent</option>
-          <option value="date-oldest">Date: Oldest</option>
-        </select>
-        <p className="text-grey">10 Results</p>
+        <p className="text-grey lg:block">{10} Results</p>
       </div>
 
       <table className="text-center">

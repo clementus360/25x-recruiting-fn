@@ -68,10 +68,10 @@ export default function UserProfile() {
       if (result) {
         setUsers(result);
       } else {
-        setError("Failed to fetch Users.");
+        setError("An error occured while loading users.");
       }
     } catch (error) {
-      setError("An error occurred while fetching Users.");
+      setError("An error occurred while loading users.");
     } finally {
       setLoading(false);
     }

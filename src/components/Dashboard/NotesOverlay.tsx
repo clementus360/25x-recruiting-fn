@@ -40,7 +40,7 @@ export const NotesOverlay = ({
       setSuccess("Comment added successfully");
       handleLoadNotes();
     } catch (error: any) {
-      setError(`Error fetching comments: ${error.message}`);
+      setError(`An error occured while loading comments`);
     }
   };
 
@@ -58,7 +58,7 @@ export const NotesOverlay = ({
       setSuccess("Comment deleted successfully");
       handleLoadNotes();
     } catch (error: any) {
-      setError(`Error deleting comment: ${error.message}`);
+      setError(`An error occured while deleting comment`);
     }
   };
 

@@ -43,7 +43,7 @@ export default function JobLayout({
     
             setJob(data);
           } catch (error: any) {
-            setError(`Error Fetching Job Info: ${error.message}`);
+            setError(`An error occured while loading job data`);
           }
         };
     

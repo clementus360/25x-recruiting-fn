@@ -57,7 +57,7 @@ export default function Declined() {
       setDeclinedApplicants(data.Applicants);
       setTotalPages(data.pageCount);
     } catch (error: any) {
-      setError(`Error fetching declined applicants: ${error.message}`);
+      setError(`An error occured while loading declined applicants`);
     } finally {
       setLoad(false); // Reset the load state
     }
