@@ -82,24 +82,8 @@ export const ApplicantRow: React.FC<ApplicantRowProps> = ({
     };
 
     useEffect(() => {
-        const fetchNotes = async () => {
-            try {
-                const token = localStorage.getItem("accessToken");
-                if (!token) {
-                    return;
-                }
-
-                const data = await getCommentsForApplicant(applicant.applicantId, token);
-                setNotes(data);
-            } catch (error: any) {
-                setError(`An error occured while loading applicants: ${error.message}`);
-            }
-            handleLoad(true)
-
-            setLoadNotes(false)
-        };
-
-        fetchNotes();
+        handleLoad(true)
+        setLoadNotes(false)
     }, [isNotesOverlayOpen, loadNotes]);
 
     return (
@@ -139,11 +123,11 @@ export const ApplicantRow: React.FC<ApplicantRowProps> = ({
                         <button onClick={toggleNotesOverlay}>
                             <Image src={NoteIcon} alt={"note"} className="min-w-5 min-h-5" />
                         </button>
-                        <p>{notes?.length}</p>
+                        <p>{applicant.applicantComments?.length}</p>
                     </div>
                     {isNotesOverlayOpen && (
                         <NotesOverlay
-                            notes={notes}
+                            notes={applicant.applicantComments}
                             applicantId={applicant.applicantId}
                             onClose={handleCloseNotesOverlay}
                             handleLoadNotes={handleLoadNotes}

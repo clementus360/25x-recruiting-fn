@@ -4,16 +4,14 @@ import NoteIcon from "@/assets/note.svg";
 import { NotesOverlay } from "@/components/Dashboard/NotesOverlay";
 import DisplayRating from "@/components/DisplayRating";
 import { useError } from "@/context/ErrorContext";
-import { getCommentsForApplicant, HireOrDeclineCandidate } from "@/data/jobsData";
-import { ApplicantRowProps } from "@/types/applicationTypes";
-import { UserComment } from "@/types/jobTypes";
+import { HireOrDeclineCandidate } from "@/data/jobsData";
+import { DeclinedRowProps } from "@/types/applicationTypes";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import DeclineReasonOverlay from "../DeclineReasonOverlay";
 import { useSuccess } from "@/context/SuccessContext";
 import Link from "next/link";
 
-export const DeclinedRow: React.FC<ApplicantRowProps> = ({
+export const DeclinedRow: React.FC<DeclinedRowProps> = ({
     applicant,
     selectedRows,
     page,
@@ -21,8 +19,6 @@ export const DeclinedRow: React.FC<ApplicantRowProps> = ({
     handleLoad
 }) => {
     const [isNotesOverlayOpen, setIsNotesOverlayOpen] = useState<boolean>(false);
-    const [isDeclineOverlayOpen, setIsDeclineOverlayOpen] = useState<boolean>(false);
-    const [notes, setNotes] = useState<UserComment[]>();
     const { setError } = useError();
     const { setSuccess } = useSuccess();
     const params = useParams<{ job: string }>();
@@ -57,22 +53,8 @@ export const DeclinedRow: React.FC<ApplicantRowProps> = ({
     };
 
     useEffect(() => {
-        const fetchNotes = async () => {
-            try {
-                const token = localStorage.getItem("accessToken");
-                if (!token) {
-                    return;
-                }
-
-                const data = await getCommentsForApplicant(applicant.applicantId, token);
-                setNotes(data);
-            } catch (error: any) {
-                setError(`An error occured while loading applicants`);
-            }
-            handleLoad(false);
-        };
-
-        fetchNotes();
+        handleLoad(true)
+        setLoadNotes(false)
     }, [isNotesOverlayOpen, loadNotes]);
 
     return (
@@ -117,11 +99,11 @@ export const DeclinedRow: React.FC<ApplicantRowProps> = ({
                         <button onClick={toggleNotesOverlay}>
                             <Image src={NoteIcon} alt={"note"} className="min-w-5 min-h-5" />
                         </button>
-                        <p>{notes?.length}</p>
+                        <p>{applicant.applicantComments?.length}</p>
                     </div>
                     {isNotesOverlayOpen && (
                         <NotesOverlay
-                            notes={notes}
+                            notes={applicant.applicantComments}
                             applicantId={applicant.applicantId}
                             onClose={handleCloseNotesOverlay}
                             handleLoadNotes={handleLoadNotes}
@@ -137,9 +119,11 @@ export const DeclinedRow: React.FC<ApplicantRowProps> = ({
                 </td>
             </tr>
 
-            <div className="absolute text-start px-2 py-1 w-max bg-gray-400 text-white text-nowrap before:content-[''] before:absolute before:right-[-8px] before:top-1/2 before:transform before:-translate-y-1/2 before:border-y-[0.8rem] before:border-y-transparent before:border-l-[8px] before:border-l-gray-400">
-                <p className="text-xs">More Qualified Candidates Selected</p>
-            </div>
+            {applicant.reasonForDecline &&
+                <div className="absolute text-start px-2 py-1 w-max bg-gray-400 text-white text-nowrap before:content-[''] before:absolute before:right-[-8px] before:top-1/2 before:transform before:-translate-y-1/2 before:border-y-[0.8rem] before:border-y-transparent before:border-l-[8px] before:border-l-gray-400">
+                    <p className="text-xs">{applicant.reasonForDecline}</p>
+                </div>
+            }
 
             <div className="spacer h-[4rem]"></div>
         </>

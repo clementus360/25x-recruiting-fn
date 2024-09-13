@@ -22,7 +22,6 @@ export const HireRow: React.FC<HireRowProps> = ({
     handleLoad
 }) => {
     const [isNotesOverlayOpen, setIsNotesOverlayOpen] = useState<boolean>(false);
-    const [notes, setNotes] = useState<UserComment[]>();
     const { setError } = useError();
     const { setSuccess } = useSuccess();
     const params = useParams<{ job: string }>();
@@ -57,22 +56,8 @@ export const HireRow: React.FC<HireRowProps> = ({
     };
 
     useEffect(() => {
-        const fetchNotes = async () => {
-            try {
-                const token = localStorage.getItem("accessToken");
-                if (!token) {
-                    return;
-                }
-
-                const data = await getCommentsForApplicant(applicant.applicantId, token);
-                setNotes(data);
-            } catch (error: any) {
-                setError(`Error fetching applicants: ${error.message}`);
-            }
-            handleLoad(false);
-        };
-
-        fetchNotes();
+        handleLoad(true)
+        setLoadNotes(false)
     }, [isNotesOverlayOpen, loadNotes]);
 
     return (
@@ -92,7 +77,7 @@ export const HireRow: React.FC<HireRowProps> = ({
                     {applicant.createdDate}
                 </td>
                 <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
-                <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
                             <Image src={PhoneIcon} alt="phone" className="w-3 h-3" />
                             <p>{applicant.phone}</p>
@@ -115,11 +100,11 @@ export const HireRow: React.FC<HireRowProps> = ({
                         <button onClick={toggleNotesOverlay}>
                             <Image src={NoteIcon} alt={"note"} className="min-w-5 min-h-5" />
                         </button>
-                        <p>{notes?.length}</p>
+                        <p>{applicant.applicantComments?.length}</p>
                     </div>
                     {isNotesOverlayOpen && (
                         <NotesOverlay
-                            notes={notes}
+                            notes={applicant.applicantComments}
                             applicantId={applicant.applicantId}
                             onClose={handleCloseNotesOverlay}
                             handleLoadNotes={handleLoadNotes}

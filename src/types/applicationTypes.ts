@@ -1,3 +1,5 @@
+import { UserComment } from "./jobTypes";
+
 export interface RecentApplications {
   id: number;
   date: string;
@@ -43,7 +45,20 @@ export interface DBApplicant {
   resumeUrl: string,
   coverLetterUrl: string,
   numOfRatings: number,
-  applicantComments: string[]
+  applicantComments:  UserComment[]
+}
+
+export interface DBDeclined {
+  applicantId: number,
+  applicantName: string,
+  email: string,
+  createdDate: string,
+  reasonForDecline: string,
+  source: string,
+  resumeUrl: string,
+  coverLetterUrl: string,
+  numOfRatings: number,
+  applicantComments:  UserComment[]
 }
 
 export interface DBTestApplicant {
@@ -58,11 +73,19 @@ export interface DBTestApplicant {
   state: string,
   coverLetterUrl: string,
   numOfRatings: number,
-  applicantComments: string[]
+  applicantComments: UserComment[]
 }
 
 export interface ApplicantRowProps {
   applicant: DBApplicant;
+  page: number;
+  selectedRows: number[];
+  handleSelectRow: (applicantId: number) => void;
+  handleLoad: (load: boolean) => void;
+}
+
+export interface DeclinedRowProps {
+  applicant: DBDeclined;
   page: number;
   selectedRows: number[];
   handleSelectRow: (applicantId: number) => void;
