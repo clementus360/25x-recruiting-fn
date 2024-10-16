@@ -68,7 +68,7 @@ export interface DBTestApplicant {
   source: string,
   resumeUrl: string,
   email: string,
-  phone: string,
+  applicantPhone: string,
   city: string,
   state: string,
   coverLetterUrl: string,
@@ -79,24 +79,39 @@ export interface DBTestApplicant {
 export interface ApplicantRowProps {
   applicant: DBApplicant;
   page: number;
-  selectedRows: number[];
-  handleSelectRow: (applicantId: number) => void;
-  handleLoad: (load: boolean) => void;
+  handleLoad: () => void;
 }
 
 export interface DeclinedRowProps {
   applicant: DBDeclined;
   page: number;
-  selectedRows: number[];
-  handleSelectRow: (applicantId: number) => void;
-  handleLoad: (load: boolean) => void;
+  handleLoad: () => void;
 }
 
 export interface HireRowProps {
   applicant: DBTestApplicant;
   page: number;
-  selectedRows: number[];
-  handleSelectRow: (applicantId: number) => void;
-  handleLoad: (load: boolean) => void;
+  handleLoad: () => void;
+}
+
+export interface DBSingleApplicant {
+  id: number,
+  firstName: string,
+  lastName: string,
+  createdDate: string,
+  status:  "APPLICANT" | "CANDIDATE" | "HIRED" | "DECLINED",
+  source: string,
+  resume: string,
+  email: string,
+  phone: string,
+  address: string
+  city: string,
+  country: string,
+  state: string,
+  zipCode: number,
+  referredBy: string,
+  coverLetterUrl: string,
+  rating: number,
+  notes: UserComment[]
 }
 

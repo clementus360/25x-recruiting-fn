@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import 'react-phone-number-input/style.css';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
-import { useError } from "@/context/ErrorContext";
 import { registerCompany } from "@/data/auth";
 import { Oval } from "react-loader-spinner";
 import { useSuccess } from "@/context/SuccessContext";
+import { useAuthError } from "@/context/AuthErrorContext";
+import AuthErrorMessage from "@/components/AuthErrorMessage";
 
 export default function SignUp() {
   const [formData, setFormData] = useState({
@@ -20,12 +21,21 @@ export default function SignUp() {
     employees: '',
     industry: ''
   });
-  const { error, setError } = useError();
+  const [changed, setChanged] = useState({
+    phone: false,
+    email: false,
+    fname: false,
+    lname: false,
+    jobTitle: false,
+    company: false,
+    employees: false,
+    industry: false
+  });
+  const { error, setError } = useAuthError();
   const { setSuccess } = useSuccess();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const [changed, setChanged] = useState(false)
 
   const validateForm = (data: typeof formData) => {
     const newErrors: { [key: string]: string } = {};
@@ -53,21 +63,21 @@ export default function SignUp() {
 
   // Validate on formData change
   useEffect(() => {
-    if (changed) {
-      validateForm(formData);
-    }
+    validateForm(formData);
   }, [formData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    if (!changed) {
-      setChanged(true)
-    }
-
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    setChanged((prev) => ({
+      ...prev,
+      [name]: true
+    }))
+
   };
 
   const handlePhoneChange = (value: string | undefined) => {
@@ -109,14 +119,14 @@ export default function SignUp() {
     const isFormValid = validateForm(formData);
 
     if (!isFormValid || loading) {
-        setDisabled(true);
+      setDisabled(true);
     } else {
-        setDisabled(false);
+      setDisabled(false);
     }
-}, [formData, loading]);
+  }, [formData, loading]);
 
   return (
-    <main className="flex min-h-screen flex-col justify-between py-16 pl-24 pr-16">
+    <main className="flex flex-col justify-between px-8 lg:py-16 lg:pl-24 lg:pr-16">
       <div className="flex flex-col gap-12">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-bold">Register Company</h1>
@@ -124,6 +134,9 @@ export default function SignUp() {
 
 
         <form onSubmit={handleRegisterCompany} className="flex flex-col gap-4">
+
+          {error && <AuthErrorMessage />}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1">
               <label htmlFor="fname" className="text-sm font-semibold">First Name</label>
@@ -136,7 +149,7 @@ export default function SignUp() {
                 value={formData.fname}
                 placeholder="Enter your first name"
               />
-              {errors.fname && <span className="text-red-500 text-xs">{errors.fname}</span>}
+              {errors.fname && changed.fname && <span className="text-red-500 text-xs">{errors.fname}</span>}
             </div>
 
             <div className="flex flex-col gap-1">
@@ -150,7 +163,7 @@ export default function SignUp() {
                 value={formData.lname}
                 placeholder="Enter your last name"
               />
-              {errors.lname && <span className="text-red-500 text-xs">{errors.lname}</span>}
+              {errors.lname && changed.lname && <span className="text-red-500 text-xs">{errors.lname}</span>}
             </div>
           </div>
 
@@ -163,7 +176,7 @@ export default function SignUp() {
               value={formData.phone}
               onChange={handlePhoneChange}
             />
-            {errors.phone && <span className="text-red-500 text-xs">{errors.phone}</span>}
+            {errors.phone && changed.phone && <span className="text-red-500 text-xs">{errors.phone}</span>}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -177,7 +190,7 @@ export default function SignUp() {
               value={formData.email}
               placeholder="example@gmail.com"
             />
-            {errors.email && <span className="text-red-500 text-xs">{errors.email}</span>}
+            {errors.email && changed.email && <span className="text-red-500 text-xs">{errors.email}</span>}
           </div>
 
           <div className="flex flex-col gap-1">
@@ -191,29 +204,29 @@ export default function SignUp() {
               value={formData.jobTitle}
               placeholder="Enter your job"
             />
-            {errors.jobTitle && <span className="text-red-500 text-xs">{errors.jobTitle}</span>}
+            {errors.jobTitle && changed.jobTitle && <span className="text-red-500 text-xs">{errors.jobTitle}</span>}
           </div>
 
-          <div className="grid grid-cols-[3fr_1fr] gap-4">
+          <div className="w-full grid grid-cols-[2fr_1fr] gap-4">
             <div className="w-full flex flex-col gap-1">
-              <label htmlFor="company" className="text-sm font-semibold">Company</label>
+              <label htmlFor="company" className="w-max text-sm font-semibold">Company</label>
               <input
                 onChange={handleInputChange}
-                className="px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]"
+                className="w-full px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]"
                 type="text"
                 name="company"
                 id="company"
                 value={formData.company}
                 placeholder="Company name"
               />
-              {errors.company && <span className="text-red-500 text-xs">{errors.company}</span>}
+              {errors.company && changed.company && <span className="text-red-500 text-xs">{errors.company}</span>}
             </div>
 
             <div className="w-full flex flex-col gap-1">
-              <label htmlFor="employees" className="text-sm font-semibold">Employees</label>
+              <label htmlFor="employees" className="w-max text-sm font-semibold">Employees</label>
               <input
                 onChange={handleInputChange}
-                className="px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]"
+                className="w-full px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]"
                 type="number"
                 name="employees"
                 id="employees"
@@ -221,7 +234,7 @@ export default function SignUp() {
                 value={formData.employees}
                 placeholder="Number of employees"
               />
-              {errors.employees && <span className="text-red-500 text-xs">{errors.employees}</span>}
+              {errors.employees && changed.employees && <span className="text-red-500 text-xs">{errors.employees}</span>}
             </div>
           </div>
 
@@ -241,12 +254,12 @@ export default function SignUp() {
               <option value="Hospitality">Hospitality</option>
               <option value="Other Business">Other Business</option>
             </select>
-            {errors.industry && <span className="text-red-500 text-xs">{errors.industry}</span>}
+            {errors.industry && changed.industry && <span className="text-red-500 text-xs">{errors.industry}</span>}
           </div>
 
           <div className="mt-6 flex flex-col gap-2">
             <button
-              className="flex gap-2 items-center justify-center bg-primary disabled:bg-grey hover:bg-opacity-80 cursor-pointer text-white font-semibold py-4 w-full rounded-lg"
+              className="flex gap-2 items-center justify-center bg-primary disabled:cursor-not-allowed disabled:bg-grey hover:bg-opacity-80 cursor-pointer text-white font-semibold py-4 w-full rounded-lg"
               type="submit"
               disabled={disabled}
             >

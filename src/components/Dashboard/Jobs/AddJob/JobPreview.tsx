@@ -7,8 +7,9 @@ import { OpenNewJob } from '@/data/jobsData';
 import { useCompany } from '@/context/CompanyContext';
 import { useError } from '@/context/ErrorContext';
 import { useSuccess } from '@/context/SuccessContext';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocalStorage } from '@/data/localStorage';
+import { getAccessToken } from '@/data/cookies';
 
 export default function JobPreview() {
     const { formData, setFormData } = useFormData()!; // Access the form data from context
@@ -19,7 +20,7 @@ export default function JobPreview() {
     const [loading, setLoading] = useState(false);
 
     // Use the custom hook to interact with localStorage
-    const [accessToken] = useLocalStorage("accessToken", "");
+    const accessToken = getAccessToken()
     const [, , removeFormData] = useLocalStorage("formData", null); // Ignore the set value function
     const [, , removeFormDataTimestamp] = useLocalStorage("formDataTimestamp", null);
 
@@ -39,20 +40,19 @@ export default function JobPreview() {
             hiringManager: '',
             search: '',
             isRemote: true,
-            country: '',
+            country: 'United States',
             address: '',
-            city: '',
-            state: '',
+            city: 'Fort Myers',
+            state: 'Florida',
             zip: '',
             description: '',
-            status: '',
+            status: 'OPENED',
             visibility: '',
         });
 
         // Clear local storage using the custom hook
         removeFormData();
         removeFormDataTimestamp();
-
         router.push('/dashboard/jobs/');
     };
 
@@ -71,7 +71,7 @@ export default function JobPreview() {
             handleCancel()
             setSuccess("Job added successfully.");
         } catch (err: any) {
-            setError(`An error occurred while opening a new job`);
+            setError(err.message || `An error occurred while opening a new job`);
         } finally {
             setLoading(false);
         }
@@ -150,7 +150,7 @@ export default function JobPreview() {
                     </button>
                     <button
                         onClick={handleOpenJob}
-                        className="flex gap-2 items-center bg-primary disabled:bg-grey disabled:border-grey border-2 border-primary px-4 py-2 hover:bg-opacity-90 text-white text-sm font-bold rounded-md"
+                        className="flex gap-2 items-center bg-primary disabled:cursor-not-allowed disabled:bg-grey disabled:border-grey border-2 border-primary px-4 py-2 hover:bg-opacity-90 text-white text-sm font-bold rounded-md"
                     >
                         Save & Continue
                     </button>

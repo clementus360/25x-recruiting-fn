@@ -72,6 +72,8 @@ export async function GetCompanyData(token: string) {
 
         const data = await response.json();
 
+        console.log(data)
+
         // Return the companies data
         return data;
     } catch (error: any) {
@@ -169,9 +171,9 @@ export async function UpdateUserProfile(updateData: UserUpdateData, token: strin
     }
 }
 
-export async function UpdateCompanyProfile(updateData: CompanyUpdateData, token: string) {
+export async function UpdateCompanyProfile(companyId: string, updateData: CompanyUpdateData, token: string) {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/users/update-profile`, {
+        const response = await fetch(`${API_BASE_URL}/api/v1/companies/update-company-profile/${companyId}`, {
             method: "PATCH",
             headers: {
                 "Accept": "application/json",
@@ -187,13 +189,13 @@ export async function UpdateCompanyProfile(updateData: CompanyUpdateData, token:
         if (!response.ok) {
             // Extract and handle the error message from the response body
             console.error("Error details from the response:", responseData);
-            throw new Error(responseData.message || "Failed to register the company.");
+            throw new Error(responseData.message || "Failed to update the company.");
         }
 
         return responseData; // Return the response data if successful
 
     } catch (error: any) {
-        console.error("Error registering the company:", error.message);
+        console.error("Error updating the company:", error.message);
         throw error;
     }
 }
@@ -211,7 +213,9 @@ export async function getHiringManagers(companyId: string, token: string) {
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();

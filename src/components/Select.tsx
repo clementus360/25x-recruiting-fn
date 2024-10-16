@@ -71,15 +71,19 @@ const Select: React.FC<SelectProps> = ({
     }
   };
 
+  // Ensure default bg and text color if not provided in className
+  const bgClass = className?.includes("bg-") ? "" : "bg-white";
+  const textClass = className?.includes("text-") ? "" : "text-black";
+
   return (
     <div
       ref={selectRef}
-      className={`relative ${className} w-56`}
+      className={`relative w-full text-nowrap`}
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
       <div
-        className="flex items-center justify-between py-1 px-4 border rounded cursor-pointer bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className={`${className} ${bgClass} ${textClass} flex items-center justify-between py-1 px-4 border rounded cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500`}
         onClick={() => setIsOpen(!isOpen)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
@@ -97,13 +101,12 @@ const Select: React.FC<SelectProps> = ({
         </svg>
       </div>
       {isOpen && (
-        <div className="absolute w-full max-h-56 overflow-y-auto mt-1 bg-white border rounded shadow-lg z-10">
+        <div className="absolute w-full max-h-56 overflow-y-auto mt-1 bg-white border rounded shadow-lg z-40">
           {options.map((option, index) => (
             <div
               key={option.value}
-              className={`p-2 cursor-pointer hover:bg-gray-200 ${
-                option.value === value ? "bg-gray-100" : ""
-              } ${index === focusedIndex ? "bg-blue-100" : ""}`}
+              className={`p-2 cursor-pointer hover:bg-gray-200 ${option.value === value ? "bg-gray-100" : ""
+                } ${index === focusedIndex ? "bg-blue-100" : ""}`}
               onClick={() => handleOptionClick(option.value)}
               role="option"
               aria-selected={option.value === value}

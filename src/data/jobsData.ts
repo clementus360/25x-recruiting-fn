@@ -1,5 +1,5 @@
-import { ApplicantFormDataType, FormDataType } from "@/types/jobTypes";
-import { API_BASE_URL, applicantTestData } from "./constants";
+import { ApplicantFormDataType, FormDataType, UpdateJobData } from "@/types/jobTypes";
+import { API_BASE_URL } from "./constants";
 
 export async function getJobs(
     companyId: string,
@@ -28,14 +28,14 @@ export async function getJobs(
             ...(filters.hiringManagerId && { hiringManagerId: filters.hiringManagerId }),
             ...(filters.fromDate && { fromDate: filters.fromDate }),
             ...(filters.toDate && { toDate: filters.toDate }),
-            ...(filters.presetTimeFrame && {presetTimeFrame: filters.presetTimeFrame})
+            ...(filters.presetTimeFrame && { presetTimeFrame: filters.presetTimeFrame })
         }).toString();
 
 
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/jobs/${companyId}?${queryParams}`;
 
-        
+
 
         const response = await fetch(url, {
             method: "GET",
@@ -48,7 +48,9 @@ export async function getJobs(
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -56,6 +58,7 @@ export async function getJobs(
         // Return the jobs data
         return data; // Adjust according to the actual data structure returned
     } catch (error: any) {
+        console.log("error is: ", error)
         console.error("Error Getting jobs:", error.message);
         throw error;
     }
@@ -92,7 +95,7 @@ export async function OpenNewJob(companyId: string, token: string, formData: For
 
         const url = `${API_BASE_URL}/api/v1/jobs/open-job/${companyId}?${queryParams}`
 
-        
+
 
         const response = await fetch(url, {
             method: "POST",
@@ -120,6 +123,37 @@ export async function OpenNewJob(companyId: string, token: string, formData: For
     }
 }
 
+export async function updateJob(companyId: string, jobId: string, updateData: UpdateJobData, token: string) {
+    try {
+        const url = `${API_BASE_URL}/api/v1/jobs/${companyId}/update-job/${jobId}`;
+
+        const response = await fetch(url, {
+            method: "PATCH",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updateData)
+        });
+
+        // Check if the response is OK
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+
+        // Return the applicants data
+        return data.comments; // Adjust according to the actual data structure returned
+    } catch (error: any) {
+        console.error("Error updating job", error.message);
+        throw error;
+    }
+}
+
 export async function getApplicantsForJob(
     jobId: string,
     token: string,
@@ -133,7 +167,7 @@ export async function getApplicantsForJob(
     }
 ) {
     try {
-        
+
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -147,8 +181,6 @@ export async function getApplicantsForJob(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/applicants/list-all-applicants/${jobId}?${queryParams}`;
 
-        ;
-
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -160,7 +192,9 @@ export async function getApplicantsForJob(
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -235,7 +269,7 @@ export async function getCandidatesForJob(
     }
 ) {
     try {
-        
+
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -262,7 +296,9 @@ export async function getCandidatesForJob(
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -288,7 +324,7 @@ export async function getHiresForJob(
     }
 ) {
     try {
-        
+
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -302,8 +338,6 @@ export async function getHiresForJob(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/hires/list-all-hires/${jobId}?${queryParams}`;
 
-        ;
-
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -315,7 +349,9 @@ export async function getHiresForJob(
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -341,7 +377,7 @@ export async function getDeclinedForJob(
     }
 ) {
     try {
-        
+
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -355,8 +391,6 @@ export async function getDeclinedForJob(
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/declined/list-all-declined${jobId}?${queryParams}`;
 
-        ;
-
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -368,7 +402,9 @@ export async function getDeclinedForJob(
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -434,8 +470,6 @@ export async function getCommentsForApplicant(applicantId: number, token: string
     try {
         const url = `${API_BASE_URL}/api/v1/comments/list-comments/${applicantId}`;
 
-        ;
-
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -447,7 +481,9 @@ export async function getCommentsForApplicant(applicantId: number, token: string
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -480,7 +516,9 @@ export async function addCommentToApplicant(applicantId: number, token: string, 
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -489,6 +527,39 @@ export async function addCommentToApplicant(applicantId: number, token: string, 
         return data.comments; // Adjust according to the actual data structure returned
     } catch (error: any) {
         console.error("Error getting applicant comments", error.message);
+        throw error;
+    }
+}
+
+export async function editApplicantComment(applicantId: number, token: string, commentId: string, comment: string) {
+    try {
+        const url = `${API_BASE_URL}/api/v1/comments/comments/update-comment/${applicantId}/${commentId}`
+
+        const response = await fetch(url, {
+            method: "PATCH",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                comment
+            })
+        });
+
+        // Check if the response is OK
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+
+        // Return the applicants data
+        return data.comments; // Adjust according to the actual data structure returned
+    } catch (error: any) {
+        console.error("Error deleting comment", error.message);
         throw error;
     }
 }
@@ -510,7 +581,9 @@ export async function deleteComment(applicantId: number, token: string, commentI
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -527,8 +600,6 @@ export async function editRating(applicantId: number, token: string, rating: num
     try {
         const url = `${API_BASE_URL}/api/v1/ratings/ratings/edit-rating/${applicantId}`;
 
-        ;
-
         const response = await fetch(url, {
             method: "PATCH",
             headers: {
@@ -543,7 +614,9 @@ export async function editRating(applicantId: number, token: string, rating: num
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -580,7 +653,9 @@ export async function HireOrDeclineCandidate(applicantId: number, jobId: number,
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -606,7 +681,7 @@ export async function getAllCandidates(
     }
 ) {
     try {
-        
+
         // Create URLSearchParams object with required and optional parameters
         const queryParams = new URLSearchParams({
             page: page.toString(),
@@ -618,9 +693,7 @@ export async function getAllCandidates(
         }).toString();
 
         // Construct the full URL with query parameters
-        const url = `${API_BASE_URL}/api/v1/candidates/list-all-candidates?${queryParams}`;
-
-        ;
+        const url = `${API_BASE_URL}/api/v1/candidates/list-all-candidates?${queryParams}`;;
 
         const response = await fetch(url, {
             method: "GET",
@@ -633,7 +706,9 @@ export async function getAllCandidates(
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -652,8 +727,6 @@ export async function getSingleJob(companyId: string, jobId: string, token: stri
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/jobs/${companyId}/list-single-job/${jobId}`;
 
-        
-
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -665,7 +738,9 @@ export async function getSingleJob(companyId: string, jobId: string, token: stri
 
         // Check if the response is OK
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
         }
 
         const data = await response.json();
@@ -682,27 +757,27 @@ export async function getApplicantData(applicantId: string, token: string) {
     try {
 
         // Construct the full URL with query parameters
-        const url = `${API_BASE_URL}/api/v1/applicants/${applicantId}`;
+        const url = `${API_BASE_URL}/api/v1/applicants/get-applicant/${applicantId}`;
 
-        
 
-        // const response = await fetch(url, {
-        //     method: "GET",
-        //     headers: {
-        //         "Accept": "application/json",
-        //         "Content-Type": "application/json",
-        //         "Authorization": `Bearer ${token}`,
-        //     },
-        // });
 
-        // // Check if the response is OK
-        // if (!response.ok) {
-        //     throw new Error(`Error: ${response.status} ${response.statusText}`);
-        // }
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+        });
 
-        // const data = await response.json();
+        // Check if the response is OK
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
+        }
 
-        const data = applicantTestData
+        const data = await response.json();
 
         // Return the jobs data
         return data; // Adjust according to the actual data structure returned

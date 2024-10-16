@@ -9,7 +9,7 @@ import SortIcon from "@/assets/sort.svg";
 import FilterSection from "@/components/Dashboard/Jobs/FilterSection";
 import JobCard from "@/components/Dashboard/Jobs/JobCard";
 import PageSelector from "@/components/PageSelector";
-import { Job, JobCardData } from "@/types/jobTypes";
+import { JobCardData } from "@/types/jobTypes";
 import { getJobs } from "@/data/jobsData";
 import { useError } from "@/context/ErrorContext";
 import { useSuccess } from "@/context/SuccessContext";
@@ -18,6 +18,8 @@ import Link from "next/link";
 import { getHiringManagers } from "@/data/users";
 import { NoResultsPage } from "@/components/Dashboard/NoResultsPage";
 import Select from "@/components/Select";
+import LoadingPage from "@/components/Dashboard/LoadingPage";
+import { getAccessToken } from "@/data/cookies";
 
 export default function DashboardJobs() {
   const [hiringManagers, setHiringManagers] = useState([])
@@ -28,9 +30,8 @@ export default function DashboardJobs() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [clearFilters, setClearFilters] = useState<boolean>(false);
   const [jobs, setJobs] = useState<JobCardData[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const { error, setError } = useError();
-  const { setSuccess } = useSuccess();
   const { companyInfo } = useCompany();
 
 
@@ -54,7 +55,7 @@ export default function DashboardJobs() {
 
       try {
         const companyId = companyInfo?.id; // Replace with the actual company ID
-        const token = localStorage.getItem("accessToken"); // Replace with the actual token
+        const token = getAccessToken(); // Replace with the actual token
 
         if (!companyId || !token) {
           return;
@@ -64,8 +65,8 @@ export default function DashboardJobs() {
         setJobs(jobsData.jobs);
 
         setTotalPages(jobsData.pageCount)
-      } catch (err) {
-        setError("An error occured while loading jobs");
+      } catch (err:any) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -78,7 +79,7 @@ export default function DashboardJobs() {
     const fetchHiringManagers = async () => {
       try {
         const companyId = companyInfo?.id;
-        const token = localStorage.getItem("accessToken");
+        const token = getAccessToken();
 
         if (!token) {
           setError("User is not authenticated");
@@ -141,7 +142,7 @@ export default function DashboardJobs() {
 
   return (
     <div className="flex flex-col gap-8 justify-between w-full">
-      <div className="flex justify-between w-full">
+      <div className="flex justify-between items-center w-full px-4 lg:px-0">
         <div className="flex flex-col">
           <h2 className="text-accent font-light">{companyInfo?.companyName}</h2>
           <h1 className="text-4xl font-bold">Jobs</h1>
@@ -185,12 +186,13 @@ export default function DashboardJobs() {
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="text-sm flex items-center justify-between lg:justify-end gap-8">
-              <div className="flex gap-4 items-center">
+            <div className="text-sm flex flex-col lg:flex-row gap-4 lg:gap-8 items-center justify-between lg:justify-end">
+              <div className="flex gap-8 items-center">
                 <div className="flex gap-2">
                   <Image src={SortIcon} alt={"sort"} className="w-6 h-6" />
-                  <p className="font-bold">Sort by</p>
+                  <p className="font-bold text-nowrap">Sort by</p>
                 </div>
+
                 <Select
                   options={[
                     { value: "DESC", label: "Date: Most recent" },
@@ -198,27 +200,25 @@ export default function DashboardJobs() {
                   ]}
                   value={order || "DESC"} // Provide a default value
                   onChange={(value) => handleOrderChange(value)}
+                  className="w-full"
                 />
+
               </div>
               <p className="text-grey lg:block">{jobs.length} Results</p>
             </div>
 
-            <div className="flex flex-col gap-8">
-              {loading ? (
-                <p>Loading...</p>
-              ) : error ? (
-                <p></p>
-              ) : (
-                jobs.map((job, idx) => {
-                  return (<JobCard key={job.id} {...job} />
-                  )
-                })
-              )}
-            </div>
+            <div className="relative flex flex-col gap-8">
+              <LoadingPage loading={loading} />
 
-            {jobs.length <= 0 &&
-              <NoResultsPage />
-            }
+              {!loading && jobs.length <= 0 &&
+                <NoResultsPage />
+              }
+
+              {jobs.map((job, idx) => {
+                return (<JobCard key={job.id} {...job} />
+                )
+              })}
+            </div>
 
             <PageSelector pageNumber={totalPages || 0} changePage={handleChangeCurrentPage} />
           </div>

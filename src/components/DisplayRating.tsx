@@ -6,6 +6,7 @@ import { editRating } from "@/data/jobsData";
 import { useError } from "@/context/ErrorContext";
 import { useSuccess } from "@/context/SuccessContext";
 import { useState } from "react";
+import { getAccessToken } from "@/data/cookies";
 
 export default function DisplayRating({ applicantId, rating, handleLoadRatings }: { applicantId: number, rating: number, handleLoadRatings: (load: boolean) => void }) {
 
@@ -18,7 +19,7 @@ export default function DisplayRating({ applicantId, rating, handleLoadRatings }
 
     const HandleSetRating = async (NewRating: number) => {
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = getAccessToken();
 
             if (!token) {
                 setError("User is not authenticated");

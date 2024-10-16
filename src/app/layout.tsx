@@ -7,8 +7,6 @@ import ErrorMessage from "@/components/ErrorMessage"; // Import the ErrorMessage
 import { SuccessProvider } from "@/context/SuccessContext";
 import SuccessMessage from "@/components/SuccessMessage";
 import { CompanyProvider } from "@/context/CompanyContext";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { UserProvider } from "@/context/UserContext";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,16 +23,12 @@ export default function RootLayout({
         {/* Wrap everything with ErrorProvider */}
         <ErrorProvider>
           <SuccessProvider>
-            <CompanyProvider>
-              <UserProvider>
                 {/* Error Message Component */}
                 <div className="relative flex flex-col gap-4">
                   <ErrorMessage />
                   <SuccessMessage />
                 </div>
                 {children}
-              </UserProvider>
-            </CompanyProvider>
           </SuccessProvider>
         </ErrorProvider>
       </body>

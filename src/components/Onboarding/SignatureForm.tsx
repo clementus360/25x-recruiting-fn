@@ -1,19 +1,72 @@
-import React, { useRef, useState } from 'react';
+import { useError } from '@/context/ErrorContext';
+import { useSuccess } from '@/context/SuccessContext';
+import { getAccessToken } from '@/data/cookies';
+import { dataURLToBlob, saveSignature, uploadSignature } from '@/data/onboarding';
+import React, { useEffect, useRef, useState } from 'react';
+import { Oval } from 'react-loader-spinner';
 import SignaturePad from 'react-signature-canvas';
 
-
 const SignatureForm = ({ onClose }: { onClose: () => void }) => {
+    const [loading, setLoading] = useState(false);
+    const [disabled, setDisabled] = useState(true);
+    const { setError } = useError();
+    const { setSuccess } = useSuccess();
     const signaturePadRef = useRef<SignaturePad>(null);
     const [isAgreed, setIsAgreed] = useState<boolean | null>(null);
     const [name, setName] = useState<string>('');
 
-    const handleSave = () => {
-        return
+    useEffect(() => {
+        // Check both the name and if the signature pad is empty
+        if (name.trim() === "" || signaturePadRef.current?.isEmpty()) {
+            setDisabled(true);
+        } else {
+            setDisabled(false);
+        }
+    }, [name, signaturePadRef.current]); // Track both `name` and signature pad state
+
+    const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setName(e.target.value);
+    };
+
+    const handleSave = async () => {
+        if (name.trim() === "") {
+            setError("Name is required.");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const token = getAccessToken();
+            if (!token) {
+                return;
+            }
+            
+            const signatureData = signaturePadRef.current?.toDataURL(); // get the base64 signature
+            if (!signatureData) {
+                setError("No signature detected.");
+                return;
+            }
+
+            const signatureBlob = dataURLToBlob(signatureData);
+
+            const signature = await uploadSignature(signatureBlob, name);
+
+            await saveSignature(signature, token)
+
+            setSuccess("Signature saved successfully");
+            onClose()
+        } catch (err: any) {
+            setError(err.message || "Failed to save signature");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleClear = () => {
         if (signaturePadRef.current) {
             signaturePadRef.current.clear();
+            setDisabled(true); // Disable save button again after clearing signature
         }
     };
 
@@ -21,15 +74,15 @@ const SignatureForm = ({ onClose }: { onClose: () => void }) => {
         <div className="flex flex-col items-center gap-4">
             {/* Information Notice */}
             <div className="border p-4 text-sm text-gray-600">
-                You have been authorized to complete online documents in connection with either your employment or contractor agreement and receive legal notices throughout your employment or contractor agreement electronically. During this process, you will be asked to &quot;sign&quot; one or more of the online documents with an electronic signature. Please read the following carefully regarding the electronic signature/notice Process.
+                You have been authorized to complete online documents in connection with either your employment or contractor agreement and receive legal notices throughout your employment or contractor agreement electronically. During this process, you will be asked to &apos;sign&apos; one or more of the online documents with an electronic signature. Please read the following carefully regarding the electronic signature/notice Process.
                 <br /><br />
-                To create your electronic signature, sign your name in the box, type your name into &quot;Signed by&quot;, and click both the &quot;I Agree&quot; box and the &quot;Submit&quot; button appearing at the bottom of the page.
+                To create your electronic signature, sign your name in the box, type your name into &apos;Signed by&apos;, and click both the &apos;I Agree&apos; box and the &apos;Submit&apos; button appearing at the bottom of the page.
                 <br /><br />
-                Your electronic signature will be applied when you click &quot;I Agree&quot; on certain additional documents in the onboarding or employment process.
+                Your electronic signature will be applied when you click &apos;I Agree&apos; on certain additional documents in the onboarding or employment process.
                 <br /><br />
                 Once the signature process is completed, your electronic signature will be binding as if you had physically signed the document by hand.
                 <br /><br />
-                If you do not agree to sign the document electronically, click the &quot;I Do Not Agree&quot; box and the &quot;Submit&quot; button. Paper copies may be available for you to complete at no charge by sending a request to support@myemployeejourney.com. The paper copies will be sent to you in the method provided by your employer representative and proper identification will be required before such information is provided.
+                If you do not agree to sign the document electronically, click the &apos;I Do Not Agree&apos; box and the &apos;Submit&apos; button. Paper copies may be available for you to complete at no charge by sending a request to support@myemployeejourney.com. The paper copies will be sent to you in the method provided by your employer representative and proper identification will be required before such information is provided.
                 <br /><br />
                 After you complete a document that requires your electronic signature and/or once all the documents have been completed and signed, you may immediately view, download or print the documents, or at a later time by logging in again using your Username and password.
                 <br /><br />
@@ -72,7 +125,7 @@ const SignatureForm = ({ onClose }: { onClose: () => void }) => {
 
             {/* Show Signature Pad and Name Input if Agreed */}
             {isAgreed && (
-                <div className="flex flex-col items-center gap-4 mt-4">
+                <div className="flex flex-col items-center gap-4 mt-4 w-full">
 
                     <div className='flex flex-col'>
                         <div className='flex w-full justify-between'>
@@ -82,7 +135,7 @@ const SignatureForm = ({ onClose }: { onClose: () => void }) => {
 
                         <SignaturePad
                             ref={signaturePadRef}
-                            canvasProps={{ className: 'signature-pad h-24 border' }}
+                            canvasProps={{ className: 'signature-pad w-96 h-24 border' }}
                         />
                     </div>
 
@@ -90,18 +143,9 @@ const SignatureForm = ({ onClose }: { onClose: () => void }) => {
                         type="text"
                         placeholder="Enter your name"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="border px-2 py-1 rounded-md"
+                        onChange={handleNameChange}
+                        className="border px-2 py-1 w-96 rounded-md"
                     />
-
-                    <div className="flex gap-4">
-                        <button
-                            onClick={handleSave}
-                            className="bg-primary text-white px-4 py-2 rounded-md"
-                        >
-                            Save Signature
-                        </button>
-                    </div>
                 </div>
             )}
 
@@ -112,14 +156,32 @@ const SignatureForm = ({ onClose }: { onClose: () => void }) => {
                 </div>
             )}
 
-            <button
-                onClick={onClose}
-                className="bg-gray-500 text-white px-4 py-2 rounded-md"
-            >
-                Cancel
-            </button>
+            <div className="flex gap-4 w-full items-end justify-end">
+                <button
+                    onClick={onClose}
+                    className="bg-gray-500 text-white px-4 py-2 rounded-md"
+                >
+                    Cancel
+                </button>
+                <button
+                    className="flex gap-2 items-center justify-center bg-primary disabled:cursor-not-allowed disabled:bg-gray-400 hover:bg-opacity-80 cursor-pointer text-white font-semibold px-4 py-2 rounded-md"
+                    onClick={handleSave}
+                    disabled={disabled}
+                >
+                    {loading && <Oval
+                        visible={true}
+                        height="14"
+                        width="14"
+                        color="#ffffff"
+                        secondaryColor="#ffffff"
+                        ariaLabel="oval-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="flex items-center justify-center"
+                    />}
+                    <p>{loading ? "Saving..." : "Save Signature"}</p>
+                </button>
 
-
+            </div>
         </div>
     );
 };

@@ -10,10 +10,11 @@ const config: Config = {
     extend: {
       colors: {
         primary: "#1579BE",
-        accent: "#902C8B",
+        accent: "#1579BE",
         lightBlue: "#F2FAFF",
-        lightViolet: "#E3D4E3",
-        grey: "#787878"
+        lightViolet: "#fce6da",
+        grey: "#787878",
+        white: '#FeFeFe'
       },
     },
   },

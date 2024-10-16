@@ -2,10 +2,8 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 import SearchIcon from "@/assets/search.svg";
-import SortIcon from "@/assets/sort.svg";
 import PageSelector from "@/components/PageSelector";
 import { useParams } from "next/navigation";
 import { useError } from "@/context/ErrorContext";
@@ -14,15 +12,19 @@ import { getDeclinedForJob } from "@/data/jobsData";
 import Select from "@/components/Select";
 import { NoResultsPage } from "@/components/Dashboard/NoResultsPage";
 import DateSelector from "@/components/DateSelector";
+import LoadingPage from "@/components/Dashboard/LoadingPage";
+import Image from "next/image";
+import { getAccessToken } from "@/data/cookies";
+import TableFilter from "@/components/TableFilter";
 
 export default function Declined() {
   const [declinedApplicants, setDeclinedApplicants] = useState([]);
-  const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [results, setResults] = useState<number>(1);
   const { setError } = useError();
   const [load, setLoad] = useState(false);
-
+  const [loading, setLoading] = useState<boolean>(true);
   const params = useParams<{ job: string }>();
   const jobId = params.job;
 
@@ -37,16 +39,19 @@ export default function Declined() {
     fromDate: "",
     toDate: "",
     presetTimeFrame: "",
-    sortingOptions: "ASC", // Default sorting option
+    sortingOptions: "DESC", // Default sorting option
   });
 
-  const handleLoadData = (load: boolean) => {
-    setLoad(load);
+  const [searchTermInput, setSearchTermInput] = useState<string>("");
+
+  const handleLoadData = () => {
+    setLoad(!load)
   };
 
   const fetchDeclinedApplicants = async () => {
+    setLoading(true)
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = getAccessToken();
       if (!token) {
         setError("User is not authenticated");
         return;
@@ -56,9 +61,11 @@ export default function Declined() {
 
       setDeclinedApplicants(data.Applicants);
       setTotalPages(data.pageCount);
+      setResults(data.totalApplicants)
     } catch (error: any) {
-      setError(`An error occured while loading declined applicants`);
+      setError(error.message ? error.message : `An error occured while loading declined applicants`);
     } finally {
+      setLoading(false)
       setLoad(false); // Reset the load state
     }
   };
@@ -67,25 +74,6 @@ export default function Declined() {
     fetchDeclinedApplicants();
   }, [load, currentPage, filters]);
 
-  const handleSelectRow = (applicantId: number) => {
-    setSelectedRows((prev) =>
-      prev.includes(applicantId)
-        ? prev.filter((id) => id !== applicantId)
-        : [...prev, applicantId]
-    );
-  };
-
-  // Handle select all functionality
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      // Select all applicants
-      const allApplicantIds = declinedApplicants.map((applicant: any) => applicant.applicantId);
-      setSelectedRows(allApplicantIds);
-    } else {
-      // Deselect all applicants
-      setSelectedRows([]);
-    }
-  };
 
   const handleChangeCurrentPage = (page: number) => {
     setCurrentPage(page);
@@ -98,6 +86,25 @@ export default function Declined() {
       [name]: value === "" ? undefined : value,
     }));
   };
+
+  // Handle search on button click
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTermInput(e.target.value);  // Update the search term locally
+  };
+
+  const handleSearchButtonClick = () => {
+    // Trigger the search only when the button is clicked
+    setFilters((prev) => ({
+      ...prev,
+      searchTerm: searchTermInput.trim() || undefined,  // Set the search term in filters
+    }));
+  };
+
+  useEffect(() => {
+    if (searchTermInput === "") {
+      handleSearchButtonClick()
+    }
+  }, [searchTermInput])
 
   const handleSelectChange = (name: string) => (value: string) => {
     handleFilterChange({ target: { name, value } } as React.ChangeEvent<HTMLInputElement>);
@@ -117,90 +124,31 @@ export default function Declined() {
       fromDate: "",
       toDate: "",
       presetTimeFrame: "",
-      sortingOptions: "ASC", // Reset to default sorting option
+      sortingOptions: "DESC",
     });
-    setCurrentPage(1); // Optionally reset the page to the first
+    setCurrentPage(1);
   };
 
   return (
     <section className="relative flex flex-col gap-4">
       {/* Filters Section */}
-      <div className="flex items-center justify-between gap-4 p-4 bg-gray-100 rounded-md">
-        {/* Sort By Filter */}
-        <div className="flex items-center gap-2">
-          <Select
-            options={[
-              { value: "ASC", label: "Date: Most Recent" },
-              { value: "DESC", label: "Date: Oldest" },
-            ]}
-            value={filters.sortingOptions || ""} // Provide a default value
-            onChange={handleSelectChange("sortingOptions")}
-          />
-        </div>
-
-        {/* Timeframe Filter */}
-        <div className="flex items-center gap-2">
-          <Select
-            options={[
-              { value: "", label: "All Time" },
-              { value: "Today", label: "Today" },
-              { value: "Yesterday", label: "Yesterday" },
-              { value: "ThisWeek", label: "This Week" },
-              { value: "LastWeek", label: "Last Week" },
-              { value: "ThisMonth", label: "This Month" },
-              { value: "LastMonth", label: "Last Month" },
-              { value: "ThisYear", label: "This Year" },
-              { value: "LastYear", label: "Last Year" },
-            ]}
-            placeholder="Select Time Range"
-            value={filters.presetTimeFrame || ""} // Provide default value
-            onChange={handleSelectChange("presetTimeFrame")}
-          />
-        </div>
-
-        {/* Date Selector Filter */}
-        <DateSelector
-          fromDate={filters.fromDate}
-          toDate={filters.toDate}
-          onDateChange={handleDateChange}
-        />
-
-        {/* Clear Filters Button */}
-        <button onClick={clearFilters} className="font-bold text-nowrap px-2 text-xs text-black underline">
-          Clear Filters
-        </button>
-
-        <input
-          style={{
-            background: `url(${SearchIcon.src})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: '1rem',
-            backgroundSize: '1.5rem',
-          }}
-          className={`w-full self-start py-2 border-[0.01rem] border-grey pl-12 pr-2 rounded-md text-sm mt-4 lg:mt-0`}
-          type="search"
-          name="searchTerm"
-          id="searchTerm"
-          onChange={handleFilterChange}
-          placeholder="Search Declined Applicants"
-        />
-
-        {/* Results Count */}
-        <p className="text-grey text-sm text-nowrap">{declinedApplicants.length} Result{declinedApplicants.length > 1 ? 's' : ''}</p>
-      </div>
+      <TableFilter
+        results={results}
+        filters={filters}
+        searchTermInput={searchTermInput}
+        handleSelectChange={handleSelectChange}
+        handleDateChange={handleDateChange}
+        clearFilters={clearFilters}
+        handleSearchInputChange={handleSearchInputChange}
+        handleSearchButtonClick={handleSearchButtonClick}
+      />
 
       <div className="w-full overflow-x-scroll lg:overflow-x-visible">
         {/* Declined Applicants Table */}
-        <table className="text-center h-max w-full">
+        <table className="relative text-center h-max w-full">
           <thead className="bg-gray-300">
             <tr>
-              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-                <input
-                  type="checkbox"
-                  onChange={handleSelectAll}
-                  checked={selectedRows.length === declinedApplicants.length && declinedApplicants.length > 0}
-                />
-              </th>
+              <th></th>
               <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
                 Name
               </th>
@@ -223,23 +171,26 @@ export default function Declined() {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={`fade-in ${!loading ? "loaded" : ""}`}>
+            <LoadingPage loading={loading} />
+
+            {!loading && declinedApplicants.length <= 0 &&
+              <tr>
+                <td colSpan={9} className="h-full">
+                  <NoResultsPage />
+                </td>
+              </tr>
+            }
             {declinedApplicants.map((applicant: any) => (
               <DeclinedRow
                 key={applicant.applicantId}
                 applicant={applicant}
                 page={currentPage}
-                handleSelectRow={handleSelectRow}
-                selectedRows={selectedRows}
                 handleLoad={handleLoadData}
               />
             ))}
           </tbody>
         </table>
-
-        {declinedApplicants.length <= 0 &&
-          <NoResultsPage />
-        }
       </div>
 
       {/* Page Selector */}

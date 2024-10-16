@@ -8,7 +8,6 @@ import { JobCardData } from "@/types/jobTypes";
 
 export default function JobCard(props: JobCardData) {
 
-    console.log(props)
     const { id, title, applicantCount, candidateCount, city, hiringManager, createdDate, hiresCount, state, status, visibility } = props
 
     return (

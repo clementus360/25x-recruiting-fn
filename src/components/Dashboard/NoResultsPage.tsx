@@ -10,7 +10,7 @@ interface NoResultsPageProps {
 
 export const NoResultsPage: React.FC<NoResultsPageProps> = ({ message }) => {
   return (
-    <div className="flex flex-col items-center justify-center h-full py-24">
+    <div className="flex flex-col items-center justify-center h-full min-h-[50vh] py-24">
       {/* Icon */}
       <div className="mb-4">
         <Image src={NoFileIcon} alt="No results" width={50} height={50} />

@@ -8,6 +8,7 @@ import { useCompany } from "@/context/CompanyContext";
 import { useError } from "@/context/ErrorContext";
 import { getSingleJob } from "@/data/jobsData";
 import { Job } from "@/types/jobTypes";
+import { getAccessToken } from "@/data/cookies";
 
 export default function JobLayout({
     children,
@@ -26,7 +27,7 @@ export default function JobLayout({
         const fetchJobInfo = async () => {
           try {
             const companyId = companyInfo?.id;
-            const token = localStorage.getItem("accessToken");
+            const token = getAccessToken();
     
             if (!token) {
               setError("User is not authenticated");
@@ -57,7 +58,7 @@ export default function JobLayout({
 
                 <JobNavigation jobId={params.job} />
 
-                <div className="px-8 h-max">
+                <div className="lg:px-8 h-max">
                     {/* Page contents will appear here */}
                     {children}
                 </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { getAccessToken } from "@/data/cookies";
 import { GetUserData } from "@/data/users";
 import { User } from "@/types/profileTypes";
 import React, { createContext, useContext, useState, useEffect } from "react";
@@ -36,8 +37,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [userInfoLoading, setUserInfoLoading] = useState(true);
   
     const fetchUserInfo = async () => {
-      const token = localStorage.getItem("accessToken");
-  
+      const token = getAccessToken();
   
       if (token) {
         try {

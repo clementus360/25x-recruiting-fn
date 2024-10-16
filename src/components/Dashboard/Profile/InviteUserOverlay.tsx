@@ -6,22 +6,34 @@ import { useSuccess } from "@/context/SuccessContext";
 import { Oval } from "react-loader-spinner";
 import { useCompany } from "@/context/CompanyContext";
 import { InviteUser } from "@/data/users";
+import Select from "@/components/Select";
+import { getAccessToken } from "@/data/cookies";
 
 export default function InviteUserOverlay({ onClose }: { onClose: () => void }) {
     const { setError } = useError();
     const { setSuccess } = useSuccess();
     const [loading, setLoading] = useState(false);
     const { companyInfo } = useCompany()
+    const [disabled, setDisabled] = useState(true);
 
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getAccessToken();
 
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
         email: "",
         title: "",
-        userRole: "user",
+        userRole: "Admin",
         note: "",
+    });
+
+    const [changed, setChanged] = useState({
+        firstName: false,
+        lastName: false,
+        email: false,
+        title: false,
+        userRole: false,
+        note: false,
     });
 
     const [errors, setErrors] = useState({
@@ -55,6 +67,11 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
             isValid = false;
         }
 
+        if (!formData.title.trim()) {
+            newErrors.title = "Title is required.";
+            isValid = false;
+        }
+
         if (formData.title && formData.title.length > 50) {
             newErrors.title = "Title must be 50 characters or less.";
             isValid = false;
@@ -73,9 +90,20 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
 
-        // Clear errors when user starts typing again
-        setErrors({ ...errors, [name]: "" });
+        setChanged((prev) => ({
+            ...prev,
+            [name]: true
+        }))
     };
+
+    const handleSelectChange = (name: string, value: string) => {
+        setFormData({ ...formData, [name]: value });
+
+        setChanged((prev) => ({
+            ...prev,
+            [name]: true
+        }))
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -108,6 +136,16 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
     };
 
     useEffect(() => {
+        const isFormValid = validate();
+
+        if (!isFormValid || loading) {
+            setDisabled(true);
+        } else {
+            setDisabled(false);
+        }
+    }, [formData, loading]);
+
+    useEffect(() => {
         validate()
     }, [formData])
 
@@ -124,10 +162,10 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
                             value={formData.firstName}
                             onChange={handleInputChange}
                             placeholder="First Name"
-                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem] ${errors.firstName ? "border-red-500" : ""}`}
+                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]`}
                             required
                         />
-                        {errors.firstName && <span className="text-red-500 text-xs">{errors.firstName}</span>}
+                        {errors.firstName && changed.firstName && <span className="text-red-500 text-xs">{errors.firstName}</span>}
                     </div>
 
                     <div className="flex flex-col">
@@ -137,10 +175,10 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
                             value={formData.lastName}
                             onChange={handleInputChange}
                             placeholder="Last Name"
-                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem] ${errors.lastName ? "border-red-500" : ""}`}
+                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem],`}
                             required
                         />
-                        {errors.lastName && <span className="text-red-500 text-xs">{errors.lastName}</span>}
+                        {errors.lastName && changed.lastName && <span className="text-red-500 text-xs">{errors.lastName}</span>}
                     </div>
 
                     <div className="flex flex-col">
@@ -150,10 +188,10 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
                             value={formData.email}
                             onChange={handleInputChange}
                             placeholder="Email"
-                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem] ${errors.email ? "border-red-500" : ""}`}
+                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]`}
                             required
                         />
-                        {errors.email && <span className="text-red-500 text-xs">{errors.email}</span>}
+                        {errors.email && changed.email && <span className="text-red-500 text-xs">{errors.email}</span>}
                     </div>
 
                     <div className="flex flex-col">
@@ -163,21 +201,20 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
                             value={formData.title}
                             onChange={handleInputChange}
                             placeholder="Title"
-                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem] ${errors.title ? "border-red-500" : ""}`}
+                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]`}
                         />
-                        {errors.title && <span className="text-red-500 text-xs">{errors.title}</span>}
+                        {errors.title && changed.title && <span className="text-red-500 text-xs">{errors.title}</span>}
                     </div>
 
-                    <select
-                        name="userRole"
+                    <Select
                         value={formData.userRole}
-                        onChange={handleInputChange}
-                        className="px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem]"
-                    >
-                        <option value="SuperAdmin">Super Admin</option>
-                        <option value="Admin">Admin</option>
-                        <option value="User">User</option>
-                    </select>
+                        options={[
+                            { value: 'Admin', label: 'Admin' },
+                            { value: 'User', label: 'User' }
+                        ]}
+                        onChange={(value) => handleSelectChange("userRole", value)}
+                        className="w-full h-full"
+                    />
 
                     <div className="flex flex-col">
                         <input
@@ -186,9 +223,9 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
                             value={formData.note}
                             onChange={handleInputChange}
                             placeholder="Note"
-                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem] ${errors.note ? "border-red-500" : ""}`}
+                            className={`px-2 py-2 border-grey border-[0.02rem] rounded-[0.2rem] `}
                         />
-                        {errors.note && <span className="text-red-500 text-xs">{errors.note}</span>}
+                        {errors.note && changed.note && <span className="text-red-500 text-xs">{errors.note}</span>}
                     </div>
 
                     <div className="mt-4">
@@ -206,9 +243,19 @@ export default function InviteUserOverlay({ onClose }: { onClose: () => void }) 
                         )}
                         <button
                             type="submit"
-                            className="bg-primary disabled:bg-grey hover:bg-opacity-80 text-white font-semibold py-2 w-full rounded-lg"
-                            disabled={loading}
+                            className="flex items-center justify-center gap-2 bg-primary disabled:cursor-not-allowed disabled:bg-grey hover:bg-opacity-80 text-white font-semibold py-2 w-full rounded-lg"
+                            disabled={disabled}
                         >
+                            {loading && <Oval
+                                visible={true}
+                                height="14"
+                                width="14"
+                                color="#ffffff"
+                                secondaryColor="#ffffff"
+                                ariaLabel="oval-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="flex items-center justify-center"
+                            />}
                             {loading ? "Inviting..." : "Invite User"}
                         </button>
                         <button

@@ -9,13 +9,12 @@ import { useEffect, useState } from "react"
 export default function ScreeningNavigation() {
     const [location, setLocation] = useState("FortMyers");
     const router = useRouter();
-    const searchParams = useSearchParams();
     const pathname = usePathname()
     const basepath = pathname.split('/').slice(-1)[0]
 
     useEffect(() => {
         router.push(`${pathname}?location=${location}`);
-    }, [])
+    })
 
     const handleLocationChange = (value: string) => {
         setLocation(value)
@@ -23,11 +22,11 @@ export default function ScreeningNavigation() {
     }
 
     return (
-        <div className="flex justify-between px-8 pt-4 bg-gray-100">
-            <nav>
-                <ul className="flex gap-2">
+        <div className="flex flex-col lg:flex-row lg:gap-40 justify-between items-center lg:items-start gap-4 px-4 lg:px-8 pt-4 pb-4 lg:pb-0 bg-gray-100">
+            <nav className="w-full lg:w-auto">
+                <ul className="flex flex-col lg:flex-row gap-2 text-nowrap">
                     {candidateNavItems.map((item, idx) => (
-                        <Link key={idx} href={`/dashboard/screening/${item.path}`}><li className={`relative ${basepath === item.path ? 'bg-lightViolet' : ''} py-3 px-8 text-sm font-medium rounded-t-lg`}>
+                        <Link key={idx} href={`/dashboard/screening/${item.path}?location=${location}`}><li className={`relative ${basepath === item.path ? 'bg-lightViolet' : ''} py-3 px-8 text-sm font-medium rounded-t-lg`}>
                             {item.name}
                             <div className={`absolute ${basepath === item.path ? 'block' : 'hidden'} w-full h-[0.2rem] rounded-t-lg bg-accent left-0 bottom-0`}></div>
                         </li></Link>
@@ -43,15 +42,7 @@ export default function ScreeningNavigation() {
                 ]}
                 value={location}
                 onChange={(value) => handleLocationChange(value)}
-            />
-
-            <input style={{
-                background: `url(${SearchIcon.src})`,
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: '1rem',
-                backgroundSize: '1.5rem',
-            }}
-                className={` h-max py-2 border-[0.01rem] border-grey px-12 rounded-md text-sm`} type="search" name="search-jobs" id="search-jobs" placeholder="Search Jobs"
+                className="w-full"
             />
         </div>
     )

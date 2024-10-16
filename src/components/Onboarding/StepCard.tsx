@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaCheckCircle, FaClipboard, FaDollarSign, FaFile, FaFileAlt, FaFileSignature, FaPenFancy, FaUniversity } from 'react-icons/fa';
 
 interface Document {
   name: string;
@@ -17,24 +18,24 @@ interface StepCardProps {
 }
 
 const StepCard: React.FC<StepCardProps> = ({ step, onClick }) => {
-  const getIcon = (stepName: string): string => {
+  const getIcon = (stepName: string) => {
     switch (stepName) {
       case 'E-Signature':
-        return '✍️';
+        return <FaPenFancy color='#902C8B' />;
       case 'Personal Information':
-        return '📋';
+        return <FaClipboard color='#902C8B' />;
       case 'Direct Deposit':
-        return '🏦';
+        return <FaUniversity color='#902C8B' />;
       case 'Additional Documents':
-        return '📑';
+        return <FaFileAlt color='#902C8B' />;
       case 'Test/Certifications':
-        return '📝';
+        return <FaFileSignature color='#902C8B' />;
       case 'Tax Withholding':
-        return '💵';
+        return <FaDollarSign color='#902C8B' />;
       case 'Employment Eligibility':
-        return '✅';
+        return <FaCheckCircle color='#902C8B' />;
       default:
-        return '📄';
+        return <FaFile color='#902C8B' />;
     }
   };
 
@@ -45,9 +46,9 @@ const StepCard: React.FC<StepCardProps> = ({ step, onClick }) => {
     >
       <div className="text-4xl mb-2">{getIcon(step)}</div>
       <h3 className="font-semibold mb-1">{step}</h3>
-      <p className="text-sm text-gray-500">
+      {/* <p className="text-sm text-gray-500">
         {`Complete 1 of 2`}
-      </p>
+      </p> */}
     </div>
   );
 };

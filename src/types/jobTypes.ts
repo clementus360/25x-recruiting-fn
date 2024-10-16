@@ -96,3 +96,22 @@ export interface HiringManager {
   firstName: string;
   lastName: string
 }
+
+export interface UpdateJobData {
+  title?: string,
+  category?: string,
+  seats?: number,
+  payRate?: number,
+  payFrequency?: string,
+  managementRole?: string,
+  employmentType?: string,
+  address?: string,
+  city?: string,
+  state?: string,
+  country?: string,
+  zipCode?: number,
+  description?: string,
+  createdAt?: string,
+  status?: string,
+  visibility?: string
+}

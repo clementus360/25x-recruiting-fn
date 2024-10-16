@@ -10,7 +10,7 @@ import { FaUser, FaBuilding, FaSignOutAlt } from "react-icons/fa"; // Import Fon
 import SearchIcon from "@/assets/search.svg";
 import NotificationIcon from "@/assets/notification.svg";
 import HelpIcon from "@/assets/help.svg";
-import AccountIcon from "@/assets/CaregiversUnited-Logo-Color-Box-300x201.png-2.webp";
+import AccountIcon from "@/assets/logo.png";
 import ProfileIcon from "@/assets/profile.svg";
 import MenuIcon from "@/assets/menu.svg";
 import { useLogout } from "@/data/auth";
@@ -24,7 +24,7 @@ export const navItems = [
 ];
 
 export default function DashboardHeader() {
-  const { userInfo, userInfoLoading } = useUser();
+  const { userInfo } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false); // State for dropdown
   const pathname = usePathname();
@@ -56,7 +56,11 @@ export default function DashboardHeader() {
     <header className="relative flex flex-col z-30 lg:flex-row items-center justify-between px-4 lg:px-24 bg-white drop-shadow-sm">
       <div className="flex w-full justify-between">
         <div className="flex items-center justify-center gap-16 py-4 lg:py-0">
-          <Image src={AccountIcon} alt={"account"} className="w-auto h-16 bg-black" />
+
+
+          <Link href={`/dashboard`}>
+            <Image src={AccountIcon} alt={"account"} className="w-20" />
+          </Link>
 
           <nav className="menu hidden lg:block">
             <ul className="flex gap-2 justify-between">
@@ -73,11 +77,13 @@ export default function DashboardHeader() {
         </div>
 
         <div className="flex items-center justify-center gap-8">
-          <div className="gap-4 justify-between hidden lg:flex">
+
+          {/* Header Icons */}
+          {/* <div className="gap-4 justify-between hidden lg:flex">
             <Image src={SearchIcon} height={16} width={16} alt={"search"} />
             <Image src={NotificationIcon} height={16} width={16} alt={"notification"} />
             <Image src={HelpIcon} height={16} width={16} alt={"help"} />
-          </div>
+          </div> */}
 
           <div className="relative" ref={dropdownRef}>
             {/* Profile Section */}
@@ -128,7 +134,7 @@ export default function DashboardHeader() {
       </div>
 
       {menuOpen && (
-        <nav className={`block w-full lg:w-auto`}>
+        <nav className={`block lg:hidden w-full lg:w-auto`}>
           <ul className="flex flex-col lg:flex-row gap-4">
             {navItems.map((item, idx) => (
               <Link key={idx} href={`/dashboard/${item.path || ""}`}>

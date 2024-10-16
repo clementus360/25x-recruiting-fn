@@ -4,6 +4,7 @@ import { CompanyItem } from "@/components/Admin/CompanyItem";
 import { useError } from "@/context/ErrorContext";
 import { useSuccess } from "@/context/SuccessContext";
 import { GetCompanies, VerifyCompany } from "@/data/admin";
+import { getAccessToken } from "@/data/cookies";
 import { Company } from "@/types/adminTypes";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -17,7 +18,7 @@ export default function Admin() {
     const router = useRouter();
 
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
+        const accessToken = getAccessToken();
 
         // If there is no accessToken or it's invalid, redirect to the sign-in page
         if (!accessToken) {
@@ -31,7 +32,7 @@ export default function Admin() {
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
-                const token = localStorage.getItem("accessToken"); // Replace with the actual token
+                const token = getAccessToken(); // Replace with the actual token
 
                 if (!token) {
                     return;
@@ -55,7 +56,7 @@ export default function Admin() {
 
     const handleApprove = async (id: number) => {
         try {
-            const token = localStorage.getItem("accessToken"); // Replace with the actual token
+            const token = getAccessToken(); // Replace with the actual token
 
             if (!token) {
                 return;

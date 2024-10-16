@@ -1,5 +1,6 @@
 'use client';
 
+import { getAccessToken } from "@/data/cookies";
 import { GetCompanyData } from "@/data/users";
 import { CompanyData } from "@/types/authTypes";
 import React, { createContext, useContext, useState, useEffect } from "react"; 
@@ -36,7 +37,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [companyInfoLoading, setCompanyInfoLoading] = useState(true);
 
   const fetchCompanyInfo = async () => {
-    const token = localStorage.getItem("accessToken");
+    const token = getAccessToken();
 
     if (token) {
       try {

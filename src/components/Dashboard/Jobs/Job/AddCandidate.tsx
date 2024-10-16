@@ -8,6 +8,7 @@ import { useCompany } from "@/context/CompanyContext";
 import { useParams } from "next/navigation";
 import { Country, State, City, IState, ICity } from "country-state-city";
 import Select from "@/components/Select";
+import { getAccessToken } from "@/data/cookies";
 
 interface AddApplicantOverlayProps {
   handleLoad: (load: boolean) => void;
@@ -107,7 +108,7 @@ export const AddCandidateOverlay: React.FC<AddApplicantOverlayProps> = ({ handle
     }
 
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = getAccessToken();
 
       if (!token) {
         setError("User not authenticated.");
@@ -119,7 +120,7 @@ export const AddCandidateOverlay: React.FC<AddApplicantOverlayProps> = ({ handle
       handleLoad(true)
       onClose();
     } catch (error: any) {
-      setError(`An error occured while adding candidate`);
+      setError(error.message);
     }
   };
 

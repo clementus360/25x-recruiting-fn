@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useError } from "@/context/ErrorContext";
 import { Oval } from "react-loader-spinner";
 import { useSuccess } from "@/context/SuccessContext";
 import { useRouter } from "next/navigation";
@@ -10,21 +9,26 @@ import { userSignIn } from "@/data/auth"; // Assume this is your sign-in functio
 import { useUser } from "@/context/UserContext";
 import { useCompany } from "@/context/CompanyContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuthError } from "@/context/AuthErrorContext";
+import AuthErrorMessage from "@/components/AuthErrorMessage";
 
 export default function SignIn() {
   const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { setError } = useError();
+  const { error, setError } = useAuthError();
   const { setSuccess } = useSuccess();
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
   const [disabled, setDisabled] = useState(true);
-  const [changed, setChanged] = useState(false)
   const [showPassword, setShowPassword] = useState(false);
   const { fetchUserInfo } = useUser();
   const { fetchCompanyInfo } = useCompany();
+  const [changed, setChanged] = useState({
+    email: false,
+    password: false
+  });
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -56,16 +60,17 @@ export default function SignIn() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!changed) {
-      setChanged(true)
-    }
-
     const { name, value } = e.target;
     if (name === 'email') {
       setEmail(value);
     } else if (name === 'password') {
       setPassword(value);
     }
+
+    setChanged((prev) => ({
+      ...prev,
+      [name]: true
+    }))
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -104,19 +109,20 @@ export default function SignIn() {
   }, [email, password, loading]);
 
   useEffect(() => {
-    if (changed) {
-      validateForm()
-    }
+    validateForm()
   }, [email, password])
 
   return (
-    <main className="flex min-h-screen flex-col justify-between py-56 pl-24 pr-16">
+    <main className="flex flex-col justify-between px-8 lg:px-0 lg:pl-24 lg:pr-16">
       <div className="flex flex-col gap-12">
-        <div className="flex flex-col gap-2">
+        {/* <div className="flex flex-col items-center gap-2">
           <h1 className="text-3xl font-bold">Sign In</h1>
-        </div>
+        </div> */}
 
         <form onSubmit={handleSignIn} className="flex flex-col gap-4">
+
+          {error && <AuthErrorMessage />}
+
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="text-sm font-semibold">Email</label>
             <input
@@ -128,7 +134,7 @@ export default function SignIn() {
               value={email}
               placeholder="Enter your email"
             />
-            {errors.email && <span className="text-red-500 text-xs">{errors.email}</span>}
+            {errors.email && changed.email && <span className="text-red-500 text-xs">{errors.email}</span>}
           </div>
 
           <div className="flex flex-col gap-1 relative">
@@ -154,12 +160,12 @@ export default function SignIn() {
                 <FaEye className="w-5 h-5" />
               )}
             </button>
-            {errors.password && <span className="text-red-500 text-xs">{errors.password}</span>}
+            {errors.password && changed.password && <span className="text-red-500 text-xs">{errors.password}</span>}
           </div>
 
           <div className="mt-6 flex flex-col gap-2">
             <button
-              className="flex gap-2 items-center justify-center bg-primary disabled:bg-grey hover:bg-opacity-80 cursor-pointer text-white font-semibold py-4 w-full rounded-lg"
+              className="flex gap-2 items-center justify-center bg-primary disabled:cursor-not-allowed disabled:bg-grey hover:bg-opacity-80 cursor-pointer text-white font-semibold py-4 w-full rounded-lg"
               type="submit"
               disabled={disabled}
             >
@@ -175,9 +181,10 @@ export default function SignIn() {
               />}
               <p>{loading ? "Submitting..." : "Sign In"}</p>
             </button>
-            <p className="text-sm font-light text-grey">
+
+            {/* <p className="text-sm font-light text-grey">
               Don&apos;t have an account? <Link href={"/register"}><span className="font-bold text-primary">Register Company</span></Link>
-            </p>
+            </p> */}
           </div>
         </form>
       </div>

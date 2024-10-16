@@ -14,19 +14,14 @@ import { JobCardData, UserComment } from "@/types/jobTypes";
 import { getCommentsForApplicant, getJobs } from "@/data/jobsData";
 import { useCompany } from "@/context/CompanyContext";
 import { DBCandidate } from "@/types/candidateTypes";
+import { getAccessToken } from "@/data/cookies";
 
 export default function CandidateCard({
     candidate,
-    selectedRows,
-    selectedJob,
-    handleSelectRow,
     handleLoad
 }: {
     candidate: DBCandidate;
-    selectedRows: number[];
-    selectedJob: string;
-    handleSelectRow: (candidateId: number) => void;
-    handleLoad: (load: boolean) => void;
+    handleLoad: () => void;
 }) {
     const [isNotesOverlayOpen, setIsNotesOverlayOpen] = useState<boolean>(false);
     const [notes, setNotes] = useState<UserComment[]>();
@@ -38,7 +33,7 @@ export default function CandidateCard({
     useEffect(() => {
         const fetchNotes = async () => {
             try {
-                const token = localStorage.getItem("accessToken");
+                const token = getAccessToken();
                 if (!token) {
                     return;
                 }
@@ -67,6 +62,7 @@ export default function CandidateCard({
 
     const handleCloseNotesOverlay = () => {
         setIsNotesOverlayOpen(false);
+        handleLoad()
     };
 
     const handleMoveApplicant = (applicantId: number, job: string) => {
@@ -74,13 +70,8 @@ export default function CandidateCard({
     };
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between lg:items-center bg-lightBlue px-4 py-6 lg:pr-24 rounded-lg">
+        <div className="w-10/12 lg:w-full flex flex-col lg:flex-row gap-4 lg:gap-0 justify-between lg:items-center bg-gray-50 px-4 py-6 lg:pr-24 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
             <div className="flex gap-8 items-center">
-                <input
-                    type="checkbox"
-                    checked={selectedRows.includes(candidate.id)}
-                    onChange={() => handleSelectRow(candidate.id)}
-                />
                 <p className="px-6 py-4 align-middle whitespace-nowrap text-lg font-bold text-gray-900">
                     {candidate.name}
                 </p>
@@ -114,17 +105,17 @@ export default function CandidateCard({
                 </div>
             </div>
 
-            <div className="flex flex-row-reverse lg:flex-row gap-16 items-center justify-between">
+            <div className="flex flex-row-reverse self-start lg:self-center lg:flex-row gap-16 items-center justify-between">
                 <div className="relative">
                     <button onClick={toggleNotesOverlay}>
                         <Image src={NoteIcon} alt="note" className="w-5 h-5" />
+                        <p>{candidate.applicantComments?.length}</p>
                     </button>
                     {isNotesOverlayOpen && (
                         <NotesOverlay
-                            notes={notes}
+                            isNotesOverlayOpen={isNotesOverlayOpen}
                             applicantId={candidate.id}
                             onClose={handleCloseNotesOverlay}
-                            handleLoadNotes={handleLoadNotes}
                         />
                     )}
                 </div>

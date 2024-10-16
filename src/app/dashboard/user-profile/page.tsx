@@ -1,24 +1,65 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { useCompany } from "@/context/CompanyContext";
-import { useError } from "@/context/ErrorContext";
-import { GetCompanyData, UpdateUserProfile } from "@/data/users";
-import { useUser } from "@/context/UserContext";
-
+import { useEffect, useState } from 'react';
+import { useUser } from '@/context/UserContext';
+import { useError } from '@/context/ErrorContext';
+import { UpdateUserProfile } from '@/data/users';
+import { getAccessToken } from '@/data/cookies';
+import { useSuccess } from '@/context/SuccessContext';
 
 export default function UserProfile() {
-  const { userInfo, userInfoLoading } = useUser();
-  const [formData, setFormData] = useState({
-    firstName: userInfo?.firstName || "",
-    lastName: userInfo?.lastName || "", // User Name
-    title: "",
-    email: "",
-    newPassword: "",
+  const { userInfo, userInfoLoading } = useUser(); // Fetch user information from context
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
+
+  // Initial and form states
+  const [formData, setFormData] = useState<{
+    firstName: string,
+    lastName: string,
+    title: string,
+    email: string,
+    oldPassword?: string | '',
+    newPassword?: string | '',
+  }>({
+    firstName: '',
+    lastName: '',
+    title: '',
+    email: '',
+    oldPassword: '',
+    newPassword: '',
   });
 
-  const [oldPassword, setOldPassword] = useState(""); // Separate state for authorization
-  const { setError } = useError();
+  const [initialData, setInitialData] = useState<{
+    firstName: string,
+    lastName: string,
+    title: string,
+    email: string,
+    oldPassword?: string | '',
+    newPassword?: string | '',
+  }>({
+    firstName: '',
+    lastName: '',
+    title: '',
+    email: '',
+    oldPassword: '',
+    newPassword: '',
+  });
+
+  const [oldPassword, setOldPassword] = useState(''); // Old password for authorization
+
+  useEffect(() => {
+    if (userInfo) {
+      const fetchedData = {
+        firstName: userInfo?.firstName || '',
+        lastName: userInfo?.lastName || '',
+        title: userInfo?.roleName || '',
+        email: userInfo?.email || '',
+        newPassword: ''
+      };
+      setFormData(fetchedData);
+      setInitialData(fetchedData);
+    }
+  }, [userInfo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,45 +70,49 @@ export default function UserProfile() {
   };
 
   const handleOldPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setOldPassword(e.target.value); // Handle old password separately
+    setOldPassword(e.target.value);
   };
 
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getAccessToken();
 
     if (!accessToken) {
-      return
+      return setError('User not authenticated.');
     }
 
-    // Check if the old password is provided before submitting
-    if (!oldPassword) {
-      setError("Please enter the old password to authorize changes.");
-      return;
+    // Compare formData with initialData to identify changed fields
+    const updatedFields: Partial<typeof formData> = {};
+    for (const key in formData) {
+      if (formData[key as keyof typeof formData] !== initialData[key as keyof typeof formData]) {
+        updatedFields[key as keyof typeof formData] = formData[key as keyof typeof formData];
+      }
     }
+
+    // Add oldPassword for authorization if any fields have changed
+    if (Object.keys(updatedFields).length > 0) {
+      updatedFields['oldPassword'] = oldPassword;
+    } else {
+      return setError('No changes were made.');
+    }
+
+    console.log(updatedFields)
 
     try {
+      // Send the updated fields to the backend
+      await UpdateUserProfile(updatedFields, accessToken);
+      setSuccess('User profile updated successfully');
 
-      // await UpdateUserProfile({
-      //   ...formData,
-      //   oldPassword: oldPassword,
-      // }, accessToken)
+      setInitialData({ ...formData });
 
     } catch (err: any) {
-      console.log(err.message)
-      setError(`Error while updating user profile: ${err}`)
+      setError(`Error updating user profile: ${err}`);
     }
-
-
-    // Perform further actions here
   };
-
 
   return (
     <main className="flex min-h-screen flex-col gap-16 py-16 w-full px-4 lg:px-40">
       <section className="flex flex-col gap-8 w-full bg-white py-8 px-6 lg:px-8 rounded-lg drop-shadow-sm">
-
         <h1 className="text-3xl font-bold">User Profile</h1>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
@@ -78,7 +123,7 @@ export default function UserProfile() {
               type="text"
               name="firstName"
               placeholder="First name"
-              value={userInfo?.firstName}
+              value={formData.firstName}
               onChange={handleChange}
             />
           </label>
@@ -90,7 +135,7 @@ export default function UserProfile() {
               type="text"
               name="lastName"
               placeholder="Last name"
-              value={userInfo?.lastName}
+              value={formData.lastName}
               onChange={handleChange}
             />
           </label>
@@ -119,7 +164,7 @@ export default function UserProfile() {
             />
           </label>
 
-          {/* Separate input for old password to check authorization */}
+          {/* Separate input for old password */}
           <label className="flex flex-col w-full gap-1">
             <p>Old Password (for authorization)</p>
             <input
@@ -152,7 +197,6 @@ export default function UserProfile() {
           </button>
         </form>
       </section>
-
     </main>
   );
 }

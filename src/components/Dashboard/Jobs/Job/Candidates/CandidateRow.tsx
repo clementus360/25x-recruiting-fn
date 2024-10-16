@@ -4,40 +4,45 @@ import NoteIcon from "@/assets/note.svg";
 import { NotesOverlay } from "@/components/Dashboard/NotesOverlay";
 import DisplayRating from "@/components/DisplayRating";
 import { useError } from "@/context/ErrorContext";
-import { getCommentsForApplicant, HireOrDeclineCandidate } from "@/data/jobsData";
+import { HireOrDeclineCandidate } from "@/data/jobsData";
 import { ApplicantRowProps } from "@/types/applicationTypes";
-import { UserComment } from "@/types/jobTypes";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import DeclineReasonOverlay from "../DeclineReasonOverlay";
 import { useSuccess } from "@/context/SuccessContext";
 import Link from "next/link";
+import { getAccessToken } from "@/data/cookies";
+import { useCompany } from "@/context/CompanyContext";
 
 export const CandidateRow: React.FC<ApplicantRowProps> = ({
     applicant,
-    selectedRows,
     page,
-    handleSelectRow,
     handleLoad
 }) => {
     const [isNotesOverlayOpen, setIsNotesOverlayOpen] = useState<boolean>(false);
     const [isDeclineOverlayOpen, setIsDeclineOverlayOpen] = useState<boolean>(false);
     const { setError } = useError();
     const { setSuccess } = useSuccess();
+    const { companyInfo } = useCompany();
     const params = useParams<{ job: string }>();
     const jobId = params.job;
-    const [loadNotes, setLoadNotes] = useState(false)
 
     const handleHireCandidate = async (e: React.MouseEvent<HTMLButtonElement>) => {
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = getAccessToken();
+            const companyId = companyInfo?.id
+            
             if (!token) {
                 return;
             }
 
+            if (!companyId) {
+                return;
+            }
+
             await HireOrDeclineCandidate(applicant.applicantId, Number(jobId), page, token, "Hire", " ");
-            setSuccess("Candidate hired successfully")
-            handleLoad(true)
+            setSuccess("Candidate hired successfully", Number(companyId), applicant.applicantId)
+            handleLoad()
         } catch (error: any) {
             setError(`Error moving candidate to hires`);
         }
@@ -45,14 +50,15 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
 
     const handleDeclineCandidate = async (reason: string) => {
         try {
-            const token = localStorage.getItem("accessToken");
+            const token = getAccessToken();
+
             if (!token) {
                 return;
             }
 
             await HireOrDeclineCandidate(applicant.applicantId, Number(jobId), page, token, "Decline", reason);
             setSuccess("Applicant denied successfully")
-            handleLoad(true);
+            handleLoad();
         } catch (error: any) {
             setError(`Error declining applicant`);
         } finally {
@@ -60,16 +66,13 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
         }
     };
 
-    const handleLoadNotes = () => {
-        setLoadNotes(true)
-    }
-
     const toggleNotesOverlay = () => {
         setIsNotesOverlayOpen(!isNotesOverlayOpen);
     };
 
     const handleCloseNotesOverlay = () => {
         setIsNotesOverlayOpen(false);
+        handleLoad()
     };
 
     const handleOpenDeclineOverlay = () => {
@@ -80,22 +83,12 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
         setIsDeclineOverlayOpen(false);
     };
 
-    useEffect(() => {
-        handleLoad(true)
-        setLoadNotes(false)
-    }, [isNotesOverlayOpen, loadNotes]);
-
     return (
         <>
             <tr key={applicant.applicantId}>
                 <td className="px-6 py-4 align-middle whitespace-nowrap">
-                    <input
-                        type="checkbox"
-                        checked={selectedRows.includes(applicant.applicantId)}
-                        onChange={() => handleSelectRow(applicant.applicantId)}
-                    />
                 </td>
-                <td className="px-6 py-4 align-middle whitespace-nowrap text-sm font-bold text-accent">
+                <td className="px-6 py-4 align-middle text-sm font-bold text-accent">
                     <Link href={`/dashboard/applicant/${applicant.applicantId}/resume?jobId=${jobId}`}>{applicant.applicantName}</Link>
                 </td>
                 <td className="px-6 py-4 align-middle whitespace-nowrap text-sm font-light text-gray-500">
@@ -115,9 +108,9 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
                         <a href={applicant.coverLetterUrl}>Cover Letter</a>
                     )}
                 </td>
-                <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
-                    {/* Placeholder for application status */}
-                </td>
+                {/* <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
+                    Placeholder for application status
+                </td> */}
                 <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
                     <DisplayRating
                         applicantId={applicant.applicantId}
@@ -134,10 +127,9 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
                     </div>
                     {isNotesOverlayOpen && (
                         <NotesOverlay
-                            notes={applicant.applicantComments}
+                            isNotesOverlayOpen={isNotesOverlayOpen}
                             applicantId={applicant.applicantId}
                             onClose={handleCloseNotesOverlay}
-                            handleLoadNotes={handleLoadNotes}
                         />
                     )}
                 </td>
@@ -147,7 +139,7 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
                             Decline
                         </button>
                         <button onClick={handleHireCandidate} className="flex gap-2 items-center bg-primary self-center justify-self-end h-max w-max px-4 py-2 text-white text-xs font-semibold rounded-md">
-                            Move To Hires
+                            Hire
                         </button>
                     </div>
                 </td>

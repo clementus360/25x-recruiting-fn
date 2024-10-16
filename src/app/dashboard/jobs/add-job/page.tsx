@@ -44,7 +44,7 @@ export default function AddJob() {
                                 <button disabled={idx > activeSteps} onClick={() => {
                                     handleChangeStep(step.id)
                                 }}
-                                    className={`text-xl disabled:border-grey disabled:text-grey ${currentStep === step.id ? `bg-primary text-white` : 'border-2 border-primary'} w-12 aspect-square rounded-full`}
+                                    className={`text-xl disabled:cursor-not-allowed disabled:border-grey disabled:text-grey ${currentStep === step.id ? `bg-primary text-white` : 'border-2 border-primary'} w-12 aspect-square rounded-full`}
                                 >
                                     {step.id}
                                 </button>

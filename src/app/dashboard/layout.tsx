@@ -1,8 +1,12 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import DashboardHeader from "./Header";
+import { getAccessToken } from "@/data/cookies";
+import LoadingPage from "@/components/Dashboard/LoadingPage";
+import { CompanyProvider } from "@/context/CompanyContext";
+import { UserProvider } from "@/context/UserContext";
 
 
 export default function DashboardLayout({
@@ -12,28 +16,40 @@ export default function DashboardLayout({
 }>) {
     const router = useRouter();
 
-    useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
+    const [isLoading, setIsLoading] = useState(true);
 
-        // If there is no accessToken or it's invalid, redirect to the sign-in page
+    useEffect(() => {
+        const accessToken = getAccessToken();
+
         if (!accessToken) {
-            router.push("/sign-in");
+            router.replace('/sign-in');  // Redirect to sign-in if not authenticated
         } else {
-            // Validate the token
+            setIsLoading(false)
         }
+
     }, [router]);
 
-    return (
-        <div>
-            <div className="z-50">
-                <DashboardHeader />
-                {/* The header component that appears on all pages */}
-            </div>
+    if (isLoading) {
+        return (
+            <LoadingPage loading={isLoading} />
+        );
+    }
 
-            <section className="w-full drop-shadow-sm">
-                {/* Page contents will appear here */}
-                {children}
-            </section>
-        </div>
+    return (
+        <CompanyProvider>
+            <UserProvider>
+                <div>
+                    <div className="z-50">
+                        <DashboardHeader />
+                        {/* The header component that appears on all pages */}
+                    </div>
+
+                    <section className="w-full drop-shadow-sm">
+                        {/* Page contents will appear here */}
+                        {children}
+                    </section>
+                </div>
+            </UserProvider>
+        </CompanyProvider>
     );
 }

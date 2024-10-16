@@ -8,7 +8,8 @@ import dynamic from "next/dynamic";
 export default function JobDescription({ handleChangeStep, handleActiveSteps }: { handleChangeStep: (step: number) => void, handleActiveSteps: (steps: number) => void }) {
     const { formData, setFormData } = useFormData()!;
     const [error, setError] = useState<string | null>(null); // State for validation error
-    const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }),[]);
+    const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }), []);
+    const [changed, setChanged] = useState(false);
 
     const handleDescriptionChange = (value: string) => {
         setFormData((prev: any) => ({ ...prev, description: value })); // Update context state
@@ -18,6 +19,8 @@ export default function JobDescription({ handleChangeStep, handleActiveSteps }: 
         } else {
             handleActiveSteps(2)
         }
+
+        setChanged(true)
     };
 
     useEffect(() => {
@@ -30,6 +33,7 @@ export default function JobDescription({ handleChangeStep, handleActiveSteps }: 
 
     const handleSave = () => {
         // Validation: Ensure description is not empty
+        console.log(formData.description)
         if (formData.description.trim().replace(/<\/?p>/g, "") === "<br>") {
             setError("Description cannot be empty.");
             return;
@@ -56,7 +60,7 @@ export default function JobDescription({ handleChangeStep, handleActiveSteps }: 
                     onChange={handleDescriptionChange}
                     style={{ height: '10rem', marginBottom: '3rem' }}
                 />
-                {error && <span className="text-red-500 text-sm">{error}</span>}
+                {error && changed && <span className="text-red-500 text-sm">{error}</span>}
             </section>
 
             <section className="flex items-end justify-end">

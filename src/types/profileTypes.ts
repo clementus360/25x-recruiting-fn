@@ -35,23 +35,23 @@ export interface User {
 }
 
 export interface UserUpdateData {
-    firstName: string,
-    lastName: string,
-    title: string,
-    email: string,
-    oldPassword: string,
-    newPassword: string
+    firstName?: string,
+    lastName?: string,
+    title?: string,
+    email?: string,
+    oldPassword?: string,
+    newPassword?: string
 }
 
 export interface CompanyUpdateData {
-    companyName: string;
-    website: string;
-    ownerPhone: string;
-    address: string;
-    city: string;
-    state: string;
-    country: string;
-    zip: string;
+    companyName?: string;
+    website?: string;
+    ownerPhone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zip?: string;
 }
 
 export interface CompanyData {

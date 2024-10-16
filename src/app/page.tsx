@@ -1,22 +1,45 @@
 'use client'
 
+import LoadingPage from "@/components/Dashboard/LoadingPage";
+import { getAccessToken, parseJwt } from "@/data/cookies";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
+  const [isLoading, setIsLoading] = useState(true);
 
-    // If there is no accessToken or it's invalid, redirect to the sign-in page
+  useEffect(() => {
+    const accessToken = getAccessToken();
+
     if (!accessToken) {
-        router.push("/sign-in");
+
+      router.replace('/sign-in');
+
     } else {
-      router.push("/dashboard");// Validate the token
+
+      const tokenPayload = parseJwt(accessToken);
+
+      if (!tokenPayload) {
+        throw new Error("Invalid token. Please try again.");
+      }
+
+      if (tokenPayload.role === 'onboarding') {
+        router.replace('/onboarding');
+      } else {
+        router.replace('/dashboard');
+      }
     }
-}, [router]);
+
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <LoadingPage loading={isLoading} />
+    );
+  }
 
   return (
     <main>

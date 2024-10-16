@@ -3,6 +3,7 @@ import { API_BASE_URL } from "./constants";
 import { useRouter } from "next/navigation";
 import { useError } from "@/context/ErrorContext";
 import { useSuccess } from "@/context/SuccessContext";
+import { removeAccessToken, storeAccessToken } from "./cookies";
 
 const initialFormData: FormDataType = {
   phone: "",
@@ -79,7 +80,7 @@ export async function userSignIn(
       throw new Error(responseData.message || "Failed to Sign-in");
     }
 
-    localStorage.setItem("accessToken", responseData.accessToken);
+    storeAccessToken(responseData.accessToken);
 
     // Call the callback to fetch user data
     onSignInSuccess(); // Trigger fetching user data after login
@@ -129,7 +130,7 @@ export function useLogout() {
   // Logout function
   const handleLogout = () => {
     // Remove access token from localStorage
-    localStorage.removeItem("accessToken");
+    removeAccessToken();
     localStorage.removeItem("formDataTimestamp");
     localStorage.removeItem("formData");
     // Redirect to sign-in page

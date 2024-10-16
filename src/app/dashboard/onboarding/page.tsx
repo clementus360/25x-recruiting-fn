@@ -1,11 +1,9 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import SearchIcon from "@/assets/search.svg";
-import SortIcon from "@/assets/sort.svg";
 import PageSelector from "@/components/PageSelector";
-import { getAllCandidates, getApplicantsForJob } from "@/data/jobsData";
+import { getAllCandidates } from "@/data/jobsData";
 import { useParams } from "next/navigation";
 import { useError } from "@/context/ErrorContext";
 import { useCompany } from "@/context/CompanyContext";
@@ -13,11 +11,14 @@ import OnboardingCandidateCard from "@/components/Dashboard/Onboarding/Onboardin
 import Select from "@/components/Select";
 import { onboardingCandidates } from "@/data/constants";
 import DateSelector from "@/components/DateSelector";
+import { getAccessToken } from "@/data/cookies";
+import TableFilter from "@/components/TableFilter";
 
 export default function DashboardCandidates() {
     const [candidates, setCandidates] = useState([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
+    const [results, setResults] = useState<number>(1);
     const [load, setLoad] = useState(false);
     const { setError } = useError();
     const params = useParams<{ job: string }>();
@@ -35,13 +36,16 @@ export default function DashboardCandidates() {
         fromDate: "",
         toDate: "",
         presetTimeFrame: "",
-        sortingOptions: "ASC", // Default sorting option
+        sortingOptions: "DESC", // Default sorting option
     });
+
+    const [searchTermInput, setSearchTermInput] = useState<string>("");
+
 
     useEffect(() => {
         const fetchCandidates = async () => {
             try {
-                const token = localStorage.getItem("accessToken");
+                const token = getAccessToken();
                 if (!token) {
                     setError("User is not authenticated");
                     return;
@@ -50,6 +54,7 @@ export default function DashboardCandidates() {
                 const data = await getAllCandidates(token, currentPage, filters);
                 setCandidates(data.candidates);
                 setTotalPages(data.pageCount);
+                setResults(data.totalApplicants)
             } catch (error: any) {
                 setError(`An error occured while loading onboarding candidates: ${error.message}`);
             } finally {
@@ -90,10 +95,28 @@ export default function DashboardCandidates() {
             fromDate: "",
             toDate: "",
             presetTimeFrame: "",
-            sortingOptions: "ASC", // Reset to default sorting option
+            sortingOptions: "DESC",
         });
-        setCurrentPage(1); // Optionally reset the page to the first
+        setCurrentPage(1);
     };
+
+    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTermInput(e.target.value);  // Update the search term locally
+    };
+
+    const handleSearchButtonClick = () => {
+        // Trigger the search only when the button is clicked
+        setFilters((prev) => ({
+            ...prev,
+            searchTerm: searchTermInput.trim() || undefined,  // Set the search term in filters
+        }));
+    };
+
+    useEffect(() => {
+        if (searchTermInput === "") {
+            handleSearchButtonClick()
+        }
+    }, [searchTermInput])
 
     return (
         <main className="flex min-h-screen flex-col gap-8 py-12 pb-32 w-full lg:pl-24 lg:pr-16">
@@ -104,69 +127,16 @@ export default function DashboardCandidates() {
 
             <section className="flex flex-col gap-8 w-full bg-white py-8 px-6 lg:px-8 rounded-lg drop-shadow-sm">
                 {/* Filters Section */}
-                <div className="flex items-center justify-between gap-4 p-4 bg-gray-100 rounded-md">
-                    {/* Sort By Filter */}
-                    <div className="flex items-center gap-2">
-                        <Select
-                            options={[
-                                { value: "ASC", label: "Sort: Most Recent" },
-                                { value: "DESC", label: "Sort: Oldest" },
-                            ]}
-                            value={filters.sortingOptions || ""} // Provide a default value
-                            onChange={handleSelectChange("sortingOptions")}
-                        />
-                    </div>
-
-                    {/* Timeframe Filter */}
-                    <div className="flex items-center gap-2">
-                        <Select
-                            options={[
-                                { value: "", label: "All Time" },
-                                { value: "Today", label: "Today" },
-                                { value: "Yesterday", label: "Yesterday" },
-                                { value: "ThisWeek", label: "This Week" },
-                                { value: "LastWeek", label: "Last Week" },
-                                { value: "ThisMonth", label: "This Month" },
-                                { value: "LastMonth", label: "Last Month" },
-                                { value: "ThisYear", label: "This Year" },
-                                { value: "LastYear", label: "Last Year" },
-                            ]}
-                            placeholder="Select Time Range"
-                            value={filters.presetTimeFrame || ""} // Provide default value
-                            onChange={handleSelectChange("presetTimeFrame")}
-                        />
-                    </div>
-
-                    {/* Date Selector Filter */}
-                    <DateSelector
-                        fromDate={filters.fromDate}
-                        toDate={filters.toDate}
-                        onDateChange={handleDateChange}
-                    />
-
-                    {/* Clear Filters Button */}
-                    <button onClick={clearFilters} className="font-bold text-nowrap px-2 text-xs text-black underline">
-                        Clear Filters
-                    </button>
-
-                    <input
-                        style={{
-                            background: `url(${SearchIcon.src})`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: '1rem',
-                            backgroundSize: '1.5rem',
-                        }}
-                        className={`w-full self-start py-2 border-[0.01rem] border-grey pl-12 pr-2 rounded-md text-sm mt-4 lg:mt-0`}
-                        type="search"
-                        name="searchTerm"
-                        id="searchTerm"
-                        onChange={handleFilterChange}
-                        placeholder="Search Candidates"
-                    />
-
-                    {/* Results Count */}
-                    <p className="text-grey text-sm text-nowrap">{onboardingCandidates.length} Result{onboardingCandidates.length > 1 ? 's' : ''}</p>
-                </div>
+                <TableFilter
+                    results={results}
+                    filters={filters}
+                    searchTermInput={searchTermInput}
+                    handleSelectChange={handleSelectChange}
+                    handleDateChange={handleDateChange}
+                    clearFilters={clearFilters}
+                    handleSearchInputChange={handleSearchInputChange}
+                    handleSearchButtonClick={handleSearchButtonClick}
+                />
 
                 {/* Results Display */}
                 <div className="flex flex-col gap-8">

@@ -1,3 +1,5 @@
+import { UserComment } from "./jobTypes";
+
 export interface FilterItem {
     label: string;
     type: 'select' | 'toggle' | 'more';
@@ -29,4 +31,5 @@ export interface Candidate {
     createdDate: string,
     title: string,
     companyName: string
+    applicantComments:  UserComment[]
   }

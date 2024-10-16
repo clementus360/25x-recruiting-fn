@@ -14,14 +14,14 @@ const initialState: FormDataType = {
     hireType: '',
     hiringManager: '',
     search: '',
-    isRemote: true,
+    isRemote: false,
     country: 'United States',
     address: '',
     city: 'Fort Myers',
     state: 'Florida',
     zip: '',
     description: '',
-    status: '',
+    status: 'OPENED',
     visibility: ''
 };
 

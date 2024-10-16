@@ -48,25 +48,27 @@ const OnboardingCandidateCard = ({ candidate }: OnboardingCandidateCardProps) =>
   return (
     <div className="border-[0.1px] rounded-md shadow-sm p-6 bg-gray-50 transition-all duration-300 hover:shadow-md">
       {/* Candidate Summary */}
-      <div onClick={handleToggle}  className={`flex items-center justify-between ${isExpanded ? 'pb-8 border-b' : ''}`}>
-        <div>
-          <h3 className="text-2xl font-semibold text-gray-800">{candidate.name}</h3>
-          <div className="grid grid-cols-2 gap-2 mt-2">
+      <div
+        onClick={handleToggle}
+        className={`flex flex-col sm:flex-row items-start sm:items-center justify-between ${isExpanded ? 'pb-8 border-b' : ''}`}
+      >
+        <div className="w-full sm:w-auto">
+          <h3 className="text-xl sm:text-2xl font-semibold text-gray-800">{candidate.name}</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
             <p className="text-md text-gray-600">{candidate.job}</p>
             <p className="text-sm text-gray-500">{candidate.email}</p>
             <p className="text-sm text-gray-500">{candidate.phone}</p>
             <p className="text-sm text-gray-500">Hired Date: {candidate.hiredDate}</p>
           </div>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 mt-4 sm:mt-0 w-full sm:w-auto justify-between sm:justify-end">
           <span className={`flex items-center ${color}`}>
             <span className="text-xl mr-2">{icon}</span>
             {status}
           </span>
-          
+
           <button
             className="flex items-center text-blue-500 hover:text-blue-700 focus:outline-none focus:underline font-medium text-sm"
-            
           >
             {isExpanded ? (
               <span className="flex items-center">
@@ -113,7 +115,7 @@ const OnboardingCandidateCard = ({ candidate }: OnboardingCandidateCardProps) =>
                   {step.documents.map((doc, docIdx) => (
                     <div
                       key={docIdx}
-                      className={`flex items-center text-sm space-x-2 py-1 px-2 rounded-lg w-full sm:w-auto ${doc.completed? 'cursor-pointer':''}`}
+                      className={`flex items-center text-sm space-x-2 py-1 px-2 rounded-lg w-full sm:w-auto ${doc.completed ? 'cursor-pointer' : ''}`}
                     >
                       <span
                         className={`w-2 h-2 rounded-full ${doc.completed ? 'bg-green-500' : 'bg-yellow-400'}`}

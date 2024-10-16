@@ -31,7 +31,7 @@ export default function FilterSection({
 
   return (
     <div>
-      <div className="flex flex-col gap-3 px-8 py-4">
+      <div className="flex justify-center flex-wrap  lg:justify-start lg:flex-col gap-3 px-8 py-4">
         {/* Job Status Filter */}
         <div className="flex flex-col gap-2">
           <label htmlFor="job-status" className="text-sm">

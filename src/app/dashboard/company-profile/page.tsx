@@ -8,6 +8,9 @@ import UserInfoCard from "@/components/Dashboard/Profile/UserCard";
 import InviteUserOverlay from "@/components/Dashboard/Profile/InviteUserOverlay";
 import { Country, State, City, IState, ICity } from "country-state-city";
 import Select from "@/components/Select";
+import { getAccessToken } from "@/data/cookies";
+import { useSuccess } from "@/context/SuccessContext";
+import { Oval } from "react-loader-spinner";
 
 export default function CompanyProfile() {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
@@ -21,12 +24,34 @@ export default function CompanyProfile() {
     country: "",
     zip: "",
   });
+  const [initialData, setInitialData] = useState({
+    companyName: "",
+    website: "",
+    ownerPhone: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    zip: "",
+  });
   const { setError } = useError();
+  const [errors, setErrors] = useState({
+    companyName: "",
+    website: "",
+    ownerPhone: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+    zip: "",
+  });
   const [loading, setLoading] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   const [users, setUsers] = useState([]);
   const [states, setStates] = useState<IState[]>([]);
   const [cities, setCities] = useState<ICity[]>([]);
   const { companyInfo } = useCompany();
+  const { success, setSuccess } = useSuccess();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -61,29 +86,55 @@ export default function CompanyProfile() {
     setFormData(prevData => ({ ...prevData, state, city: "" }));
   };
 
+  const handleCityChange = (city: string) => {
+    setFormData(prevData => ({ ...prevData, city: city }));
+  };
+
+
+
   const handleSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getAccessToken();
 
     if (!accessToken) {
-      setError("Access token not found.");
+      setError("User not registered.");
+      return;
+    }
+
+    if (!companyInfo) {
+      setError("Could not find company information.");
       return;
     }
 
     setLoading(true);
 
+    // Compare formData with initialData to only update changed fields
+    const updatedFields: Partial<typeof formData> = {};
+    for (const key in formData) {
+      if (formData[key as keyof typeof formData] !== initialData[key as keyof typeof formData]) {
+        updatedFields[key as keyof typeof formData] = formData[key as keyof typeof formData];
+      }
+    }
+
+    if (Object.keys(updatedFields).length === 0) {
+      setError("No changes were made.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await UpdateCompanyProfile(formData, accessToken);
-    } catch (error) {
-      setError("An error occurred while updating company data.");
+      await UpdateCompanyProfile(companyInfo?.id, updatedFields, accessToken);
+      setSuccess("Company profile updated successfully");
+    } catch (error: any) {
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const fetchUsers = async () => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getAccessToken();
 
     if (!companyInfo || !accessToken) {
       return;
@@ -106,7 +157,7 @@ export default function CompanyProfile() {
   };
 
   const fetchCompanyInfo = async () => {
-    const accessToken = localStorage.getItem("accessToken");
+    const accessToken = getAccessToken();
 
     if (!accessToken) {
       return;
@@ -117,7 +168,7 @@ export default function CompanyProfile() {
     try {
       const result = await GetCompanyData(accessToken);
       if (result) {
-        setFormData({
+        const fetchedData = {
           companyName: result.companyName || "",
           website: result.website || "",
           ownerPhone: result.ownerPhone || "",
@@ -125,10 +176,14 @@ export default function CompanyProfile() {
           city: result.city || "",
           state: result.state || "",
           country: result.country || "",
-          zip: result.zip || "",
-        });
+          zip: result.zip || "0000",
+        }
 
+        setFormData(fetchedData);
+        setInitialData(fetchedData)
         handleCountryChange(result.country || "");
+        handleStateChange(result.state || "")
+        handleCityChange(result.city || "")
       } else {
         setError("Failed to fetch company data.");
       }
@@ -159,49 +214,53 @@ export default function CompanyProfile() {
           <label className="flex flex-col gap-1">
             <p>Company Name</p>
             <input
-              className="bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm"
+              className="bg-transparent px-2 py-2 border-[0.01rem] border-grey rounded-md text-sm"
               type="text"
               name="companyName"
               placeholder="Company Name"
               value={formData.companyName}
               onChange={handleChange}
             />
+            {errors.companyName && <p className="text-red-500 text-xs">{errors.companyName}</p>}
           </label>
 
           <label className="flex flex-col gap-1">
             <p>Website</p>
             <input
-              className="bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm"
+              className="bg-transparent px-2 py-2 border-[0.01rem] border-grey rounded-md text-sm"
               type="text"
               name="website"
               placeholder="Website"
               value={formData.website}
               onChange={handleChange}
             />
+            {errors.website && <p className="text-red-500 text-xs">{errors.website}</p>}
           </label>
 
           <label className="flex flex-col gap-1">
             <p>Owner Phone</p>
             <input
-              className="bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm"
+              className="bg-transparent px-2 py-2 border-[0.01rem] border-grey rounded-md text-sm"
               type="text"
               name="ownerPhone"
               placeholder="Owner Phone"
               value={formData.ownerPhone}
               onChange={handleChange}
             />
+            {errors.ownerPhone && <p className="text-red-500 text-xs">{errors.ownerPhone}</p>}
           </label>
 
           <label className="flex flex-col gap-1">
             <p>Address</p>
             <input
-              className="bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm"
+              className="bg-transparent px-2 py-2 border-[0.01rem] border-grey rounded-md text-sm"
               type="text"
               name="address"
               placeholder="Address"
               value={formData.address}
               onChange={handleChange}
             />
+            {errors.address && <p className="text-red-500 text-xs">{errors.address}</p>}
           </label>
 
           <label className="flex flex-col gap-1">
@@ -215,6 +274,7 @@ export default function CompanyProfile() {
               onChange={(value) => handleCountryChange(value)}
               placeholder="Select Country"
             />
+            {errors.country && <p className="text-red-500 text-xs">{errors.country}</p>}
           </label>
 
           <label className="flex flex-col gap-1">
@@ -228,6 +288,7 @@ export default function CompanyProfile() {
               onChange={(value) => handleStateChange(value)}
               placeholder="Select State"
             />
+            {errors.state && <p className="text-red-500 text-xs">{errors.state}</p>}
           </label>
 
           <label className="flex flex-col gap-1">
@@ -238,30 +299,42 @@ export default function CompanyProfile() {
                 label: city.name,
               }))}
               value={formData.city}
-              onChange={(value) => setFormData((prevData) => ({ ...prevData, city: value }))}
+              onChange={(value) => handleCityChange(value)}
               placeholder="Select City"
             />
+            {errors.city && <p className="text-red-500 text-xs">{errors.city}</p>}
           </label>
 
           <label className="flex flex-col gap-1">
             <p>ZIP</p>
             <input
-              className="bg-transparent px-2 py-3 border-[0.01rem] border-grey rounded-md text-sm"
+              className="bg-transparent px-2 py-2 border-[0.01rem] border-grey rounded-md text-sm"
               type="text"
               name="zip"
               placeholder="ZIP Code"
               value={formData.zip}
               onChange={handleChange}
             />
+            {errors.zip && <p className="text-red-500 text-xs">{errors.zip}</p>}
           </label>
 
           <div className="col-span-1 md:col-span-2 flex justify-start">
             <button
+              className="flex gap-2 items-center justify-center bg-primary disabled:cursor-not-allowed disabled:bg-grey hover:bg-opacity-80 cursor-pointer text-white font-semibold py-4 w-full rounded-lg"
               type="submit"
-              className="bg-primary px-8 py-4 text-white text-sm font-semibold rounded-md"
-              disabled={loading}
+              disabled={disabled}
             >
-              {loading ? "Saving..." : "Save Information"}
+              {loading && <Oval
+                visible={true}
+                height="14"
+                width="14"
+                color="#ffffff"
+                secondaryColor="#ffffff"
+                ariaLabel="oval-loading"
+                wrapperStyle={{}}
+                wrapperClass="flex items-center justify-center"
+              />}
+              <p>{loading ? "Saving..." : "Save Information"}</p>
             </button>
           </div>
         </form>

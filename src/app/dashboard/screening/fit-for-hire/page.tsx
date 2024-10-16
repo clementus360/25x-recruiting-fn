@@ -1,29 +1,95 @@
 'use client'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-
-import PhoneIcon from "@/assets/phone.svg"
-import EmailIcon from "@/assets/email.svg"
-
-import SortIcon from "@/assets/sort.svg"
-import NoteIcon from "@/assets/note.svg"
-import TagIcon from "@/assets/tag.svg"
-
+import SearchIcon from "@/assets/search.svg"
+import { NoResultsPage } from "@/components/Dashboard/NoResultsPage";
+import LoadingPage from "@/components/Dashboard/LoadingPage";
 import PageSelector from "@/components/PageSelector";
-import DisplayRating from "@/components/DisplayRating";
-import { NotesOverlay } from "@/components/Dashboard/NotesOverlay";
-import { Job } from "@/types/jobTypes";
+import Select from "@/components/Select";
+import { getScreeningApplicants, moveApplicantToJob } from "@/data/screeningData";
+import { useError } from "@/context/ErrorContext";
+import { ScreeningRow } from "@/components/Dashboard/Screening/ScreeningCard";
+import DateSelector from "@/components/DateSelector";
+import { useSearchParams } from "next/navigation";
+import { JobCardData } from "@/types/jobTypes";
+import { getJobs } from "@/data/jobsData";
+import { useCompany } from "@/context/CompanyContext";
+import ConfirmationModal from "@/components/ConfirmationModal";
+import { useSuccess } from "@/context/SuccessContext";
+import { getAccessToken } from "@/data/cookies";
+import TableFilter from "@/components/TableFilter";
 
 export default function FitForHire() {
+  const [applicants, setApplicants] = useState([]);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-  const [isNotesOverlayOpen, setIsNotesOverlayOpen] = useState<number | null>(null);
-  const [selectedJob, setSelectedJob] = useState<string>("");
-  const [availableJobs, setAvailableJobs] = useState();
-  const [order, setOrder] = useState<string>("DESC");
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
+  const [load, setLoad] = useState(false)
+  const [jobs, setJobs] = useState<JobCardData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [results, setResults] = useState<number>(1);
+  const [searchTermInput, setSearchTermInput] = useState<string>("");
+  const { companyInfo } = useCompany();
+  const searchParams = useSearchParams();
+  const location = searchParams.get("location");
+  const [filters, setFilters] = useState<{
+    searchTerm: string;
+    fromDate: string;
+    toDate: string;
+    presetTimeFrame: string;
+    applicantCategory: "FIT_FOR_HIRE" | "NEED_REVIEW_SARASOTA" | "NOT_FIT_SARASOTA" | "UNCATEGORIZED_SARASOTA" | "NEED_REVIEW_FORT_MERYS" | "NOT_FIT_FORT_MERYS" | "UNCATEGORIZED_FORT_MERYS" | "DO_NOT_HIRE";
+    sortingOptions: "ASC" | "DESC";
+  }>({
+    searchTerm: "",
+    fromDate: "",
+    toDate: "",
+    presetTimeFrame: "",
+    applicantCategory: location === "FortMyers" ? 'NEED_REVIEW_FORT_MERYS' : 'NEED_REVIEW_SARASOTA',
+    sortingOptions: "DESC",
+  });
 
-  const handleOrderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setOrder(e.target.value);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+
+  const handleLoadData = () => {
+    setLoad(!load)
+  }
+
+  const fetchApplicants = async () => {
+    setLoading(true);
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        setError("User is not authenticated");
+        return;
+      }
+
+      // Fetch applicants from API (example function)
+      const data = await getScreeningApplicants(token, currentPage, filters);
+
+      setApplicants(data.Applicants);
+      setTotalPages(data.pageCount);
+      setResults(data.totalApplicants)
+    } catch (error: any) {
+      setError(error.message ? error.message : `An error occured while loading screening applicants`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchApplicants();
+  }, [filters, currentPage, load]);
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTermInput(e.target.value);
+  };
+
+  const handleSearchButtonClick = () => {
+    setFilters({ ...filters, searchTerm: searchTermInput });
   };
 
   const handleSelectRow = (applicantId: number) => {
@@ -34,149 +100,232 @@ export default function FitForHire() {
     );
   };
 
-  // const handleAddNote = (applicantId: number, note: string) => {
-  //   addNoteToApplicant(note, applicantId)
-  // };
-
-  // const handleOpenNotesOverlay = (applicantId: number) => {
-  //   setIsNotesOverlayOpen(applicantId);
-  // };
-
-  // const handleCloseNotesOverlay = () => {
-  //   setIsNotesOverlayOpen(null);
-  // };
-
-  const handleMoveApplicant = (applicantId: number, job: string) => {
-    console.log(`applicant ${applicantId} moved to ${job}`)
-    // Optionally, remove the applicant from the list after moving
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.checked) {
+      setSelectedRows(applicants.map((applicant: any) => applicant.applicantId));
+    } else {
+      setSelectedRows([]);
+    }
   };
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value === "" ? undefined : value,
+    }));
+  };
+
+  const handleChangeCurrentPage = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSelectChange = (name: string) => (value: string) => {
+    handleFilterChange({ target: { name, value } } as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  const handleDateChange = (dates: { fromDate?: string; toDate?: string }) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...dates,
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      searchTerm: "",
+      fromDate: "",
+      toDate: "",
+      presetTimeFrame: "",
+      applicantCategory: "NEED_REVIEW_FORT_MERYS",
+      sortingOptions: "DESC",
+    });
+    setCurrentPage(1); // Optionally reset the page to the first
+  };
+
+  const handleMoveMultipleApplicants = (jobId: string) => {
+    if (selectedRows.length === 0) {
+      alert("No applicants selected.");
+      return;
+    }
+
+    // Trigger the modal instead of using window.confirm
+    setSelectedJobId(jobId);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmMove = async () => {
+    console.log(selectedJobId)
+    if (!selectedJobId) return;
+
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        setError("User is not authenticated");
+        return;
+      }
+
+      // Call the moveApplicantToJob function
+      const responseMessage = await moveApplicantToJob(selectedJobId, selectedRows, token);
+
+      setSuccess("Applicants moved to job successfully")
+      setSelectedJobId(null)
+      setSelectedRows([])
+      fetchApplicants(); // Reload applicants if needed
+    } catch (error: any) {
+      setError(error.message || "An error occurred while moving applicants");
+    } finally {
+      setSelectedJobId(null)
+      setIsModalOpen(false); // Close modal after confirming
+    }
+  };
+
+  const handleCancelMove = () => {
+    setIsModalOpen(false); // Close modal on cancel
+  };
+
+
+  const fetchJobs = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const companyId = companyInfo?.id; // Replace with the actual company ID
+      const token = getAccessToken(); // Replace with the actual token
+
+      if (!companyId || !token) {
+        return;
+      }
+
+      const jobsData = await getJobs(companyId, token, currentPage);
+      setJobs(jobsData.jobs);
+
+      setTotalPages(jobsData.pageCount)
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  useEffect(() => {
+    if (searchTermInput === "") {
+      handleSearchButtonClick()
+    }
+  }, [searchTermInput])
+
+  useEffect(() => {
+    if (location === "FortMyers") {
+      setFilters((prev) => ({
+        ...prev,
+        applicantCategory: "NEED_REVIEW_FORT_MERYS",
+      }));
+    } else if (location === "Sarasota") {
+      setFilters((prev) => ({
+        ...prev,
+        applicantCategory: "NEED_REVIEW_SARASOTA",
+      }));
+    }
+  }, [searchParams])
 
   return (
     <section className="flex flex-col gap-4 px-8 overflow-x-scroll">
-      <div className="text-sm flex items-center justify-between lg:justify-end gap-8">
-        <div className="flex gap-4">
-          <div className="flex gap-2">
-            <Image src={SortIcon} alt={"sort"} className="w-6 h-6" />
-            <p className="font-bold">Sort by</p>
-          </div>
-          <select onChange={handleOrderChange} name="sort" id="sort" className="bg-none text-primary">
-            <option value="DESC">Date: Most recent</option>
-            <option value="ASC">Date: Oldest</option>
-          </select>
-        </div>
-        <p className="text-grey lg:block">{10} Results</p>
-      </div>
+      {/* Filters Section */}
+      <TableFilter
+        results={results}
+        filters={filters}
+        searchTermInput={searchTermInput}
+        handleSelectChange={handleSelectChange}
+        handleDateChange={handleDateChange}
+        clearFilters={clearFilters}
+        handleSearchInputChange={handleSearchInputChange}
+        handleSearchButtonClick={handleSearchButtonClick}
+      />
 
-      <table className="text-center">
-        <thead className="bg-gray-300">
-          <tr>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-              <input type="checkbox" />
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-              First Name
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-              Last Name
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-              Email
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-              Phone Number
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-              Location
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-              Rating
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-
-            </th>
-            <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
-
-            </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {/* {getApplicantsFitForHire().map((applicant, idx) => (
-            <tr className="">
-              <td className="px-6 py-4 align-middle whitespace-nowrap">
+      <div className="w-full overflow-x-scroll lg:overflow-x-visible">
+        <table className="relative text-center h-max w-full">
+          <thead className="bg-gray-300">
+            <tr>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
                 <input
                   type="checkbox"
-                  checked={selectedRows.includes(applicant.applicantId)}
-                  onChange={() => handleSelectRow(applicant.applicantId)}
+                  onChange={handleSelectAll}
+                  checked={selectedRows.length === applicants.length && applicants.length > 0}
                 />
-              </td>
-
-              <td className="px-6 py-4 align-middle whitespace-nowrap text-sm font-bold text-gray-900">
-                {applicant.firstName}
-              </td>
-              <td className="px-6 py-4 align-middle whitespace-nowrap text-sm font-bold text-gray-900">
-                {applicant.lastName}
-              </td>
-              <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <Image src={EmailIcon} alt={"sort"} className="w-3 h-3" />
-                  <p>{applicant.email}</p>
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
+                Name
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
+                Applied Date
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
+                source
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
+                Rating
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
+                Notes
+              </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
+                <div className={`${selectedRows.length > 1 ? 'block' : 'hidden'}`}>
+                  <Select
+                    options={jobs.map((job: JobCardData) => ({
+                      value: job.id.toString(),
+                      label: job.title,
+                    }))}
+                    value={""}
+                    placeholder="Move all to"
+                    onChange={(value) => handleMoveMultipleApplicants(value)} // Trigger the move function
+                    className="bg-primary text-white rounded-lg py-2"
+                  />
                 </div>
-              </td>
-              <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  <Image src={PhoneIcon} alt={"sort"} className="w-3 h-3" />
-                  <p>{applicant.phoneNumber}</p>
-                </div>
-              </td>
-              <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
-                {applicant.city + ', ' + applicant.state}
-              </td>
-              <td className="px-6 py-4 align-middle whitespace-nowrap text-sm text-gray-500">
-                <DisplayRating rate={applicant.rate} />
-              </td>
+              </th>
+            </tr>
+          </thead>
 
-              <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                <button onClick={() => handleOpenNotesOverlay(applicant.applicantId)}>
-                  <Image src={NoteIcon} alt={"note"} className="w-8 h-8" />
-                </button>
-              </td>
-
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <div className="flex gap-2">
-                  <select
-                    value={selectedJob}
-                    onChange={(e) => handleMoveApplicant(applicant.applicantId, e.target.value)}
-                    className="flex gap-2 items-center bg-primary hover:bg-opacity-90 self-center justify-self-end w-[6rem] max-w-[10rem] truncate px-2 py-2 text-white text-xs font-semibold rounded-md"
-                  >
-                    <option value="" disabled>Move to</option>
-                    {jobs.map((job, index) => (
-                      <option key={index} value={job.jobTitle}>
-                        {job.jobTitle}
-                      </option>
-                    ))}
-                  </select>
-
-                </div>
+          <tbody className={`relative fade-in ${!loading ? "loaded" : ""}`}>
+            <tr>
+              <td colSpan={10} className="h-full">
+                <LoadingPage loading={loading} />
               </td>
             </tr>
-          ))} */}
-        </tbody>
 
+            {!loading && applicants.length <= 0 &&
+              <tr>
+                <td colSpan={10} className="h-full">
+                  <NoResultsPage />
+                </td>
+              </tr>
+            }
+            {applicants.map((applicant: any) => (
+              <ScreeningRow
+                key={applicant.applicantId}
+                applicant={applicant}
+                page={currentPage}
+                selectedRows={selectedRows}
+                handleSelectRow={handleSelectRow}
+                handleLoad={handleLoadData}
+                jobs={jobs}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      </table>
+      <ConfirmationModal
+        message="Are you sure you want to move the selected applicants?"
+        onConfirm={handleConfirmMove}
+        onCancel={handleCancelMove}
+        isOpen={isModalOpen} // Control modal visibility
+      />
 
-      {/* {isNotesOverlayOpen !== null && (
-        <NotesOverlay
-          notes={applicants.find(a => a.applicantId === isNotesOverlayOpen)?.notes || []}
-          onAddNote={(note) => handleAddNote(isNotesOverlayOpen, note)}
-          onClose={handleCloseNotesOverlay}
-        />
-      )} */}
-
-
-      {/* <PageSelector /> */}
-
+      <PageSelector pageNumber={totalPages} changePage={handleChangeCurrentPage} />
     </section>
   );
 }

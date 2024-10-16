@@ -23,16 +23,7 @@ const UserInfoCard: React.FC<{ user: User }> = ({ user }) => {
 
             {/* Role dropdown column */}
             <div className="min-w-[150px] flex-1">
-                <select
-                    className="bg-transparent text-grey font-light px-4 w-full"
-                    name="role"
-                    value={role}
-                    onChange={handleRoleChange}
-                >
-                    <option value="Admin">Admin</option>
-                    <option value="Hiring Manager">Hiring Manager</option>
-                    <option value="User">User</option>
-                </select>
+                <p className="bg-transparent text-grey font-light px-4 w-full">{role}</p>
             </div>
 
             {/* Email column */}
@@ -48,7 +39,7 @@ const UserInfoCard: React.FC<{ user: User }> = ({ user }) => {
                     Edit Permissions
                 </button> */}
                 <button className="flex gap-2 items-center bg-red-400 self-center justify-self-end h-max w-max px-4 py-2 text-white text-xs font-semibold rounded-md">
-                    Delete User
+                    Deactivate User
                 </button>
             </div>
         </div>
