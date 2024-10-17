@@ -36,7 +36,7 @@ const OverlayModal: React.FC<OverlayModalProps> = ({
     return (
         <div onClick={handleClickOutside} className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
             <div onClick={(e) => e.stopPropagation()} className="flex flex-col gap-8 bg-white p-6 rounded-md shadow-md min-w-[50vw] max-w-3xl h-[90vh] overflow-y-scroll">
-                <div className='flex flex-col items-center justify-center px-8 py-8 bg-lightViolet'>
+                <div className='flex flex-col items-center justify-center px-8 py-8 bg-lightBlue'>
                     <h4 className="text-2xl font-semibold">{step}</h4>
                     <p className='text-grey'>Add {step}</p>
                 </div>

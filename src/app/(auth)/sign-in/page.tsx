@@ -90,7 +90,7 @@ export default function SignIn() {
         fetchCompanyInfo();
       });
       setSuccess("Sign-in successful.");
-      router.push("/dashboard"); // Redirect to dashboard or another page after successful sign-in
+      router.push("/dashboard/jobs"); // Redirect to dashboard or another page after successful sign-in
     } catch (err: any) {
       setError(err.message || "An error occurred during sign-in.");
     } finally {

@@ -29,7 +29,7 @@ export default function Home() {
       if (tokenPayload.role === 'onboarding') {
         router.replace('/onboarding');
       } else {
-        router.replace('/dashboard');
+        router.replace('/dashboard/jobs');
       }
     }
 

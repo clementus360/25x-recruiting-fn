@@ -21,21 +21,21 @@ const StepCard: React.FC<StepCardProps> = ({ step, onClick }) => {
   const getIcon = (stepName: string) => {
     switch (stepName) {
       case 'E-Signature':
-        return <FaPenFancy color='#902C8B' />;
+        return <FaPenFancy color='#1579BE' />;
       case 'Personal Information':
-        return <FaClipboard color='#902C8B' />;
+        return <FaClipboard color='#1579BE' />;
       case 'Direct Deposit':
-        return <FaUniversity color='#902C8B' />;
+        return <FaUniversity color='#1579BE' />;
       case 'Additional Documents':
-        return <FaFileAlt color='#902C8B' />;
+        return <FaFileAlt color='#1579BE' />;
       case 'Test/Certifications':
-        return <FaFileSignature color='#902C8B' />;
+        return <FaFileSignature color='#1579BE' />;
       case 'Tax Withholding':
-        return <FaDollarSign color='#902C8B' />;
+        return <FaDollarSign color='#1579BE' />;
       case 'Employment Eligibility':
-        return <FaCheckCircle color='#902C8B' />;
+        return <FaCheckCircle color='#1579BE' />;
       default:
-        return <FaFile color='#902C8B' />;
+        return <FaFile color='#1579BE' />;
     }
   };
 

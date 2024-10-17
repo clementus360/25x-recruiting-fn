@@ -42,7 +42,7 @@ export default function DashboardCandidates() {
     fromDate: "",
     toDate: "",
     presetTimeFrame: "",
-    sortingOptions: "ASC", // Default sorting option
+    sortingOptions: "DESC",
   });
 
   const [searchTermInput, setSearchTermInput] = useState<string>("");
@@ -125,7 +125,7 @@ export default function DashboardCandidates() {
       fromDate: "",
       toDate: "",
       presetTimeFrame: "",
-      sortingOptions: "ASC", // Reset to default sorting option
+      sortingOptions: "DESC"
     });
     setCurrentPage(1); // Optionally reset the page to the first
   };

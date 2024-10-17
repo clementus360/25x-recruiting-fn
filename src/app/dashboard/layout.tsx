@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import DashboardHeader from "./Header";
-import { getAccessToken } from "@/data/cookies";
+import { getAccessToken, parseJwt } from "@/data/cookies";
 import LoadingPage from "@/components/Dashboard/LoadingPage";
 import { CompanyProvider } from "@/context/CompanyContext";
 import { UserProvider } from "@/context/UserContext";
@@ -22,9 +22,20 @@ export default function DashboardLayout({
         const accessToken = getAccessToken();
 
         if (!accessToken) {
-            router.replace('/sign-in');  // Redirect to sign-in if not authenticated
+            router.replace('/sign-in');
         } else {
-            setIsLoading(false)
+            const tokenPayload = parseJwt(accessToken);
+
+            if (!tokenPayload) {
+                throw new Error("Invalid token. Please try again.");
+            }
+
+            if (tokenPayload.role === 'onboarding' || !tokenPayload.role) {
+                router.push("/onboarding")
+            } else {
+                setIsLoading(false)
+            }
+
         }
 
     }, [router]);

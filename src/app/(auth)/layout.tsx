@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 
-import AuthImage from "@/assets/vecteezy_caregiver-for-an-elderly-woman-weekly-check-ups-at-the_22171076.jpg"
-
 import Logo from "@/assets/logo_1@4x.png"
 
 import { useRouter } from "next/navigation";
@@ -26,7 +24,7 @@ export default function AuthLayout({
 
         // If there is no accessToken or it's invalid, redirect to the sign-in page
         if (accessToken) {
-            router.push("/dashboard");
+            router.push("/dashboard/jobs");
         }
 
     }, [router]);

@@ -462,9 +462,9 @@ export const onboardingSteps = [
     "Personal Information",
     "Direct Deposit",
     "Additional Documents",
-    // "Test/Certifications",
-    // "Tax Withholding",
-    // "Employment Eligibility",
+    "Test/Certifications",
+    "Tax Withholding",
+    "Employment Eligibility",
 ]
 
 export const applicantTestData = {

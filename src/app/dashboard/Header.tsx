@@ -16,7 +16,7 @@ import MenuIcon from "@/assets/menu.svg";
 import { useLogout } from "@/data/auth";
 
 export const navItems = [
-  { name: 'Home', path: undefined },
+  // { name: 'Home', path: undefined },
   { name: 'Screening', path: 'screening' },
   { name: 'Jobs', path: 'jobs' },
   { name: 'Candidates', path: 'candidates' },

@@ -5,7 +5,7 @@ import StepCard from '@/components/Onboarding/StepCard';
 import { onboardingSteps } from '@/data/constants'; // Importing steps from constants
 import OverlayModal from '@/components/Onboarding/StepOverlay';
 import { useRouter } from 'next/navigation';
-import { getAccessToken } from '@/data/cookies';
+import { getAccessToken, parseJwt } from '@/data/cookies';
 import LoadingPage from '@/components/Dashboard/LoadingPage';
 import { useOnboardingLogout } from '@/data/onboarding';
 import { MdLogout } from 'react-icons/md';
@@ -31,8 +31,19 @@ const OnboardingStepsPage: React.FC = () => {
 
         // If there is no accessToken or it's invalid, redirect to the sign-in page
         if (accessToken) {
-            router.push("/onboarding");
-            setIsLoading(false)
+            const tokenPayload = parseJwt(accessToken);
+
+            if (!tokenPayload) {
+                throw new Error("Invalid token. Please try again.");
+            }
+
+            if (tokenPayload.role === 'Admin' || tokenPayload.role === 'User') {
+                router.push("/dashboard/jobs")
+            } else {
+                router.push("/onboarding");
+                setIsLoading(false)
+            }
+
         } else {
             router.push("/onboarding/sign-in");
         }
