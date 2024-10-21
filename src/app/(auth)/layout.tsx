@@ -36,10 +36,11 @@ export default function AuthLayout({
                     <Suspense>
                         <div className="flex flex-col items-center justify-center">
                             <div className="py-12 min-h-screen flex flex-col gap-16 justify-center items-center">
-                                <Image src={Logo} alt={"25x caregiver recruiting logo"} className="w-1/5" />
+                                <div className="flex min-w-1/5 w-full items-center justify-center">
+                                    <Image src={Logo} alt={"25x caregiver recruiting logo"} className="w-3/5 lg:w-1/5" />
+                                </div>
 
-
-                                <section className="w-10/12 lg:w-1/2 drop-shadow-sm">
+                                <section className="w-10/12 lg:w-1/2 lg:min-w-40 drop-shadow-sm transition-all">
                                     {children}
                                 </section>
                             </div>

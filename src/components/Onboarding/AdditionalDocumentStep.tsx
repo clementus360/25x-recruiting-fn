@@ -140,11 +140,11 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
 
             setProfessionalHistory(data)
 
-            setSuccess("Direct deposit saved")
+            setSuccess("Professional History saved")
             handleLoad()
             setStep(2);
         } catch (err: any) {
-            setError(err.message || "Failed to get Additional Info");
+            setError(err.message || "Failed to get Professional History");
         } finally {
             setLoading(false);
         } // Move to user info preview step
@@ -161,11 +161,11 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
             await editReferencesAndEmployment(data, token)
 
             setProfessionalHistory(data)
-            setSuccess("Additional Info updated")
+            setSuccess("Professional History updated")
             handleLoad()
             setStep(2);
         } catch (err: any) {
-            setError(err.message || "Failed to get Additional Info");
+            setError(err.message || "Failed to get Professional History");
         } finally {
             setLoading(false);
         } // Move to user info preview step
@@ -190,10 +190,10 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
 
             await submitReferencesAndEmployment(professionalHistory, token)
 
-            setSuccess("Additional Info submitted successfully");
+            setSuccess("Professional History submitted successfully");
             setStep(4)
         } catch (err: any) {
-            setError(err.message || "Failed to save Additional Info");
+            setError(err.message || "Failed to save Professional History");
         } finally {
             setLoading(false);
         }
