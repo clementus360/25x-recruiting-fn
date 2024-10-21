@@ -105,7 +105,7 @@ export default function UserRegistration() {
             }
 
         } catch (err: any) {
-            setError(`An error occurred while completing the registration: ${err}`);
+            setError(err.message || `An error occurred while completing the registration`);
         } finally {
             setLoading(false);
         }

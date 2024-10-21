@@ -92,7 +92,7 @@ export default function CompanyRegistration() {
             // await registerCompanyOwner({ token, password }); // Pass token and password to the API function
             setSuccess("Registration completed successfully.");
         } catch (err: any) {
-            setError(`An error occurred while completing the registration: ${err}`);
+            setError(err.message || `An error occurred while completing the registration`);
         } finally {
             setLoading(false);
             router.push("/sign-in")

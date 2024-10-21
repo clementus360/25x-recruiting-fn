@@ -27,9 +27,9 @@ export default function SuccessMessage() {
       await sendHireLetter(companyId, applicantId, token)
       setSuccess("Hire letter sent successfully")
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending hire letter:", error);
-      setError("Failed to send hire letter")
+      setError(error.message || "Failed to send hire letter")
     }
   };
 

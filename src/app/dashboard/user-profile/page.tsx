@@ -106,7 +106,7 @@ export default function UserProfile() {
       setInitialData({ ...formData });
 
     } catch (err: any) {
-      setError(`Error updating user profile: ${err}`);
+      setError(err.message || `Error updating user profile`);
     }
   };
 

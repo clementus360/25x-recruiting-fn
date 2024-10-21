@@ -4,10 +4,10 @@ import { useError } from '@/context/ErrorContext';
 import { getAccessToken } from '@/data/cookies';
 import { getEmergencyContacts } from '@/data/onboarding';
 import { OnboardingEmergencyContacts } from '@/types/onboardingTypes';
+import { Oval } from 'react-loader-spinner';
 
-export default function UserInformationReview({ onClose, onNext, documentStatus, handleEmergencyContactSubmit, handleChangeStep }: { onClose: () => void, onNext: () => void, documentStatus: string, handleEmergencyContactSubmit: () => void, handleChangeStep: (step: number) => void }) {
+export default function UserInformationReview({ onClose, onNext, documentStatus, handleEmergencyContactSubmit, handleChangeStep, loading }: { onClose: () => void, onNext: () => void, documentStatus: string, handleEmergencyContactSubmit: () => void, handleChangeStep: (step: number) => void, loading: boolean }) {
     const { setError } = useError();
-    const [loading, setLoading] = useState(false);
     const [agreed, setAgreed] = useState<boolean>(false);
     const [emergencyContacts, setEmergencyContacts] = useState<OnboardingEmergencyContacts>({
         firstName: '',
@@ -32,8 +32,6 @@ export default function UserInformationReview({ onClose, onNext, documentStatus,
 
         } catch (err: any) {
             setError(err.message || "Failed to get personal information");
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -83,10 +81,20 @@ export default function UserInformationReview({ onClose, onNext, documentStatus,
                         :
                         <button
                             onClick={handleEmergencyContactSubmit}
-                            className={`bg-primary text-white px-3 py-2 rounded-md ${!agreed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`flex gap-2 items-center justify-center bg-primary text-white px-3 py-2 rounded-md ${!agreed || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={!agreed}
                         >
-                            Submit
+                            {loading && <Oval
+                                visible={true}
+                                height="14"
+                                width="14"
+                                color="#ffffff"
+                                secondaryColor="#ffffff"
+                                ariaLabel="oval-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="flex items-center justify-center"
+                            />}
+                            <p>{loading ? "Submitting..." : "Submit"}</p>
                         </button>
                     }
                 </div>

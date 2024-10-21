@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from '@/components/Select'; // Adjust the path
 import { DirectDeposit } from '@/types/onboardingTypes';
+import { Oval } from 'react-loader-spinner';
 
 interface DirectDepositFormProps {
   directDeposit: DirectDeposit,
@@ -10,9 +11,10 @@ interface DirectDepositFormProps {
   onEdit: (formData: DirectDeposit) => void;
   onNext: () => void;
   onClose: () => void;
+  loading: boolean
 }
 
-const DirectDepositForm: React.FC<DirectDepositFormProps> = ({ directDeposit, onSave, onEdit, onNext, onClose }) => {
+const DirectDepositForm: React.FC<DirectDepositFormProps> = ({ directDeposit, onSave, onEdit, onNext, onClose, loading }) => {
   const [formData, setFormData] = useState<DirectDeposit>(directDeposit);
   const [initialData, setInitialData] = useState<DirectDeposit>(directDeposit);
   const [errors, setErrors] = useState({
@@ -199,10 +201,20 @@ const DirectDepositForm: React.FC<DirectDepositFormProps> = ({ directDeposit, on
         </button>
         <button
           onClick={handleNext}
-          className={`bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length ? 'opacity-50' : ''}`}
+          className={`flex gap-2 items-center justify-center bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length || loading ? 'opacity-50' : ''}`}
           disabled={Object.keys(errors).length > 0}
         >
-          Next
+          {loading && <Oval
+            visible={true}
+            height="14"
+            width="14"
+            color="#ffffff"
+            secondaryColor="#ffffff"
+            ariaLabel="oval-loading"
+            wrapperStyle={{}}
+            wrapperClass="flex items-center justify-center"
+          />}
+          <p>{loading ? "Saving..." : "Next"}</p>
         </button>
       </div>
     </form>

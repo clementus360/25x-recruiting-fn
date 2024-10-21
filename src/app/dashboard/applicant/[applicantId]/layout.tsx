@@ -67,7 +67,7 @@ export default function ApplicantLayout({
 
             setJob(data);
         } catch (error: any) {
-            setError(`Error Fetching Job Info: ${error.message}`);
+            setError(error.message ||`Error Fetching Job Info`);
         }
     };
 
@@ -88,7 +88,7 @@ export default function ApplicantLayout({
 
             setApplicant(data);
         } catch (error: any) {
-            setError(`Error Fetching Applicant Info: ${error.message}`);
+            setError(error.message || `Error Fetching Applicant Info`);
         }
     }
 
@@ -102,7 +102,7 @@ export default function ApplicantLayout({
             const data = await getCommentsForApplicant(Number(applicantId), token);
             setNotes(data);
         } catch (error: any) {
-            setError(`Error fetching applicants: ${error.message}`);
+            setError(error.message || `Error fetching applicants`);
         }
 
         setLoadNotes(false)
@@ -123,7 +123,7 @@ export default function ApplicantLayout({
             setSuccess("Applicant Moved to candidate successfully")
             handleLoad();
         } catch (error: any) {
-            setError(`Error moving applicant to candidates`);
+            setError(error.message || `Error moving applicant to candidates`);
         }
     };
 
@@ -145,7 +145,7 @@ export default function ApplicantLayout({
             setSuccess("Applicant denied successfully")
             handleLoad();
         } catch (error: any) {
-            setError(`Error declining applicant: ${error.message}`);
+            setError(error.message ||`Error declining applicant`);
         } finally {
             setIsDeclineOverlayOpen(false);
         }
@@ -172,7 +172,7 @@ export default function ApplicantLayout({
             setSuccess("Candidate hired successfully", Number(companyId), applicant.id)
             handleLoad()
         } catch (error: any) {
-            setError(`Error moving candidate to hires`);
+            setError(error.message || `Error moving candidate to hires`);
         }
     }
 

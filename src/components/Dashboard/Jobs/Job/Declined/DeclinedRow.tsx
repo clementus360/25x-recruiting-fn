@@ -34,7 +34,7 @@ export const DeclinedRow: React.FC<DeclinedRowProps> = ({
             setSuccess("Moved to candidate successfully");
             handleLoad();
         } catch (error: any) {
-            setError(`Error moving declined to candidates`);
+            setError(error.message || `Error moving declined to candidates`);
         }
     };
 

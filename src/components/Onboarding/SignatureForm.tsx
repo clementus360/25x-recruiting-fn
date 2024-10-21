@@ -41,7 +41,7 @@ const SignatureForm = ({ onClose }: { onClose: () => void }) => {
             if (!token) {
                 return;
             }
-            
+
             const signatureData = signaturePadRef.current?.toDataURL(); // get the base64 signature
             if (!signatureData) {
                 setError("No signature detected.");

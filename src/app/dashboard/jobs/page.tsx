@@ -66,7 +66,7 @@ export default function DashboardJobs() {
 
         setTotalPages(jobsData.pageCount)
       } catch (err:any) {
-        setError(err.message);
+        setError(err.message || "Failed to get jobs");
       } finally {
         setLoading(false);
       }
@@ -95,7 +95,7 @@ export default function DashboardJobs() {
         setHiringManagers(data);
         setTotalPages(data.pageCount);
       } catch (error: any) {
-        setError(`Failed to load hiring managers`);
+        setError(error.message || `Failed to load hiring managers`);
       }
     };
 

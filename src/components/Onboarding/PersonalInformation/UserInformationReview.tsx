@@ -5,12 +5,12 @@ import { getAccessToken } from '@/data/cookies';
 import { getPersonalInfo } from '@/data/onboarding';
 import { useError } from '@/context/ErrorContext';
 import { useSuccess } from '@/context/SuccessContext';
+import { Oval } from 'react-loader-spinner';
 
-export default function UserInformationReview({ handleUserInfoSubmit, onNext, documentStatus, handleChangeStep, onClose }: { onClose: () => void, onNext: () => void, documentStatus: string, handleUserInfoSubmit: () => void, handleChangeStep: (step: number) => void }) {
+export default function UserInformationReview({ handleUserInfoSubmit, onNext, documentStatus, handleChangeStep, onClose, loading }: { onClose: () => void, onNext: () => void, documentStatus: string, handleUserInfoSubmit: () => void, handleChangeStep: (step: number) => void, loading: boolean }) {
     const [agreed, setAgreed] = useState<boolean>(false);
     const { setError } = useError();
     const { setSuccess } = useSuccess();
-    const [loading, setLoading] = useState(false);
     const [userInfo, setUserInfo] = useState<OnboardingPersonalInfo>({
         firstName: '',
         lastName: '',
@@ -45,8 +45,6 @@ export default function UserInformationReview({ handleUserInfoSubmit, onNext, do
 
         } catch (err: any) {
             setError(err.message || "Failed to get personal information");
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -109,10 +107,20 @@ export default function UserInformationReview({ handleUserInfoSubmit, onNext, do
                         :
                         <button
                             onClick={handleUserInfoSubmit}
-                            className={`bg-primary text-white px-3 py-2 rounded-md ${!agreed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`flex gap-2 items-center justify-center bg-primary text-white px-3 py-2 rounded-md ${!agreed || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={!agreed}
                         >
-                            Submit
+                            {loading && <Oval
+                                visible={true}
+                                height="14"
+                                width="14"
+                                color="#ffffff"
+                                secondaryColor="#ffffff"
+                                ariaLabel="oval-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="flex items-center justify-center"
+                            />}
+                            <p>{loading ? "Submitting..." : "Submit"}</p>
                         </button>
                     }
                 </div>

@@ -44,7 +44,7 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
             setSuccess("Candidate hired successfully", Number(companyId), applicant.applicantId)
             handleLoad()
         } catch (error: any) {
-            setError(`Error moving candidate to hires`);
+            setError(error.message || `Error moving candidate to hires`);
         }
     }
 
@@ -60,7 +60,7 @@ export const CandidateRow: React.FC<ApplicantRowProps> = ({
             setSuccess("Applicant denied successfully")
             handleLoad();
         } catch (error: any) {
-            setError(`Error declining applicant`);
+            setError(error.message || `Error declining applicant`);
         } finally {
             setIsDeclineOverlayOpen(false);
         }

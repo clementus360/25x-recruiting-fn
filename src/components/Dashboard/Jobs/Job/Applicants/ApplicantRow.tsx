@@ -35,7 +35,7 @@ export const ApplicantRow: React.FC<ApplicantRowProps> = ({
             setSuccess("Applicant Moved to candidate successfully")
             handleLoad();
         } catch (error: any) {
-            setError(`Error moving applicant to candidates`);
+            setError(error.message || `Error moving applicant to candidates`);
         }
     };
 
@@ -52,7 +52,7 @@ export const ApplicantRow: React.FC<ApplicantRowProps> = ({
             setSuccess("Applicant denied successfully")
             handleLoad();
         } catch (error: any) {
-            setError(`Error declining applicant: ${error.message}`);
+            setError(error.message || `Error declining applicant`);
         } finally {
             setIsDeclineOverlayOpen(false);
         }

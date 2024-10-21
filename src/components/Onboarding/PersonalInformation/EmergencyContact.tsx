@@ -1,5 +1,6 @@
 import { OnboardingEmergencyContacts } from '@/types/onboardingTypes';
 import React, { useState, useEffect } from 'react';
+import { Oval } from 'react-loader-spinner';
 
 interface EmergencyContactFormProps {
   emergencyContacts: OnboardingEmergencyContacts,
@@ -7,9 +8,10 @@ interface EmergencyContactFormProps {
   onEdit: (formData: OnboardingEmergencyContacts) => void;
   onNext: () => void;
   onClose: () => void;
+  loading: boolean;
 }
 
-const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({ emergencyContacts, onSave, onEdit, onNext, onClose }) => {
+const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({ emergencyContacts, onSave, onEdit, onNext, onClose, loading }) => {
   const [formData, setFormData] = useState<OnboardingEmergencyContacts>(emergencyContacts);
   const [initialData, setInitialData] = useState<OnboardingEmergencyContacts>(emergencyContacts);
   const [errors, setErrors] = useState({
@@ -165,10 +167,20 @@ const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({ emergencyCo
         </button>
         <button
           type="submit"
-          className={`bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length ? 'opacity-50' : ''}`}
+          className={`flex gap-2 items-center justify-center bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length || loading ? 'opacity-50' : ''}`}
           disabled={Object.keys(errors).length > 0}
         >
-          Next
+          {loading && <Oval
+            visible={true}
+            height="14"
+            width="14"
+            color="#ffffff"
+            secondaryColor="#ffffff"
+            ariaLabel="oval-loading"
+            wrapperStyle={{}}
+            wrapperClass="flex items-center justify-center"
+          />}
+          <p>{loading ? "Saving..." : "Next"}</p>
         </button>
       </div>
     </form>

@@ -4,13 +4,15 @@ import { useError } from '@/context/ErrorContext';
 import { getAccessToken } from '@/data/cookies';
 import { getReferencesAndEmployment } from '@/data/onboarding';
 import { ReferencesAndEmployment } from '@/types/onboardingTypes';
+import { Oval } from 'react-loader-spinner';
 
 interface ProfessionalHistoryReviewProps {
     onClose: () => void;
     onNext: () => void;
     handleProfessionalHistorySubmit: () => void;
     handleChangeStep: (step: number) => void;
-    documentStatus: string
+    documentStatus: string;
+    loading: boolean;
 }
 
 const ProfessionalHistoryReview: React.FC<ProfessionalHistoryReviewProps> = ({
@@ -18,10 +20,10 @@ const ProfessionalHistoryReview: React.FC<ProfessionalHistoryReviewProps> = ({
     onNext,
     handleProfessionalHistorySubmit,
     handleChangeStep,
-    documentStatus
+    documentStatus,
+    loading
 }) => {
     const { setError } = useError();
-    const [loading, setLoading] = useState(false);
     const [agreed, setAgreed] = useState<boolean>(false);
     const [professionalHistory, setProfessionalHistory] = useState<ReferencesAndEmployment>({
         primaryName: '',
@@ -65,7 +67,6 @@ const ProfessionalHistoryReview: React.FC<ProfessionalHistoryReviewProps> = ({
 
     const getProfessionalHistoryInfo = async () => {
         try {
-            setLoading(true);
             const token = getAccessToken();
             if (!token) {
                 return;
@@ -74,8 +75,6 @@ const ProfessionalHistoryReview: React.FC<ProfessionalHistoryReviewProps> = ({
             setProfessionalHistory(professionalHistoryData.directDepositInfo);
         } catch (err: any) {
             setError(err.message || "Failed to get professional history");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -183,10 +182,20 @@ const ProfessionalHistoryReview: React.FC<ProfessionalHistoryReviewProps> = ({
                         :
                         <button
                             onClick={handleProfessionalHistorySubmit}
-                            className={`bg-primary text-white px-3 py-2 rounded-md ${!agreed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`flex gap-2 items-center justify-center bg-primary text-white px-3 py-2 rounded-md ${!agreed || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={!agreed}
                         >
-                            Submit
+                            {loading && <Oval
+                                visible={true}
+                                height="14"
+                                width="14"
+                                color="#ffffff"
+                                secondaryColor="#ffffff"
+                                ariaLabel="oval-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="flex items-center justify-center"
+                            />}
+                            <p>{loading ? "Submitting..." : "Submit"}</p>
                         </button>
                     }
                 </div>

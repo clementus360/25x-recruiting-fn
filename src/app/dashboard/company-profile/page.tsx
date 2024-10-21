@@ -127,7 +127,7 @@ export default function CompanyProfile() {
       await UpdateCompanyProfile(companyInfo?.id, updatedFields, accessToken);
       setSuccess("Company profile updated successfully");
     } catch (error: any) {
-      setError(error.message);
+      setError(error.message || "Failed to update company profile");
     } finally {
       setLoading(false);
     }
@@ -149,8 +149,8 @@ export default function CompanyProfile() {
       } else {
         setError("Failed to fetch users.");
       }
-    } catch (error) {
-      setError("An error occurred while fetching users.");
+    } catch (error: any) {
+      setError(error.message || "An error occurred while fetching users.");
     } finally {
       setLoading(false);
     }
@@ -187,8 +187,8 @@ export default function CompanyProfile() {
       } else {
         setError("Failed to fetch company data.");
       }
-    } catch (error) {
-      setError("An error occurred while fetching company data.");
+    } catch (error: any) {
+      setError(error.message || "An error occurred while fetching company data.");
     } finally {
       setLoading(false);
     }

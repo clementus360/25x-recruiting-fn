@@ -7,6 +7,8 @@ import { getAccessToken } from '@/data/cookies';
 import { getAdditionalDocument } from '@/data/onboarding';
 import { useError } from '@/context/ErrorContext';
 import { FaCheckCircle } from 'react-icons/fa';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import { Oval } from 'react-loader-spinner';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -18,6 +20,7 @@ interface DocumentSignatureProps {
     handleSubmit: () => void;
     step: number;
     title: string;
+    loading: boolean
 }
 
 const DocumentSignature: React.FC<DocumentSignatureProps> = ({
@@ -27,7 +30,8 @@ const DocumentSignature: React.FC<DocumentSignatureProps> = ({
     handleSubmit,
     step,
     type,
-    title,  // Pass the document title dynamically
+    title,
+    loading,
 }) => {
     const [pdfUrl, setPdfUrl] = useState("")
     const [status, setStatus] = useState("")
@@ -91,7 +95,7 @@ const DocumentSignature: React.FC<DocumentSignatureProps> = ({
                                         pageNumber={index + 1}
                                         className="pdf-page flex items-center justify-center"
                                         renderMode="canvas"
-                                        renderAnnotationLayer={false}
+                                        renderAnnotationLayer={true}  // Enable annotation layer to support links
                                         renderTextLayer={false}
                                     />
                                 ))}
@@ -124,18 +128,39 @@ const DocumentSignature: React.FC<DocumentSignatureProps> = ({
                     {status != "COMPLETED" ?
                         <button
                             onClick={handleSubmit}
-                            className={`bg-primary text-white px-3 py-2 rounded-md ${!agreed ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            disabled={!agreed}
+                            className={`flex gap-2 items-center justify-center bg-primary text-white px-3 py-2 rounded-md ${!agreed || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={!agreed || loading}
                         >
-                            Submit
-                        </button> :
-                        <button
-                            disabled={false}
-                            onClick={onNext}
-                            className={`bg-primary text-white px-3 py-2 rounded-md`}
-                        >
-                            Next
+                            {loading && <Oval
+                                visible={true}
+                                height="14"
+                                width="14"
+                                color="#ffffff"
+                                secondaryColor="#ffffff"
+                                ariaLabel="oval-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="flex items-center justify-center"
+                            />}
+                            <p>{loading ? "Submitting..." : "Submit"}</p>
                         </button>
+                        :
+                        <button
+                        onClick={onNext}
+                        className={`bg-primary text-white px-3 py-2 rounded-md`}
+                        disabled={false}
+                      >
+                        {loading && <Oval
+                          visible={true}
+                          height="14"
+                          width="14"
+                          color="#ffffff"
+                          secondaryColor="#ffffff"
+                          ariaLabel="oval-loading"
+                          wrapperStyle={{}}
+                          wrapperClass="flex items-center justify-center"
+                        />}
+                        <p>{loading ? "Saving..." : "Next"}</p>
+                      </button>
                     }
                 </div>
             </div>

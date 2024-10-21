@@ -202,7 +202,7 @@ export default function FitForHire() {
 
       setTotalPages(jobsData.pageCount)
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Failed to get jobs");
     } finally {
       setLoading(false);
     }

@@ -42,7 +42,7 @@ export default function ApplicantQualificationDocuments() {
 
             setApplicant(data);
         } catch (error: any) {
-            setError(`Error Fetching Applicant Info: ${error.message}`);
+            setError(error.message || `Error Fetching Applicant Info`);
         }
     }
 
@@ -65,7 +65,7 @@ export default function ApplicantQualificationDocuments() {
             setSuccess("Document collection started successfully")
         } catch (error: any) {
             console.log(error)
-            setError(error.message);
+            setError(error.message || "Failed to start document collection");
         }
     }
 

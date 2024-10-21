@@ -66,7 +66,7 @@ export default function DashboardCandidates() {
         setTotalPages(data.pageCount);
         setResults(data.totalApplicants)
       } catch (error: any) {
-        setError(`An error occured while loading candidates`);
+        setError(error.message || `An error occured while loading candidates`);
       } finally {
         setLoading(false)
         setLoad(false); // Reset the load state

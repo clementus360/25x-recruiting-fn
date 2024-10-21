@@ -37,7 +37,7 @@ export default function JobHeader({ job }: { job: Job }) {
             await updateJob(companyInfo?.id, job.id.toString(), newStatus, token)
             setSuccess("Job status updated successfully")
         } catch (error: any) {
-            setError(`Error updating job status`);
+            setError(error.message || `Error updating job status`);
         }
     }
 
@@ -61,7 +61,7 @@ export default function JobHeader({ job }: { job: Job }) {
             await updateJob(companyInfo?.id, job.id.toString(), newVisibility, token)
             setSuccess("Job visibility updated successfully")
         } catch (error: any) {
-            setError(`Error updating job visibility`);
+            setError(error.message || `Error updating job visibility`);
         }
     }
 

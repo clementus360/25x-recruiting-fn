@@ -121,6 +121,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
     }
 
     const handleUserInfoSave = async (data: OnboardingPersonalInfo) => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -142,6 +143,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
     };
 
     const handleUserInfoEdit = async (data: OnboardingPersonalInfo) => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -166,6 +168,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
     }
 
     const handleUserInfoSubmit = async () => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -185,6 +188,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
     };
 
     const handleEmergencyContactSave = async (data: OnboardingEmergencyContacts) => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -206,6 +210,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
     };
 
     const handleEmergencyContactEdit = async (data: OnboardingEmergencyContacts) => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -230,6 +235,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
     };
 
     const handleEmergencyContactSubmit = async () => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -259,6 +265,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
                         onEdit={handleUserInfoEdit}
                         onNext={handleUserInfoNext}
                         onClose={onClose}
+                        loading={loading}
                     />
                 </div>
             )}
@@ -273,6 +280,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
                         handleChangeStep(3)
                         handleLoad()
                     }}
+                    loading={loading}
                 />
             )}
 
@@ -285,6 +293,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
                         onEdit={handleEmergencyContactEdit}
                         onNext={handleEmergencyContactNext}
                         onClose={onClose}
+                        loading={loading}
                     />
                 </div>
             )}
@@ -296,6 +305,7 @@ const PersonalInformationProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleEmergencyContactSubmit={handleEmergencyContactSubmit}
                     handleChangeStep={handleChangeStep}
                     onNext={() => onClose()}
+                    loading={loading}
                 />
             )}
 

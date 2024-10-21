@@ -68,6 +68,7 @@ const DirectDepositProcess = ({ onClose }: { onClose: () => void }) => {
   }, [load])
 
   const handleDirectDepositSave = async (data: DirectDeposit) => {
+    setLoading(true)
     try {
       const token = getAccessToken();
       if (!token) {
@@ -85,10 +86,11 @@ const DirectDepositProcess = ({ onClose }: { onClose: () => void }) => {
       setError(err.message || "Failed to get direct deposit");
     } finally {
       setLoading(false);
-    } // Move to user info preview step
+    }
   };
 
   const handleDirectDepositEdit = async (data: DirectDeposit) => {
+    setLoading(true)
     try {
       const token = getAccessToken();
       if (!token) {
@@ -105,7 +107,7 @@ const DirectDepositProcess = ({ onClose }: { onClose: () => void }) => {
       setError(err.message || "Failed to get direct deposit");
     } finally {
       setLoading(false);
-    } // Move to user info preview step
+    }
   };
 
   const handleDirectDepositNext = () => {
@@ -113,6 +115,7 @@ const DirectDepositProcess = ({ onClose }: { onClose: () => void }) => {
   }
 
   const handleDirectDepositSubmit = async () => {
+    setLoading(true)
     try {
       const token = getAccessToken();
       if (!token) {
@@ -140,6 +143,7 @@ const DirectDepositProcess = ({ onClose }: { onClose: () => void }) => {
           onEdit={handleDirectDepositEdit}
           onNext={handleDirectDepositNext}
           onClose={onClose}
+          loading={loading}
         />
       )}
 
@@ -152,7 +156,8 @@ const DirectDepositProcess = ({ onClose }: { onClose: () => void }) => {
           onNext={() => {
             onClose()
             handleLoad()
-        }}
+          }}
+          loading={loading}
         />
       )}
 

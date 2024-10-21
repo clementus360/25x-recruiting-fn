@@ -36,7 +36,7 @@ export const HireRow: React.FC<HireRowProps> = ({
             setSuccess("Moved to candidates successfully");
             handleLoad();
         } catch (error: any) {
-            setError(`Error moving applicant To candidates`);
+            setError(error.message || `Error moving applicant To candidates`);
         }
     };
 

@@ -115,3 +115,24 @@ export interface DBSingleApplicant {
   notes: UserComment[]
 }
 
+export interface SpecificSingleApplicant {
+  id: number,
+  firstName: string,
+  lastName: string,
+  createdDate: string,
+  status:  "APPLICANT" | "CANDIDATE" | "HIRED" | "DECLINED",
+  source: string,
+  resume: string,
+  email: string,
+  phone: string,
+  address: string
+  city: string,
+  country: string,
+  state: string,
+  zipCode: number,
+  referredBy: string,
+  coverLetter: string,
+  rating: number,
+  notes: UserComment[]
+}
+

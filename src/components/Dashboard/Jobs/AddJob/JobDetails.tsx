@@ -263,8 +263,8 @@ export default function JobDetails({ handleChangeStep, handleActiveSteps }: { ha
                 } else {
                     setError("Failed to fetch users.");
                 }
-            } catch (error) {
-                setError("An error occurred while fetching Users.");
+            } catch (error: any) {
+                setError(error.message || "An error occurred while fetching Users.");
             } finally {
                 setLoading(false);
             }

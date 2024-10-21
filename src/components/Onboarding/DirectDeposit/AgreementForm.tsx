@@ -6,18 +6,19 @@ import { useError } from '@/context/ErrorContext';
 import { DirectDeposit } from '@/types/onboardingTypes';
 import { getAccessToken } from '@/data/cookies';
 import { getDirectDeposit } from '@/data/onboarding';
+import { Oval } from 'react-loader-spinner';
 
 interface ReviewFormProps {
-    handleChangeStep: (step: number) => void; // Callback to return to the form for editing
-    onNext: () => void, 
+    handleChangeStep: (step: number) => void;
+    onNext: () => void,
     documentStatus: string,
-    handleDirectDepositSubmit: () => void; // Callback to handle submission
-    onClose: () => void;  // Callback to close the form
+    handleDirectDepositSubmit: () => void;
+    onClose: () => void;
+    loading: boolean
 }
 
-const ReviewForm: React.FC<ReviewFormProps> = ({ onNext, documentStatus, handleChangeStep, handleDirectDepositSubmit, onClose }) => {
+const ReviewForm: React.FC<ReviewFormProps> = ({ onNext, documentStatus, handleChangeStep, handleDirectDepositSubmit, onClose, loading }) => {
     const { setError } = useError();
-    const [loading, setLoading] = useState(false);
     const [agreed, setAgreed] = useState<boolean>(false);
     const [directDeposit, setDirectDeposit] = useState<DirectDeposit>({
         financialInstitution: '',
@@ -29,25 +30,23 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onNext, documentStatus, handleC
 
     const getDirectDepositInfo = async () => {
         try {
-          const token = getAccessToken();
-          if (!token) {
-            return;
-          }
-    
-          const directDepositInformation = await getDirectDeposit(token)
-    
-          setDirectDeposit(directDepositInformation.directDepositInfo)
-    
+            const token = getAccessToken();
+            if (!token) {
+                return;
+            }
+
+            const directDepositInformation = await getDirectDeposit(token)
+
+            setDirectDeposit(directDepositInformation.directDepositInfo)
+
         } catch (err: any) {
-          setError(err.message || "Failed to get direct deposit information");
-        } finally {
-          setLoading(false);
+            setError(err.message || "Failed to get direct deposit information");
         }
-      }
-    
-      useEffect(() => {
+    }
+
+    useEffect(() => {
         getDirectDepositInfo()
-      }, [])
+    }, [])
 
     const handleAgreed = (value: boolean) => setAgreed(value);
 
@@ -79,7 +78,7 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onNext, documentStatus, handleC
                             <p className="text-gray-700">{directDeposit.accountType}</p>
                         </div>
                     </div>
-                    
+
                     <button className=' border-[0.1rem] border-primary py-2 rounded-md' onClick={() => handleChangeStep(3)}>Preview document</button>
 
                 </div>
@@ -136,10 +135,20 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onNext, documentStatus, handleC
                         :
                         <button
                             onClick={handleDirectDepositSubmit}
-                            className={`bg-primary text-white px-3 py-2 rounded-md ${!agreed ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`flex gap-2 items-center justify-center bg-primary text-white px-3 py-2 rounded-md ${!agreed || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={!agreed}
                         >
-                            Submit
+                            {loading && <Oval
+                                visible={true}
+                                height="14"
+                                width="14"
+                                color="#ffffff"
+                                secondaryColor="#ffffff"
+                                ariaLabel="oval-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="flex items-center justify-center"
+                            />}
+                            <p>{loading ? "Submitting..." : "Submit"}</p>
                         </button>
                     }
                 </div>

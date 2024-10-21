@@ -44,8 +44,8 @@ export default function Admin() {
                 } else {
                     setError("Failed to fetch companies.");
                 }
-            } catch (error) {
-                setError("An error occurred while fetching companies.");
+            } catch (error: any) {
+                setError(error.message || "An error occurred while fetching companies.");
             } finally {
                 setLoading(false);
             }
@@ -70,8 +70,8 @@ export default function Admin() {
             );
 
             setSuccess(`Company with id:${id} approved successfully`)
-        } catch (error) {
-            setError("An error occurred while approving the company.");
+        } catch (error: any) {
+            setError(error.message || "An error occurred while approving the company.");
         }
     };
 

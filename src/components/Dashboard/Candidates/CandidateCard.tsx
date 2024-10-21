@@ -41,7 +41,7 @@ export default function CandidateCard({
                 const data = await getCommentsForApplicant(candidate.id, token);
                 setNotes(data);
             } catch (error: any) {
-                setError(`An error occured while loading applicant notes`);
+                setError(error.message || `An error occured while loading applicant notes`);
             }
 
             setLoadNotes(false)

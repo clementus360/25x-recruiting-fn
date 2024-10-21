@@ -1,6 +1,7 @@
 import Select from '@/components/Select';
 import { OnboardingPersonalInfo, OnboardingPersonalInfoForm } from '@/types/onboardingTypes';
 import React, { useEffect, useState } from 'react';
+import { Oval } from 'react-loader-spinner';
 
 interface UserInfoFormProps {
   userInfo: OnboardingPersonalInfo,
@@ -8,9 +9,10 @@ interface UserInfoFormProps {
   onEdit: (formData: OnboardingPersonalInfo) => void;
   onNext: () => void;
   onClose: () => void;
+  loading: boolean
 }
 
-const UserInfoForm: React.FC<UserInfoFormProps> = ({ userInfo, onSave, onEdit, onNext, onClose }) => {
+const UserInfoForm: React.FC<UserInfoFormProps> = ({ userInfo, onSave, onEdit, onNext, onClose, loading }) => {
   const [confirmSsn, setConfirmSsn] = useState("")
   const [initialData, setInitialData] = useState<OnboardingPersonalInfo>(userInfo);
   const [formData, setFormData] = useState<OnboardingPersonalInfo>(userInfo);
@@ -87,6 +89,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ userInfo, onSave, onEdit, o
 
     // Example validation for required fields
     if (!formData.firstName) newErrors.firstName = 'First Name is required';
+    if (!formData.preferedName) newErrors.preferedName = 'Preferred Name is required';
     if (!formData.lastName) newErrors.lastName = 'Last Name is required';
     if (!formData.email) newErrors.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Invalid email format';
@@ -173,8 +176,10 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ userInfo, onSave, onEdit, o
             placeholder="Preferred Name"
             value={formData?.preferedName}
             onChange={handleChange}
-            className="border px-2 py-1 rounded-md w-full bg-lightBlue"
+            className={`border px-2 py-1 rounded-md w-full bg-lightBlue ${errors?.preferedName ? 'border-red-500' : ''}`}
           />
+          {showError('preferedName') && errors?.preferedName && <span className="text-red-500 text-sm">{errors?.preferedName}</span>}
+
         </div>
 
         <div className="flex gap-4 justify-between">
@@ -238,7 +243,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ userInfo, onSave, onEdit, o
 
           <div className='flex flex-col'>
             <label htmlFor="streetLine2">
-              <p className='text-sm font-semibold'>Street Line 2</p>
+              <p className='text-sm font-semibold'>Country</p>
             </label>
             <input
               name="country"
@@ -391,10 +396,20 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ userInfo, onSave, onEdit, o
         </button>
         <button
           type="submit"
-          className={`bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length ? 'opacity-50' : ''}`}
+          className={`flex gap-2 items-center justify-center bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length || loading ? 'opacity-50' : ''}`}
           disabled={Object.keys(errors).length > 0}
         >
-          Next
+          {loading && <Oval
+            visible={true}
+            height="14"
+            width="14"
+            color="#ffffff"
+            secondaryColor="#ffffff"
+            ariaLabel="oval-loading"
+            wrapperStyle={{}}
+            wrapperClass="flex items-center justify-center"
+          />}
+          <p>{loading ? "Saving..." : "Next"}</p>
         </button>
       </div>
     </form>

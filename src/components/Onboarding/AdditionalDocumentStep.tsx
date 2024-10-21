@@ -103,6 +103,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
     }, [])
 
     const handleSubmitDocument = async (documentType: string) => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) return;
@@ -128,6 +129,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
     };
 
     const handleProfessionalHistorySave = async (data: ReferencesAndEmployment) => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -149,6 +151,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
     };
 
     const handleProfessionalHistoryEdit = async (data: ReferencesAndEmployment) => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -178,6 +181,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
     }
 
     const handleProfessionalHistorySubmit = async () => {
+        setLoading(true)
         try {
             const token = getAccessToken();
             if (!token) {
@@ -209,6 +213,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onEdit={handleProfessionalHistoryEdit}
                     onNext={handleNextStep}
                     onClose={onClose}
+                    loading={loading}
                 />
             )}
 
@@ -219,6 +224,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleChangeStep={handleChangeStep}
                     documentStatus={professionalHistoryStatus}
                     onNext={() => handleChangeStep(4)}
+                    loading={loading}
                 />
             )}
 
@@ -235,6 +241,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('ELECTRONIC_SIGNATURE_AGGREMENT')} // Final submission
                     step={3}
                     title='Electronic Signature Agreement'
+                    loading={loading}
                 />
             )}
 
@@ -247,6 +254,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('CONFIDENTIALITY_AND_NONCOMPETE_AGGEREMENT')}
                     step={4}
                     title="Confidentiality and Non-Compete Agreement"
+                    loading={loading}
                 />
             )}
 
@@ -259,6 +267,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('CONFLICT_OF_INTEREST')}
                     step={5}
                     title="Conflict of Interest"
+                    loading={loading}
                 />
             )}
 
@@ -271,6 +280,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('CORPORATE_COMPLIANCE')}
                     step={6}
                     title="Corporate Compliance"
+                    loading={loading}
                 />
             )}
 
@@ -283,6 +293,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('ORIENTATION_CHECKLIST')}
                     step={7}
                     title="Orientation Checklist"
+                    loading={loading}
                 />
             )}
 
@@ -295,6 +306,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('PPE_AND_INFECTION_CONTROL_ACKNOWLEDGMENT')}
                     step={8}
                     title="PPE and Infection Control Acknowledgment"
+                    loading={loading}
                 />
             )}
 
@@ -307,6 +319,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('JOB_ACCEPTANCE')}
                     step={9}
                     title="Job Acceptance"
+                    loading={loading}
                 />
             )}
 
@@ -319,6 +332,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('RECEIPT_OF_EMPLOYEE_HANDBOOK')}
                     step={10}
                     title="Receipt of Employee Handbook"
+                    loading={loading}
                 />
             )}
 
@@ -331,6 +345,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('FIELD_EMPLOYEE_STANDARDS_AND_PROCEDURES')}
                     step={11}
                     title="Field Employee Standards and Procedures"
+                    loading={loading}
                 />
             )}
 
@@ -343,6 +358,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('EMPLOYEE_SAFETY_FORM')}
                     step={12}
                     title="Employee Safety Form"
+                    loading={loading}
                 />
             )}
 
@@ -355,6 +371,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('HHA_DUTIES')}
                     step={13}
                     title="HHA Duties"
+                    loading={loading}
                 />
             )}
 
@@ -367,6 +384,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('MASK_POLICY')}
                     step={14}
                     title="Mask Policy"
+                    loading={loading}
                 />
             )}
 
@@ -379,6 +397,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('PRIVACY_POLICY')}
                     step={15}
                     title="Privacy Policy"
+                    loading={loading}
                 />
             )}
 
@@ -391,6 +410,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     handleSubmit={() => handleSubmitDocument('HEPATITS_VACCINE_REQUIREMENT')}
                     step={16}
                     title="Hepatitis Vaccine Requirement"
+                    loading={loading}
                 />
             )}
         </div>

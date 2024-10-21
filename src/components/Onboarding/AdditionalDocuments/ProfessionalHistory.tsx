@@ -1,5 +1,6 @@
 import { ReferencesAndEmployment } from '@/types/onboardingTypes';
 import React, { useEffect, useState } from 'react';
+import { Oval } from 'react-loader-spinner';
 
 interface UserInfoFormProps {
     professionalHistory: ReferencesAndEmployment,
@@ -7,6 +8,7 @@ interface UserInfoFormProps {
     onEdit: (formData: ReferencesAndEmployment) => void;
     onNext: () => void;
     onClose: () => void;
+    loading: boolean
 }
 
 const ProfessionalHistoryForm: React.FC<UserInfoFormProps> = ({
@@ -15,6 +17,7 @@ const ProfessionalHistoryForm: React.FC<UserInfoFormProps> = ({
     onEdit,
     onNext,
     onClose,
+    loading
 }) => {
     const [initialData, setInitialData] = useState<ReferencesAndEmployment>(professionalHistory);
     const [formData, setFormData] = useState<ReferencesAndEmployment>(professionalHistory);
@@ -111,14 +114,14 @@ const ProfessionalHistoryForm: React.FC<UserInfoFormProps> = ({
 
             <div className="flex flex-col gap-4 w-full">
                 <h3 className="text-xl font-bold my-4">Primary Reference</h3>
-                {renderInput('Primary Name', 'primaryName', 'Enter primary name')}
+                {renderInput('Primary Employer Name', 'primaryName', 'Enter full name')}
                 {renderInput('Primary Employer', 'primaryEmployer', 'Enter primary employer')}
                 {renderInput('Primary Phone', 'primaryPhone', 'Enter phone number')}
                 {renderInput('Primary Relationship', 'primaryRelationship', 'Enter relationship')}
 
                 {/* Secondary Reference */}
                 <h3 className="text-xl font-bold my-4">Secondary Reference</h3>
-                {renderInput('Secondary Name', 'secondaryName', 'Enter secondary name')}
+                {renderInput('Secondary Employer Name', 'secondaryName', 'Enter full name')}
                 {renderInput('Secondary Employer', 'secondaryEmployer', 'Enter secondary employer')}
                 {renderInput('Secondary Phone', 'secondaryPhone', 'Enter phone number')}
                 {renderInput('Secondary Relationship', 'secondaryRelationship', 'Enter relationship')}
@@ -164,8 +167,22 @@ const ProfessionalHistoryForm: React.FC<UserInfoFormProps> = ({
                 <button type="button" onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded-md">
                     Close
                 </button>
-                <button type="submit" className="bg-primary text-white px-6 py-2 rounded-md">
-                    Next
+                <button
+                    type="submit"
+                    className={`flex gap-2 items-center justify-center bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length || loading ? 'opacity-50' : ''}`}
+                    disabled={Object.keys(errors).length > 0}
+                >
+                    {loading && <Oval
+                        visible={true}
+                        height="14"
+                        width="14"
+                        color="#ffffff"
+                        secondaryColor="#ffffff"
+                        ariaLabel="oval-loading"
+                        wrapperStyle={{}}
+                        wrapperClass="flex items-center justify-center"
+                    />}
+                    <p>{loading ? "Saving..." : "Next"}</p>
                 </button>
             </div>
         </form>
