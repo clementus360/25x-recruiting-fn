@@ -141,7 +141,7 @@ export default function DashboardCandidates() {
 
                     <div className="flex flex-col h-max gap-6">
 
-                        {candidates?.map((candidate, idx) => (
+                        {candidates?.map((candidate: any, idx) => (
                             <OnboardingCandidateCard
                                 key={idx}
                                 candidate={candidate}
