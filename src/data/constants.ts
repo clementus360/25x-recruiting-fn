@@ -457,6 +457,18 @@ export const applicantNavItems = [
     { name: 'Qualification Documents', path: 'qualification-documents' },
 ]
 
+export const qualificationDocumentsSteps = [
+    "Driver's Licence",
+    'Certifications/Licenses',
+    'CPR Card',
+    'Auto Insurance Card',
+    'Vehicle Registration (MVR)',
+    'Social Security Card',
+    'Physical Form Signed By Doctor',
+    'TB Test Signed By Doctor',
+    'Copy Of Void Check'
+]
+
 export const onboardingSteps = [
     "E-Signature",
     "Personal Information",
@@ -483,3 +495,86 @@ export const applicantTestData = {
     state: "Florida",
     applicantComments: []
 }
+
+export const sarasotaScreeningCategories = [
+    { name: "Need Review", value: "NEED_REVIEW_SARASOTA" },
+    { name: "Not Fit", value: "NOT_FIT_SARASOTA" },
+    { name: "Uncategorized", value: "UNCATEGORIZED_SARASOTA" },
+    { name: "Do Not Hire", value: "DO_NOT_HIRE" }
+]
+
+export const fortMyersScreeningCategories = [
+    { name: "Need Review", value: "NEED_REVIEW_FORT_MERYS" },
+    { name: "Not Fit", value: "NOT_FIT_FORT_MERYS" },
+    { name: "Uncategorized", value: "UNCATEGORIZED_FORT_MERYS" },
+    { name: "Do Not Hire", value: "DO_NOT_HIRE" }
+]
+
+export const documentTypeMapping: { [key: string]: string } = {
+    "Driver's Licence": 'DRIVER_LICENSE',
+    'Certifications/Licenses': 'CERTIFICATIONS_AND_LICENCES',
+    'CPR Card': 'CPR_CARD',
+    'Auto Insurance Card': 'AUTO_INSURANCE_CARD',
+    'Vehicle Registration (MVR)': 'VEHICLE_REGISTRATION',
+    'Social Security Card': 'SOCIAL_SECURITY_CARD',
+    'Physical Form Signed By Doctor': 'PHYSICAL_FORM',
+    'TB Test Signed By Doctor': 'TB_TEST_FORM',
+    'Copy Of Void Check': 'COPY_OF_VOID_CHECK',
+};
+
+export const hireLetterTemplate = `<!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              color: #333;
+              margin: 0;
+              padding: 0;
+            }
+            .container {
+              width: 100%;
+              margin: 0 auto;
+              padding: 20px;
+              border: 1px solid #ddd;
+              border-radius: 8px;
+              background-color: #f9f9f9;
+            }
+            .header {
+              font-size: 20px;
+              font-weight: bold;
+              color: #000;
+            }
+            .footer {
+              margin-top: 20px;
+              font-size: 14px;
+              color: #666;
+            }
+            .footer a {
+              color: #0066cc;
+              text-decoration: none;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div>
+             On behalf of all of us at Caregivers United, I am pleased to welcome you to the team. We are looking forward to working with you.
+            </div>
+            <p>
+              You have been hired for the position of Caregiver. Your starting pay will be a rate of $15/hr and $16/hr on the weekend DAY shifts only. This weekend differential does not apply to overnight shifts.
+            </p>
+            <p>
+              I have emailed you step one of the onboarding process. Please follow the directions in the email, and Text me when finished. If you don't see this email, please call me.
+            </p>
+            <p>
+              Welcome to our team of Awesome Caregivers!!! If you have any questions before your first day, please don’t hesitate to contact me. My email is <a href="mailto:Cory@caregiversunited.net">Cory@caregiversunited.net</a>.
+            </p>
+            <div class="footer">
+              Best regards,<br/>
+              Cory Solo<br/>
+              941-899-4675<br/>
+            </div>
+          </div>
+        </body>
+      </html>`

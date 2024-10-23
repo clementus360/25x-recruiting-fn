@@ -7,6 +7,8 @@ import { getAccessToken, parseJwt } from "@/data/cookies";
 import LoadingPage from "@/components/Dashboard/LoadingPage";
 import { CompanyProvider } from "@/context/CompanyContext";
 import { UserProvider } from "@/context/UserContext";
+import EmailComposer from "@/components/Dashboard/Onboarding/HireLetter";
+import { useHireLetter } from "@/context/HireLetterContext";
 
 
 export default function DashboardLayout({
@@ -14,6 +16,7 @@ export default function DashboardLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const { isHireLetterOpen } = useHireLetter();
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState(true);
@@ -49,16 +52,19 @@ export default function DashboardLayout({
     return (
         <CompanyProvider>
             <UserProvider>
-                <div>
-                    <div className="z-50">
+                <div className="relative">
+                    <div className="absolute z-50 w-full">
                         <DashboardHeader />
                         {/* The header component that appears on all pages */}
                     </div>
 
-                    <section className="w-full drop-shadow-sm">
+                    <section className="w-full drop-shadow-sm pt-24">
                         {/* Page contents will appear here */}
                         {children}
                     </section>
+
+                    {isHireLetterOpen && <EmailComposer onSendEmail={() => null} />}
+
                 </div>
             </UserProvider>
         </CompanyProvider>

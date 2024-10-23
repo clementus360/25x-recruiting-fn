@@ -4,10 +4,12 @@ import ProfessionalHistoryReview from './AdditionalDocuments/ProfessionalHistory
 import ElectronicSignature from './AdditionalDocuments/DocumentSignature';
 import { useError } from '@/context/ErrorContext';
 import { useSuccess } from '@/context/SuccessContext';
-import { ReferencesAndEmployment } from '@/types/onboardingTypes';
+import { ReferencesAndEmployment, TBMedicalQuestionnaire } from '@/types/onboardingTypes';
 import { getAccessToken } from '@/data/cookies';
-import { editReferencesAndEmployment, getReferencesAndEmployment, saveReferencesAndEmployment, submitAdditionalDocument, submitReferencesAndEmployment } from '@/data/onboarding';
+import { editReferencesAndEmployment, editTBMedicalQuestionnaire, getReferencesAndEmployment, getTBMedicalQuestionnaire, saveReferencesAndEmployment, saveTBMedicalQuestionnaire, submitAdditionalDocument, submitReferencesAndEmployment, submitTBMedicalQuestionnaire } from '@/data/onboarding';
 import dynamic from 'next/dynamic';
+import TBMedicalQuestionnaireForm from './AdditionalDocuments/TBMedicalQuestionnaire';
+import TBMedicalQuestionnaireReview from './AdditionalDocuments/TBMedicalQuestionnaireReview';
 
 const DocumentSignature = dynamic(() => import('./AdditionalDocuments/DocumentSignature'), { ssr: false });
 const FilePreview = dynamic(() => import('./FilePreview'), { ssr: false });
@@ -60,6 +62,19 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
         thirdWorkPhone: '',
         thirdReasonForLeave: ''
     });
+    const [tbMedicalQuestionnairePdf, setTBMedicalQuestionnairePdf] = useState('')
+    const [tbMedicalQuestionnaireStatus, setTBMedicalQuestionnaireStatus] = useState('')
+    const [tbMedicalQuestionnaire, setTBMedicalQuestionnaire] = useState<TBMedicalQuestionnaire>({
+        everHadTbSkin: '',
+        doYouCoughBlood: '',
+        doYouHaveChronicCough: '',
+        doYouHaveProlongedOrRecurrentFever: '',
+        doYouHaveSweatingAtNight: '',
+        haveYouEverHadBcgVaccine: '',
+        haveYouRecentlyLostWeight: '',
+        doYouHaveRiskFactors: '',
+        describe: ''
+    });
 
     const [load, setLoad] = useState(false)
 
@@ -94,13 +109,34 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
         }
     }
 
+    const getTBMedicalQuestionnaireInfo = async () => {
+        try {
+            const token = getAccessToken();
+            if (!token) {
+                return;
+            }
+
+            const tbMedicalQuestionnaireInformation = await getTBMedicalQuestionnaire(token)
+
+            setTBMedicalQuestionnaire(tbMedicalQuestionnaireInformation.tbTargetedMedicalFormInfo)
+            setTBMedicalQuestionnairePdf(tbMedicalQuestionnaireInformation.documentUrl)
+            setTBMedicalQuestionnaireStatus(tbMedicalQuestionnaireInformation.documentStatus)
+
+        } catch (err: any) {
+            if (err.message === "User doesn not  have a document. Please start the process") {
+            } else {
+                setError(err.message || "Failed to get references and employment information");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }
+
     useEffect(() => {
         getProfessionalHistory()
+        getTBMedicalQuestionnaireInfo()
     }, [load])
 
-    useEffect(() => {
-
-    }, [])
 
     const handleSubmitDocument = async (documentType: string) => {
         setLoading(true)
@@ -113,9 +149,9 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
 
             handleLoad()
 
-            if (step < 17) {
+            if (step < 19) {
                 console.log(step)
-                setStep((prev) => prev+1)
+                setStep((prev) => prev + 1)
             } else {
                 onClose()
             }
@@ -139,12 +175,11 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
             await saveReferencesAndEmployment(data, token)
 
             setProfessionalHistory(data)
-
-            setSuccess("Professional History saved")
+            setSuccess("Professional history saved")
             handleLoad()
             setStep(2);
         } catch (err: any) {
-            setError(err.message || "Failed to get Professional History");
+            setError(err.message || "Failed to get Professional history");
         } finally {
             setLoading(false);
         } // Move to user info preview step
@@ -161,24 +196,15 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
             await editReferencesAndEmployment(data, token)
 
             setProfessionalHistory(data)
-            setSuccess("Professional History updated")
+            setSuccess("Professional history updated")
             handleLoad()
             setStep(2);
         } catch (err: any) {
-            setError(err.message || "Failed to get Professional History");
+            setError(err.message || "Failed to get Professional history");
         } finally {
             setLoading(false);
-        } // Move to user info preview step
-    };
-
-    const handleNextStep = () => {
-        console.log(step)
-        if (step < 17) {
-        setStep(step + 1)
-        } else {
-            onClose()
         }
-    }
+    };
 
     const handleProfessionalHistorySubmit = async () => {
         setLoading(true)
@@ -189,15 +215,84 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
             }
 
             await submitReferencesAndEmployment(professionalHistory, token)
-
-            setSuccess("Professional History submitted successfully");
-            setStep(4)
+            setSuccess("Professional history submitted successfully");
+            setStep(14)
         } catch (err: any) {
-            setError(err.message || "Failed to save Professional History");
+            setError(err.message || "Failed to save Professional history");
         } finally {
             setLoading(false);
         }
     };
+
+    const handleTBMedicalQuestionnaireSave = async (data: TBMedicalQuestionnaire) => {
+        setLoading(true)
+        try {
+            const token = getAccessToken();
+            if (!token) {
+                return;
+            }
+
+            await saveTBMedicalQuestionnaire(data, token)
+
+            setTBMedicalQuestionnaire(data)
+
+            setSuccess("TB Medical Questionnaire saved")
+            handleLoad()
+            setStep(13);
+        } catch (err: any) {
+            setError(err.message || "Failed to get TB Medical Questionnaire");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleTBMedicalQuestionnaireEdit = async (data: TBMedicalQuestionnaire) => {
+        setLoading(true)
+        try {
+            const token = getAccessToken();
+            if (!token) {
+                return;
+            }
+
+            await editTBMedicalQuestionnaire(data, token)
+
+            setTBMedicalQuestionnaire(data)
+            setSuccess("TB Medical Questionnaire updated")
+            handleLoad()
+            setStep(13);
+        } catch (err: any) {
+            setError(err.message || "Failed to get TB Medical Questionnaire");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleTBMedicalQuestionnaireSubmit = async () => {
+        setLoading(true)
+        try {
+            const token = getAccessToken();
+            if (!token) {
+                return;
+            }
+
+            await submitTBMedicalQuestionnaire(tbMedicalQuestionnaire, token)
+
+            setSuccess("TB Medical Questionnaire submitted successfully");
+            setStep(15)
+        } catch (err: any) {
+            setError(err.message || "Failed to save TB Medical Questionnaire");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleNextStep = () => {
+        if (step < 19) {
+            setStep(step + 1)
+        } else {
+            onClose()
+        }
+    }
 
     const handleChangeStep = (step: number) => {
         setStep(step);
@@ -206,7 +301,6 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
     return (
         <div className="flex flex-col items-center gap-4 w-full px-8">
             {step === 1 && (
-                // Step 1: Professional History Form
                 <ProfessionalHistoryForm
                     professionalHistory={professionalHistory}
                     onSave={handleProfessionalHistorySave}
@@ -239,7 +333,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(2)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('ELECTRONIC_SIGNATURE_AGGREMENT')} // Final submission
-                    step={3}
+                    step={2}
                     title='Electronic Signature Agreement'
                     loading={loading}
                 />
@@ -252,7 +346,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(4)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('CONFIDENTIALITY_AND_NONCOMPETE_AGGEREMENT')}
-                    step={4}
+                    step={3}
                     title="Confidentiality and Non-Compete Agreement"
                     loading={loading}
                 />
@@ -265,7 +359,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(5)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('CONFLICT_OF_INTEREST')}
-                    step={5}
+                    step={4}
                     title="Conflict of Interest"
                     loading={loading}
                 />
@@ -278,7 +372,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(6)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('CORPORATE_COMPLIANCE')}
-                    step={6}
+                    step={5}
                     title="Corporate Compliance"
                     loading={loading}
                 />
@@ -291,7 +385,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(7)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('ORIENTATION_CHECKLIST')}
-                    step={7}
+                    step={6}
                     title="Orientation Checklist"
                     loading={loading}
                 />
@@ -304,7 +398,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(8)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('PPE_AND_INFECTION_CONTROL_ACKNOWLEDGMENT')}
-                    step={8}
+                    step={7}
                     title="PPE and Infection Control Acknowledgment"
                     loading={loading}
                 />
@@ -317,7 +411,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(9)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('JOB_ACCEPTANCE')}
-                    step={9}
+                    step={8}
                     title="Job Acceptance"
                     loading={loading}
                 />
@@ -330,13 +424,38 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                     onBack={() => setStep(10)}
                     onNext={handleNextStep}
                     handleSubmit={() => handleSubmitDocument('RECEIPT_OF_EMPLOYEE_HANDBOOK')}
-                    step={10}
+                    step={9}
                     title="Receipt of Employee Handbook"
                     loading={loading}
                 />
             )}
 
             {step === 12 && (
+                <TBMedicalQuestionnaireForm
+                    tbMedicalQuestionnaire={tbMedicalQuestionnaire}
+                    status={tbMedicalQuestionnaireStatus}
+                    onSave={handleTBMedicalQuestionnaireSave}
+                    onEdit={handleTBMedicalQuestionnaireEdit}
+                    onNext={handleNextStep}
+                    onClose={onClose}
+                    loading={loading}
+                />
+            )}
+
+            {step === 13 && (
+                <TBMedicalQuestionnaireReview
+                    onClose={onClose}
+                    step={10}
+                    handleQuestionnaireSubmit={handleTBMedicalQuestionnaireSubmit}
+                    pdfUrl={tbMedicalQuestionnairePdf}
+                    handleChangeStep={handleChangeStep}
+                    documentStatus={tbMedicalQuestionnaireStatus}
+                    onNext={() => handleChangeStep(14)}
+                    loading={loading}
+                />
+            )}
+
+            {step === 14 && (
                 <DocumentSignature
                     type="FIELD_EMPLOYEE_STANDARDS_AND_PROCEDURES"
                     onClose={onClose}
@@ -349,7 +468,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                 />
             )}
 
-            {step === 13 && (
+            {step === 15 && (
                 <DocumentSignature
                     type="EMPLOYEE_SAFETY_FORM"
                     onClose={onClose}
@@ -362,7 +481,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                 />
             )}
 
-            {step === 14 && (
+            {step === 16 && (
                 <DocumentSignature
                     type="HHA_DUTIES"
                     onClose={onClose}
@@ -375,7 +494,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                 />
             )}
 
-            {step === 15 && (
+            {step === 17 && (
                 <DocumentSignature
                     type="MASK_POLICY"
                     onClose={onClose}
@@ -388,7 +507,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                 />
             )}
 
-            {step === 16 && (
+            {step === 18 && (
                 <DocumentSignature
                     type="PRIVACY_POLICY"
                     onClose={onClose}
@@ -401,7 +520,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
                 />
             )}
 
-            {step === 17 && (
+            {step === 19 && (
                 <DocumentSignature
                     type="HEPATITS_VACCINE_REQUIREMENT"
                     onClose={onClose}

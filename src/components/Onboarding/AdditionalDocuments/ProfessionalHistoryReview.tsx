@@ -87,7 +87,7 @@ const ProfessionalHistoryReview: React.FC<ProfessionalHistoryReviewProps> = ({
 
     return (
         <div className="flex flex-col gap-6 w-full">
-            <h2 className="text-xl font-semibold mb-3">Step 2: Review Professional History Information</h2>
+            <h2 className="text-xl font-semibold mb-3">Step 1: Review Professional History Information</h2>
 
             {/* Review References */}
             <div className="border px-4 py-8 rounded-md divide-y divide-gray-300">

@@ -112,3 +112,24 @@ export interface ReferencesAndEmployment {
   thirdWorkPhone: string,
   thirdReasonForLeave: string
 }
+
+export interface TaxWithholding {
+  homeAddress: string,
+  homeAddressLineTwo: string,
+  city: string,
+  state: string,
+  zipCode: string,
+  socialSecurityNumber: string
+}
+
+export interface TBMedicalQuestionnaire {
+  everHadTbSkin: string,
+  doYouCoughBlood: string,
+  doYouHaveChronicCough: string,
+  doYouHaveProlongedOrRecurrentFever: string,
+  doYouHaveSweatingAtNight: string,
+  haveYouEverHadBcgVaccine: string,
+  haveYouRecentlyLostWeight: string,
+  doYouHaveRiskFactors: string,
+  describe: string
+}

@@ -45,7 +45,7 @@ export interface DBApplicant {
   resumeUrl: string,
   coverLetterUrl: string,
   numOfRatings: number,
-  applicantComments:  UserComment[]
+  applicantComments: UserComment[]
 }
 
 export interface DBDeclined {
@@ -58,7 +58,7 @@ export interface DBDeclined {
   resumeUrl: string,
   coverLetterUrl: string,
   numOfRatings: number,
-  applicantComments:  UserComment[]
+  applicantComments: UserComment[]
 }
 
 export interface DBTestApplicant {
@@ -95,11 +95,12 @@ export interface HireRowProps {
 }
 
 export interface DBSingleApplicant {
+  onboardingId: number,
   id: number,
   firstName: string,
   lastName: string,
   createdDate: string,
-  status:  "APPLICANT" | "CANDIDATE" | "HIRED" | "DECLINED",
+  status: "APPLICANT" | "CANDIDATE" | "HIRED" | "DECLINED",
   source: string,
   resume: string,
   email: string,
@@ -120,7 +121,7 @@ export interface SpecificSingleApplicant {
   firstName: string,
   lastName: string,
   createdDate: string,
-  status:  "APPLICANT" | "CANDIDATE" | "HIRED" | "DECLINED",
+  status: "APPLICANT" | "CANDIDATE" | "HIRED" | "DECLINED",
   source: string,
   resume: string,
   email: string,
@@ -136,3 +137,17 @@ export interface SpecificSingleApplicant {
   notes: UserComment[]
 }
 
+export interface ApplicantUpdateFields {
+  firstName: string,
+  lastName: string,
+  email: string,
+  phone: string,
+  address: string,
+  city: string,
+  state: string,
+  zipCode: string,
+  country: string,
+  referredBy: string,
+  resumeUrl: string,
+  coverLetterUrl: string
+}

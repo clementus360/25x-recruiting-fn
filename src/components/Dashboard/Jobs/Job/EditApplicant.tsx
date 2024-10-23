@@ -3,40 +3,57 @@
 import { useState, useEffect } from "react";
 import { useError } from "@/context/ErrorContext";
 import { useSuccess } from "@/context/SuccessContext";
-import { addApplicant } from "@/data/jobsData";
-import { useCompany } from "@/context/CompanyContext";
-import { useParams } from "next/navigation";
 import { Country, State, City, IState, ICity } from "country-state-city";
 import Select from "@/components/Select";
 import { getAccessToken } from "@/data/cookies";
+import { getApplicantData } from "@/data/jobsData";
+import { editApplicantData } from "@/data/appplicant";
 
-interface AddApplicantOverlayProps {
-    handleLoad: (load: boolean) => void;
+interface EditApplicantOverlayProps {
+    applicantId: string;
     onClose: () => void;
+    handleLoad: (load: boolean) => void;
 }
 
-export const AddApplicantOverlay: React.FC<AddApplicantOverlayProps> = ({ handleLoad, onClose }) => {
+export const EditApplicantOverlay: React.FC<EditApplicantOverlayProps> = ({ applicantId, onClose, handleLoad }) => {
     const [applicantData, setApplicantData] = useState({
         firstName: "",
         lastName: "",
         email: "",
         phone: "",
         address: "",
-        city: "Sarasota",
-        state: "Florida",
+        city: "",
+        state: "",
         zipCode: "",
-        country: "United States",
+        country: "",
         referredBy: "",
         resumeUrl: "",
     });
-
+    const [originalData, setOriginalData] = useState({ ...applicantData });
     const [states, setStates] = useState<IState[]>([]);
     const [cities, setCities] = useState<ICity[]>([]);
-    const params = useParams<{ job: string }>();
-    const jobId = params.job;
-    const { companyInfo } = useCompany();
     const { setError } = useError();
     const { setSuccess } = useSuccess();
+
+    // Fetch the applicant's details when component mounts
+    useEffect(() => {
+        const fetchApplicantData = async () => {
+            try {
+                const token = getAccessToken();
+                if (!token) {
+                    setError("User not authenticated.");
+                    return;
+                }
+                const details = await getApplicantData(applicantId, token);
+                setApplicantData(details); // Set the applicant's details
+                setOriginalData(details); // Keep the original data for comparison
+            } catch (error: any) {
+                setError(error.message || "Failed to fetch applicant data.");
+            }
+        };
+
+        fetchApplicantData();
+    }, [applicantId, setError]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -98,7 +115,6 @@ export const AddApplicantOverlay: React.FC<AddApplicantOverlayProps> = ({ handle
             setError("First name, last name, and email are required.");
             return false;
         }
-        // Add more validations as needed
         return true;
     };
 
@@ -109,166 +125,151 @@ export const AddApplicantOverlay: React.FC<AddApplicantOverlayProps> = ({ handle
 
         try {
             const token = getAccessToken();
-
             if (!token) {
                 setError("User not authenticated.");
                 return;
             }
 
-            await addApplicant(jobId, token, applicantData);
-            setSuccess("Applicant added successfully!");
-            handleLoad(true)
+            // Compare current data with original and only send the changed fields
+            const changedFields = Object.keys(applicantData).reduce((acc, key) => {
+                if (applicantData[key as keyof typeof applicantData] !== originalData[key as keyof typeof originalData]) {
+                    acc[key as keyof typeof applicantData] = applicantData[key as keyof typeof applicantData];
+                }
+                return acc;
+            }, {} as Partial<typeof applicantData>);
+
+            if (Object.keys(changedFields).length === 0) {
+                setError("No changes made to update.");
+                return;
+            }
+
+            await editApplicantData(changedFields, applicantId, token);
+            setSuccess("Applicant updated successfully!");
+            handleLoad(true);
             onClose();
         } catch (error: any) {
             setError(error.message);
         }
     };
 
+    const handleClickOutside = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation(); // Prevent the event from bubbling up to the outside click handler
+        onClose();
+      };
+
     return (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-md shadow-lg w-full max-w-lg">
-                <h2 className="text-lg font-semibold mb-4">Add New Applicant</h2>
+        <div onMouseDown={handleClickOutside} className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50">
+            <div onMouseDown={(e) => e.stopPropagation()} className="bg-white p-6 rounded-md shadow-lg w-full max-w-lg">
+                <h2 className="text-lg font-semibold mb-4">Update Applicant Information</h2>
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col">
-                        <label htmlFor="firstName" className="text-xs font-medium text-gray-700 mb-1">First Name</label>
+                    <div>
+                        <label className="text-sm">First Name</label>
                         <input
                             type="text"
                             name="firstName"
-                            id="firstName"
                             value={applicantData.firstName}
                             onChange={handleChange}
                             placeholder="First Name"
-                            className="border p-2 rounded"
+                            className="border p-2 rounded w-full"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="lastName" className="text-xs font-medium text-gray-700 mb-1">Last Name</label>
+                    <div>
+                        <label className="text-sm">Last Name</label>
                         <input
                             type="text"
                             name="lastName"
-                            id="lastName"
                             value={applicantData.lastName}
                             onChange={handleChange}
                             placeholder="Last Name"
-                            className="border p-2 rounded"
+                            className="border p-2 rounded w-full"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="email" className="text-xs font-medium text-gray-700 mb-1">Email</label>
+                    <div>
+                        <label className="text-sm">Email</label>
                         <input
                             type="email"
                             name="email"
-                            id="email"
                             value={applicantData.email}
                             onChange={handleChange}
                             placeholder="Email"
-                            className="border p-2 rounded"
+                            className="border p-2 rounded w-full"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="phone" className="text-xs font-medium text-gray-700 mb-1">Phone</label>
+                    <div>
+                        <label className="text-sm">Phone</label>
                         <input
                             type="text"
                             name="phone"
-                            id="phone"
                             value={applicantData.phone}
                             onChange={handleChange}
                             placeholder="Phone"
-                            className="border p-2 rounded"
+                            className="border p-2 rounded w-full"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="address" className="text-xs font-medium text-gray-700 mb-1">Address</label>
+                    <div>
+                        <label className="text-sm">Address</label>
                         <input
                             type="text"
                             name="address"
-                            id="address"
                             value={applicantData.address}
                             onChange={handleChange}
                             placeholder="Address"
-                            className="border p-2 rounded"
+                            className="border p-2 rounded w-full"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="country" className="text-xs font-medium text-gray-700 mb-1">Country</label>
+                    <div>
+                        <label className="text-sm">Country</label>
                         <Select
                             options={Country.getAllCountries().map(country => ({ label: country.name, value: country.name }))}
                             value={applicantData.country}
                             onChange={handleCountryChange}
                             placeholder="Select Country"
-                            className="border p-2 rounded"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="state" className="text-xs font-medium text-gray-700 mb-1">State</label>
+                    <div>
+                        <label className="text-sm">State</label>
                         <Select
                             options={states.map(state => ({ label: state.name, value: state.name }))}
                             value={applicantData.state}
                             onChange={handleStateChange}
                             placeholder="Select State"
-                            className="border p-2 rounded"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="city" className="text-xs font-medium text-gray-700 mb-1">City</label>
+                    <div>
+                        <label className="text-sm">City</label>
                         <Select
                             options={cities.map(city => ({ label: city.name, value: city.name }))}
                             value={applicantData.city}
                             onChange={(value) => setApplicantData({ ...applicantData, city: value })}
                             placeholder="Select City"
-                            className="border p-2 rounded"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="zipCode" className="text-xs font-medium text-gray-700 mb-1">Zip Code</label>
+                    <div>
+                        <label className="text-sm">Zip Code</label>
                         <input
                             type="text"
                             name="zipCode"
-                            id="zipCode"
                             value={applicantData.zipCode}
                             onChange={handleChange}
                             placeholder="Zip Code"
-                            className="border p-2 rounded"
+                            className="border p-2 rounded w-full"
                         />
                     </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="referredBy" className="text-xs font-medium text-gray-700 mb-1">Referred By</label>
+                    <div>
+                        <label className="text-sm">Referred By</label>
                         <input
                             type="text"
                             name="referredBy"
-                            id="referredBy"
                             value={applicantData.referredBy}
                             onChange={handleChange}
                             placeholder="Referred By"
-                            className="border p-2 rounded"
-                        />
-                    </div>
-                    <div className="flex flex-col">
-                        <label htmlFor="resumeUrl" className="text-xs font-medium text-gray-700 mb-1">Resume URL</label>
-                        <input
-                            type="url"
-                            name="resumeUrl"
-                            id="resumeUrl"
-                            value={applicantData.resumeUrl}
-                            onChange={handleChange}
-                            placeholder="Resume URL"
-                            className="border p-2 rounded"
+                            className="border p-2 rounded w-full"
                         />
                     </div>
                 </div>
-                <div className="mt-4 flex justify-end gap-2">
-                    <button
-                        className="bg-gray-500 text-white px-4 py-2 rounded"
-                        onClick={onClose}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="bg-primary text-white px-4 py-2 rounded"
-                        onClick={handleSubmit}
-                    >
-                        Add Applicant
-                    </button>
+                <div className="mt-6 flex justify-end">
+                    <button onClick={onClose} className="px-4 py-2 mr-2 bg-gray-200 text-gray-700 rounded">Cancel</button>
+                    <button onClick={handleSubmit} className="px-4 py-2 bg-primary text-white rounded">Save</button>
                 </div>
             </div>
         </div>

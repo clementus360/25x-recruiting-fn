@@ -759,8 +759,6 @@ export async function getApplicantData(applicantId: string, token: string) {
         // Construct the full URL with query parameters
         const url = `${API_BASE_URL}/api/v1/applicants/get-applicant/${applicantId}`;
 
-
-
         const response = await fetch(url, {
             method: "GET",
             headers: {

@@ -72,8 +72,6 @@ export async function GetCompanyData(token: string) {
 
         const data = await response.json();
 
-        console.log(data)
-
         // Return the companies data
         return data;
     } catch (error: any) {

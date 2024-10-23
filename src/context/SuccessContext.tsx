@@ -30,16 +30,11 @@ export const SuccessProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         // Only start a timer if either companyId or applicantId is missing
-        if (success && (!companyId || !applicantId)) {
-            const timer = setTimeout(() => {
-                setSuccessState('');
-                setCompanyId(null);
-                setApplicantId(null);
-            }, 5000);
-
-            return () => clearTimeout(timer); // Clean up the timer
-        }
-        // If both are present, success remains indefinitely (no timer set)
+        const timer = setTimeout(() => {
+            setSuccessState('');
+            setCompanyId(null);
+            setApplicantId(null);
+        }, 5000);
     }, [success, companyId, applicantId]);
 
     const setSuccess = (message: string, companyId?: number, applicantId?: number) => {

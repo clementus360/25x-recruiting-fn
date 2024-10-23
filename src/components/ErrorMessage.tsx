@@ -9,7 +9,7 @@ export default function ErrorMessage() {
 
   return (
     <div
-      className="animate-slide-in fixed z-50 top-12 right-4 border-l-4 border-red-500 bg-white text-black px-6 py-4 w-auto max-w-xs rounded-md shadow-lg flex items-start space-x-3"
+      className="animate-slide-in fixed z-[60] top-12 right-4 border-l-4 border-red-500 bg-white text-black px-6 py-4 w-auto max-w-xs rounded-md shadow-lg flex items-start space-x-3"
       role="alert"
     >
       {/* Exclamation icon */}

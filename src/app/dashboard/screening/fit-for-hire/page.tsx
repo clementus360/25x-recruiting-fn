@@ -7,7 +7,7 @@ import { NoResultsPage } from "@/components/Dashboard/NoResultsPage";
 import LoadingPage from "@/components/Dashboard/LoadingPage";
 import PageSelector from "@/components/PageSelector";
 import Select from "@/components/Select";
-import { getScreeningApplicants, moveApplicantToJob } from "@/data/screeningData";
+import { getScreeningApplicants, moveApplicantToJob, moveApplicantToList } from "@/data/screeningData";
 import { useError } from "@/context/ErrorContext";
 import { ScreeningRow } from "@/components/Dashboard/Screening/ScreeningCard";
 import DateSelector from "@/components/DateSelector";
@@ -19,6 +19,9 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import { useSuccess } from "@/context/SuccessContext";
 import { getAccessToken } from "@/data/cookies";
 import TableFilter from "@/components/TableFilter";
+import { fortMyersScreeningCategories, sarasotaScreeningCategories } from "@/data/constants";
+import { Category } from "@/types/ScreeningTypes";
+
 
 export default function FitForHire() {
   const [applicants, setApplicants] = useState([]);
@@ -51,8 +54,11 @@ export default function FitForHire() {
     sortingOptions: "DESC",
   });
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
+
 
   const handleLoadData = () => {
     setLoad(!load)
@@ -151,7 +157,18 @@ export default function FitForHire() {
 
     // Trigger the modal instead of using window.confirm
     setSelectedJobId(jobId);
-    setIsModalOpen(true);
+    setIsMoveModalOpen(true);
+  };
+
+  const handleChangeMultipleApplicants = (category: string) => {
+    if (selectedRows.length === 0) {
+      alert("No applicants selected.");
+      return;
+    }
+
+    // Trigger the modal instead of using window.confirm
+    setCategory(category);
+    setIsChangeModalOpen(true);
   };
 
   const handleConfirmMove = async () => {
@@ -176,12 +193,42 @@ export default function FitForHire() {
       setError(error.message || "An error occurred while moving applicants");
     } finally {
       setSelectedJobId(null)
-      setIsModalOpen(false); // Close modal after confirming
+      setIsMoveModalOpen(false); // Close modal after confirming
+    }
+  };
+
+  const handleConfirmChange = async () => {
+    console.log(category)
+    if (!category) return;
+
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        setError("User is not authenticated");
+        return;
+      }
+
+      // Call the moveApplicantToJob function
+      const responseMessage = await moveApplicantToList(category, selectedRows, token);
+
+      setSuccess("Applicants moved to list successfully")
+      setSelectedJobId(null)
+      setSelectedRows([])
+      fetchApplicants(); // Reload applicants if needed
+    } catch (error: any) {
+      setError(error.message || "An error occurred while moving applicants");
+    } finally {
+      setSelectedJobId(null)
+      setIsChangeModalOpen(false); // Close modal after confirming
     }
   };
 
   const handleCancelMove = () => {
-    setIsModalOpen(false); // Close modal on cancel
+    setIsMoveModalOpen(false); // Close modal on cancel
+  };
+
+  const handleCancelChange = () => {
+    setIsChangeModalOpen(false); // Close modal on cancel
   };
 
 
@@ -286,6 +333,26 @@ export default function FitForHire() {
                   />
                 </div>
               </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-black uppercase">
+                <div className={`${selectedRows.length > 1 ? 'block' : 'hidden'}`}>
+                  <Select
+                    options={location === "FortMyers" ? fortMyersScreeningCategories.map((category: Category) => ({
+                      value: category.value,
+                      label: category.name,
+                    }))
+                      :
+                      sarasotaScreeningCategories.map((category: Category) => ({
+                        value: category.value,
+                        label: category.name,
+                      }))
+                    }
+                    value={""}
+                    placeholder="Change list"
+                    onChange={(value) => handleChangeMultipleApplicants(value)}
+                    className="bg-primary text-white rounded-lg py-2"
+                  />
+                </div>
+              </th>
             </tr>
           </thead>
 
@@ -322,7 +389,14 @@ export default function FitForHire() {
         message="Are you sure you want to move the selected applicants?"
         onConfirm={handleConfirmMove}
         onCancel={handleCancelMove}
-        isOpen={isModalOpen} // Control modal visibility
+        isOpen={isMoveModalOpen} // Control modal visibility
+      />
+
+      <ConfirmationModal
+        message="Are you sure you want to move the selected applicants?"
+        onConfirm={handleConfirmChange}
+        onCancel={handleCancelChange}
+        isOpen={isChangeModalOpen} // Control modal visibility
       />
 
       <PageSelector pageNumber={totalPages} changePage={handleChangeCurrentPage} />

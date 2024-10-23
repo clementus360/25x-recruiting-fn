@@ -1,6 +1,7 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "./firebase";
 import { API_BASE_URL } from "./constants";
+import { Applicant, ApplicantUpdateFields } from "@/types/applicationTypes";
 
 export const uploadCoverLetter = async (coverLetter: Blob, name: string): Promise<string | null> => {
     try {
@@ -84,6 +85,36 @@ export async function saveResume(resumeUrl: string, applicantId: string, token: 
 
     } catch (error: any) {
         console.error("Error saving resume:", error.message);
+        throw error;
+    }
+}
+
+export async function editApplicantData(applicantData: Partial<ApplicantUpdateFields>, applicantId: string, token: string) {
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/applicants/edit-applicant/${applicantId}`, {
+            method: "PATCH",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(applicantData)
+        });
+
+        // Read the response body regardless of the status
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            // Extract and handle the error message from the response body
+            console.error("Error details from the response:", responseData);
+            throw new Error(responseData.message || "Failed to edit applicant");
+        }
+
+        return responseData; // Return the response data if successful
+
+    } catch (error: any) {
+        console.error("Error editing applicant:", error.message);
         throw error;
     }
 }

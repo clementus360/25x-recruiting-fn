@@ -1,16 +1,12 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
 import SignatureSection from '../ESignature/SignatureSection';
 import { getAccessToken } from '@/data/cookies';
 import { getAdditionalDocument } from '@/data/onboarding';
 import { useError } from '@/context/ErrorContext';
 import { FaCheckCircle } from 'react-icons/fa';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { Oval } from 'react-loader-spinner';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface DocumentSignatureProps {
     type: string;
@@ -83,23 +79,11 @@ const DocumentSignature: React.FC<DocumentSignatureProps> = ({
                     <div className="border p-4 rounded-md">
                         <h3 className="text-lg font-medium mb-4">Review {title} Document</h3>
                         <div className="pdf-viewer h-96 overflow-y-auto border">
-                            <Document
-                                file={pdfUrl}
-                                onLoadSuccess={onDocumentLoadSuccess}
-                                className="pdf-document"
-                            >
-                                {/* Render all pages */}
-                                {Array.from(new Array(numPages), (el, index) => (
-                                    <Page
-                                        key={`page_${index + 1}`}
-                                        pageNumber={index + 1}
-                                        className="pdf-page flex items-center justify-center"
-                                        renderMode="canvas"
-                                        renderAnnotationLayer={true}  // Enable annotation layer to support links
-                                        renderTextLayer={false}
-                                    />
-                                ))}
-                            </Document>
+                            <iframe
+                                src={pdfUrl}
+                                title="PDF Preview"
+                                className="w-full h-full"
+                            />
                         </div>
                     </div>
 
@@ -145,22 +129,22 @@ const DocumentSignature: React.FC<DocumentSignatureProps> = ({
                         </button>
                         :
                         <button
-                        onClick={onNext}
-                        className={`bg-primary text-white px-3 py-2 rounded-md`}
-                        disabled={false}
-                      >
-                        {loading && <Oval
-                          visible={true}
-                          height="14"
-                          width="14"
-                          color="#ffffff"
-                          secondaryColor="#ffffff"
-                          ariaLabel="oval-loading"
-                          wrapperStyle={{}}
-                          wrapperClass="flex items-center justify-center"
-                        />}
-                        <p>{loading ? "Saving..." : "Next"}</p>
-                      </button>
+                            onClick={onNext}
+                            className={`bg-primary text-white px-3 py-2 rounded-md`}
+                            disabled={false}
+                        >
+                            {loading && <Oval
+                                visible={true}
+                                height="14"
+                                width="14"
+                                color="#ffffff"
+                                secondaryColor="#ffffff"
+                                ariaLabel="oval-loading"
+                                wrapperStyle={{}}
+                                wrapperClass="flex items-center justify-center"
+                            />}
+                            <p>{loading ? "Saving..." : "Next"}</p>
+                        </button>
                     }
                 </div>
             </div>

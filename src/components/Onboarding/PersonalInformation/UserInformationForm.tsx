@@ -62,6 +62,7 @@ const UserInfoForm: React.FC<UserInfoFormProps> = ({ userInfo, onSave, onEdit, o
   useEffect(() => {
     setFormData(userInfo)
     setInitialData(userInfo)
+    setConfirmSsn(userInfo.ssn)
     validate()
   }, [userInfo])
 

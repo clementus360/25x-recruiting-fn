@@ -13,9 +13,10 @@ import { onboardingCandidates } from "@/data/constants";
 import DateSelector from "@/components/DateSelector";
 import { getAccessToken } from "@/data/cookies";
 import TableFilter from "@/components/TableFilter";
+import { getAllOnboardingCandidates } from "@/data/onboarding";
 
 export default function DashboardCandidates() {
-    const [candidates, setCandidates] = useState([]);
+    const [candidates, setCandidates] = useState<typeof onboardingCandidates>();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [results, setResults] = useState<number>(1);
@@ -43,18 +44,15 @@ export default function DashboardCandidates() {
 
 
     useEffect(() => {
-        const fetchCandidates = async () => {
+        const fetchOnboardingCandidates = async () => {
             try {
                 const token = getAccessToken();
                 if (!token) {
                     setError("User is not authenticated");
                     return;
                 }
-
-                const data = await getAllCandidates(token, currentPage, filters);
-                setCandidates(data.candidates);
-                setTotalPages(data.pageCount);
-                setResults(data.totalApplicants)
+                const data = await getAllOnboardingCandidates(token, currentPage, filters);
+                setCandidates(data);
             } catch (error: any) {
                 setError(error.message || `An error occured while loading onboarding candidates`);
             } finally {
@@ -62,8 +60,8 @@ export default function DashboardCandidates() {
             }
         };
 
-        fetchCandidates();
-    }, [load, jobId, currentPage, filters]);
+        fetchOnboardingCandidates();
+    }, []);
 
     const handleChangeCurrentPage = (page: number) => {
         setCurrentPage(page);
@@ -143,7 +141,7 @@ export default function DashboardCandidates() {
 
                     <div className="flex flex-col h-max gap-6">
 
-                        {onboardingCandidates?.map((candidate, idx) => (
+                        {candidates?.map((candidate, idx) => (
                             <OnboardingCandidateCard
                                 key={idx}
                                 candidate={candidate}

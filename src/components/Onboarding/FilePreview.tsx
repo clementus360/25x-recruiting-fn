@@ -1,17 +1,8 @@
 'use client'
 
-import dynamic from 'next/dynamic';
-import React, { useEffect, useState } from 'react';
-import {Document, Page, pdfjs } from 'react-pdf';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.mjs`;
+import React from 'react';
 
 export default function FilePreview({ pdfUrl, handleChangeStep, onClose }: { pdfUrl: string, handleChangeStep: () => void, onClose: () => void }) {
-    const [numPages, setNumPages] = useState<number>(); // For total number of PDF pages
-
-    const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-        setNumPages(numPages); // Set the total number of pages when PDF is loaded
-    };
 
     return (
         <div className='flex flex-col gap-6 w-full'>
@@ -19,23 +10,11 @@ export default function FilePreview({ pdfUrl, handleChangeStep, onClose }: { pdf
 
             {/* Container for PDF with a fixed height and scroll */}
             <div className="pdf-viewer h-96 overflow-y-auto border">
-                <Document
-                    file={pdfUrl}
-                    onLoadSuccess={onDocumentLoadSuccess}
-                    className="pdf-document"
-                >
-                    {/* Render all pages */}
-                    {Array.from(new Array(numPages), (el, index) => (
-                        <Page
-                            key={`page_${index + 1}`}
-                            pageNumber={index + 1}
-                            className="pdf-page"
-                            renderMode="canvas"
-                            renderAnnotationLayer={false}
-                            renderTextLayer={false}
-                        />
-                    ))}
-                </Document>
+                <iframe
+                    src={pdfUrl}
+                    title="PDF Preview"
+                    className="w-full h-full"
+                />
             </div>
 
             <div className='flex justify-between'>

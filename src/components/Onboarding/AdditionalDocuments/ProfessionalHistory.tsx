@@ -61,6 +61,8 @@ const ProfessionalHistoryForm: React.FC<UserInfoFormProps> = ({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
+        console.log(formData)
+
         if (validateForm()) {
             const isEmptyForm = Object.keys(initialData).every(
                 (key) => !initialData[key as keyof ReferencesAndEmployment]
@@ -168,7 +170,7 @@ const ProfessionalHistoryForm: React.FC<UserInfoFormProps> = ({
                     Close
                 </button>
                 <button
-                    type="submit"
+                    onClick={handleSubmit}
                     className={`flex gap-2 items-center justify-center bg-primary text-white px-4 py-2 rounded-md mt-2 ${Object.keys(errors).length || loading ? 'opacity-50' : ''}`}
                     disabled={Object.keys(errors).length > 0}
                 >

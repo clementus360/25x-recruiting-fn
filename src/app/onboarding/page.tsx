@@ -1,30 +1,64 @@
 'use client'; // Enable client-side rendering
 
 import React, { useEffect, useState } from 'react';
-import StepCard from '@/components/Onboarding/StepCard';
-import { onboardingSteps } from '@/data/constants'; // Importing steps from constants
-import OverlayModal from '@/components/Onboarding/StepOverlay';
 import { useRouter } from 'next/navigation';
 import { getAccessToken, parseJwt } from '@/data/cookies';
 import LoadingPage from '@/components/Dashboard/LoadingPage';
 import { useOnboardingLogout } from '@/data/onboarding';
 import { MdLogout } from 'react-icons/md';
+import { Onboarding } from '@/components/Onboarding/Onboarding';
+import { QualificationDocuments } from '@/components/Documents/QualificationDocuments';
+import { documentTypeMapping, qualificationDocumentsSteps } from '@/data/constants';
+import { getQualificationDocument } from '@/data/qualificationDocuments';
+import { useError } from '@/context/ErrorContext';
 
 const OnboardingStepsPage: React.FC = () => {
+    const [step, setStep] = useState(1)
+    const [documentStatus, setDocumentStatus] = useState<string>('NOT_STARTED');
     const handleLogout = useOnboardingLogout();
+    const { setError } = useError();
     const router = useRouter();
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [step, setStep] = useState("")
+    const [loading, setLoading] = useState(true);
 
-    const handleCardClick = (stepName: string) => {
-        setStep(stepName)
-        console.log(`Clicked on step: ${stepName}`);
+    const fetchDocumentStatuses = async () => {
+        try {
+            const token = getAccessToken();
+            if (!token) return;
+
+            let overallStatus = 'NOT_STARTED';
+            for (const step of qualificationDocumentsSteps) {
+                const mappedType = documentTypeMapping[step];
+                if (mappedType) {
+                    const response = await getQualificationDocument(mappedType, token);
+                    overallStatus = response.overallDocumentStatus || 'NOT_STARTED';
+
+                    // Exit early if a step is 'NOT_STARTED'
+                    if (overallStatus !== 'ON_TRACK' && overallStatus !== 'COMPLETED') {
+                        setDocumentStatus(overallStatus);
+                        return;
+                    }
+                }
+            }
+
+            setDocumentStatus(overallStatus);
+        } catch (error: any) {
+            setError(error.message || 'Failed to fetch document statuses.');
+        }
     };
 
-    const handleCloseOverlay = () => {
-        setStep("")
-    }
+    useEffect(() => {
+        fetchDocumentStatuses()
+    }, [])
+
+    useEffect(() => {
+        if (documentStatus === "COMPLETED") {
+            setStep(2)
+        }
+
+        setLoading(false)
+    }, [documentStatus])
+
 
     useEffect(() => {
         const accessToken = getAccessToken();
@@ -41,7 +75,6 @@ const OnboardingStepsPage: React.FC = () => {
                 router.push("/dashboard/jobs")
             } else {
                 router.push("/onboarding");
-                setIsLoading(false)
             }
 
         } else {
@@ -50,49 +83,32 @@ const OnboardingStepsPage: React.FC = () => {
 
     }, [router]);
 
-    if (isLoading) {
+    if (loading) {
         return (
-            <LoadingPage loading={isLoading} />
+            <LoadingPage loading={loading} />
         );
+    }
+
+    const handleNextStep = () => {
+        setStep(2)
     }
 
     return (
         <main className="flex flex-col w-full gap-8 min-h-screen items-center justify-center py-16 px-4 sm:px-8">
-            <div className="w-max">
-                <div className="mb-6 text-center sm:text-center">
-                    <h2 className="text-3xl sm:text-4xl font-semibold">Onboarding Steps</h2>
-                    <p className="text-sm text-gray-500">
-                        Please complete each step to finish your onboarding process.
-                    </p>
-                </div>
-            </div>
 
-            <div className="flex flex-col items-center w-max p-6 bg-white rounded-lg shadow-lg">
-                {/* Responsive Step Cards Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-                    {onboardingSteps.map((stepName, index) => (
-                        <StepCard
-                            key={index}
-                            step={stepName}
-                            onClick={() => handleCardClick(stepName)}
-                        />
-                    ))}
-                </div>
-            </div>
+            {step === 1 &&
+                <QualificationDocuments handleNextStep={handleNextStep} />
+            }
+
+            {step === 2 &&
+                <Onboarding />
+            }
 
             {/* Logout Button */}
             <button onClick={handleLogout} className="mt-4 flex items-center justify-center gap-2 text-red-500 hover:text-red-900">
                 <MdLogout className="text-red-500 hover:text-red-900" size={20} />
                 Logout
             </button>
-
-            {/* Overlay Modal for Steps */}
-            {step && (
-                <OverlayModal
-                    step={step}
-                    onClose={handleCloseOverlay}
-                />
-            )}
         </main>
 
     );

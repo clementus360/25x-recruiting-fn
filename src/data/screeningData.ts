@@ -154,3 +154,43 @@ export async function moveApplicantToJob(jobId: string, applicantIds: number[], 
     }
 
 }
+
+export async function moveApplicantToList(category: string, applicantIds: number[], token: string,) {
+    const queryParams = new URLSearchParams({
+        category: category
+    })
+
+    try {
+        // Construct the full URL with query parameters
+        const url = `${API_BASE_URL}/api/v1/applicants/move-applicants-to/${category}?${queryParams}`;
+
+        const response = await fetch(url, {
+            method: "PATCH",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+                applicantIds: applicantIds
+            })
+        });
+
+        // Check if the response is OK
+        if (!response.ok) {
+            const errorData = await response.json();
+            const errorMessage = errorData.message || "Something went wrong";
+            throw new Error(errorMessage);
+        }
+
+        const data = await response.json();
+
+        // Return the applicants data
+        return data.message
+
+    } catch (error: any) {
+        console.error("Error moving to list", error.message);
+        throw error;
+    }
+
+}

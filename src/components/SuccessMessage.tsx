@@ -1,41 +1,33 @@
 'use client';
 
 import { useError } from "@/context/ErrorContext";
+import { useHireLetter } from "@/context/HireLetterContext";
 import { useSuccess } from "@/context/SuccessContext";
-import { getAccessToken } from "@/data/cookies";
-import { sendHireLetter } from "@/data/onboarding";
 
 export default function SuccessMessage() {
+  const { openHireLetter } = useHireLetter();
   const { success, setSuccess, companyId, applicantId } = useSuccess();
-  const { error, setError } = useError();
+  const { setError } = useError();
 
   if (!success) return null;
 
   const handleSendHireLetter = async () => {
-    try {
-
-      const token = getAccessToken();
-
-      if (!token) {
-        return;
-      }
-
-      if (!companyId || !applicantId) {
-        return
-      }
-
-      await sendHireLetter(companyId, applicantId, token)
-      setSuccess("Hire letter sent successfully")
-
-    } catch (error: any) {
-      console.error("Error sending hire letter:", error);
-      setError(error.message || "Failed to send hire letter")
+    if (!companyId) {
+      setError("Cannot find company Id")
+      return
     }
+    if (!applicantId) {
+      setError("Cannot find applicant Id")
+      return
+    }
+    openHireLetter(companyId, applicantId)
   };
+
+
 
   return (
     <div
-      className="animate-slide-in fixed z-50 top-4 right-4 border-l-4 border-green-500 bg-white text-black px-6 py-4 w-auto max-w-xs rounded-md shadow-lg flex flex-col space-y-3"
+      className="animate-slide-in fixed z-[60] top-4 right-4 border-l-4 border-green-500 bg-white text-black px-6 py-4 w-auto max-w-xs rounded-md shadow-lg flex flex-col space-y-3"
       role="alert"
     >
       <div className="flex items-start space-x-3">

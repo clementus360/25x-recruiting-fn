@@ -4,7 +4,8 @@ import PersonalInformationProcess from './PersonalInformationStep';
 import DirectDepositProcess from './DirectDepositStep';
 import AdditionalDocumentsProcess from './AdditionalDocumentStep';
 import TestsAndCertificationsProcess from './TestsAndCertificationsStep';
-import { FaCog, FaHourglassHalf, FaHourglassStart, FaTools } from 'react-icons/fa';
+import { FaCog } from 'react-icons/fa';
+import TaxWithholdingProcess from './TaxWithholdingStep';
 
 interface OverlayModalProps {
     step: string;
@@ -27,9 +28,11 @@ const OverlayModal: React.FC<OverlayModalProps> = ({
             return <AdditionalDocumentsProcess onClose={onClose} />
         } if (step === 'Test/Certifications') {
             return <TestsAndCertificationsProcess onClose={onClose} />
+        } if (step === 'Tax Withholding') {
+            return <TaxWithholdingProcess onClose={onClose} />
         } else {
             return <div className='flex flex-col gap-4 items-center justify-center w-full h-full text-lg'>
-                <FaCog className='an motion-safe:animate-spin' color='#1579BE' size={100}/>
+                <FaCog className='an motion-safe:animate-spin' color='#1579BE' size={100} />
                 <p className='text-xl'>Incoming Feature</p>
             </div>;
         }

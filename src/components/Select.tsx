@@ -13,7 +13,7 @@ interface SelectProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
-  isDisabled?: boolean; // Optional isDisabled prop
+  isDisabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -22,11 +22,11 @@ const Select: React.FC<SelectProps> = ({
   onChange,
   placeholder = "Select...",
   className,
-  isDisabled = false, // Default isDisabled to false
+  isDisabled = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
-  const [focusedIndex, setFocusedIndex] = useState(-1); // For keyboard navigation
+  const [focusedIndex, setFocusedIndex] = useState(-1);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
