@@ -3,7 +3,7 @@ import { FaCheckCircle, FaClipboard, FaDollarSign, FaFile, FaFileAlt, FaFileSign
 
 interface StepCardProps {
   step: string;
-  status: 'COMPLETED' | 'ON_TRACK' | 'NOT_STARTED' | 'REVIEW';
+  status: any;
   progress: string;
   onClick: () => void;
 }
@@ -40,6 +40,8 @@ const StepCard: React.FC<StepCardProps> = ({ step, status, progress, onClick }) 
         return 'text-gray-400';
       case 'REVIEW':
         return 'text-yellow-600';
+      case 'DISABLED':
+        return 'text-gray-200';
       default:
         return 'text-gray-400';
     }
@@ -47,14 +49,14 @@ const StepCard: React.FC<StepCardProps> = ({ step, status, progress, onClick }) 
 
   return (
     <div
-      onClick={status === 'COMPLETED' ? undefined : onClick}
-      className={`border border-gray-300 rounded-lg shadow-md flex flex-col items-center justify-center text-center w-48 h-48 cursor-${status === 'COMPLETED' ? 'not-allowed bg-gray-100' : 'pointer hover:bg-gray-100'}`}
+      onClick={status === 'COMPLETED' || status === "DISABLED" ? undefined : onClick}
+      className={`border border-gray-300 rounded-lg shadow-md flex flex-col items-center justify-center text-center w-48 h-48 ${status === 'COMPLETED' || status === "DISABLED" ? 'cursor-not-allowed bg-gray-100' : 'cursor-pointer hover:bg-gray-100'}`}
     >
       <div className="text-4xl mb-2">
         {status === 'COMPLETED' ? <FaCheckCircle className="text-green-500" /> : getIcon(step)}
       </div>
 
-      <h3 className="font-semibold mb-1">{step}</h3>
+      <h3 className={`font-semibold mb-1 ${status === 'COMPLETED' || status === "DISABLED" ? 'text-grey' : 'pointer hover:bg-gray-100'}`}>{step}</h3>
 
       {status !== 'REVIEW'
         ? <p className={`text-xs font-medium ${getStatusColor(status)} px-2 py-1 rounded-full bg-opacity-20`}>

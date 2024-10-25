@@ -53,8 +53,6 @@ export async function getQualificationDocument(documentType: string, token: stri
             docOptions: documentType
         }).toString();
 
-        console.log(documentType)
-
         const response = await fetch(`${API_BASE_URL}/api/v1/qualification-documents/retrieve-document?${queryParams}`, {
             method: "GET",
             headers: {

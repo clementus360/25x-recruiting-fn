@@ -32,7 +32,7 @@ interface Candidate {
 }
 
 interface OnboardingCandidateCardProps {
-  candidate: Candidate;
+  candidate: any;
 }
 
 interface MappedStep {

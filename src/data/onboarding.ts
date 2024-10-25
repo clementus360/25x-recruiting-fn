@@ -1069,29 +1069,11 @@ export async function getAllOnboardingCandidates(
 export async function getSingleOnboardingCandidate(
     onboardingId: string,
     token: string,
-    page: number,
-    filters: {
-        searchTerm?: string;
-        fromDate?: string;
-        toDate?: string;
-        presetTimeFrame?: string;
-        sortingOptions: "ASC" | "DESC"; // Required parameter
-    }
 ) {
     try {
 
-        // Create URLSearchParams object with required and optional parameters
-        const queryParams = new URLSearchParams({
-            page: page.toString(),
-            sortingOptions: filters.sortingOptions,
-            ...(filters.searchTerm && { searchTerm: filters.searchTerm }),
-            ...(filters.fromDate && { fromDate: filters.fromDate }),
-            ...(filters.toDate && { toDate: filters.toDate }),
-            ...(filters.presetTimeFrame && { presetTimeFrame: filters.presetTimeFrame }),
-        }).toString();
-
         // Construct the full URL with query parameters
-        const url = `${API_BASE_URL}/api/v1/onboardings/list-all-hires/${onboardingId}?${queryParams}`;
+        const url = `${API_BASE_URL}/api/v1/onboardings/list-all-hires/${onboardingId}`;
 
         const response = await fetch(url, {
             method: "GET",

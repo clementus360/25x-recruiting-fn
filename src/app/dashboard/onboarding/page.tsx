@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import SearchIcon from "@/assets/search.svg";
 import PageSelector from "@/components/PageSelector";
 import { getAllCandidates } from "@/data/jobsData";
 import { useParams } from "next/navigation";
@@ -141,7 +140,7 @@ export default function DashboardCandidates() {
 
                     <div className="flex flex-col h-max gap-6">
 
-                        {candidates?.map((candidate: any, idx) => (
+                        {candidates?.map((candidate, idx) => (
                             <OnboardingCandidateCard
                                 key={idx}
                                 candidate={candidate}

@@ -70,7 +70,7 @@ export default function UserInformationReview({ onClose, onNext, documentStatus,
             <div className='flex justify-between'>
                 <button onClick={onClose} className="bg-gray-500 text-white px-3 py-2 rounded-md">Cancel</button>
                 <div className="flex gap-2">
-                    <button onClick={() => handleChangeStep(3)} className="bg-gray-300 text-black px-3 py-2 rounded-md">Edit</button>
+                    {/* <button onClick={() => handleChangeStep(3)} className="bg-gray-300 text-black px-3 py-2 rounded-md">Edit</button> */}
                     {documentStatus === "COMPLETED" ?
                         <button
                             onClick={onNext}

@@ -118,12 +118,12 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onNext, documentStatus, handleC
                 </button>
 
                 <div className="flex gap-2">
-                    <button
+                    {/* <button
                         onClick={() => handleChangeStep(1)}
                         className="bg-gray-300 text-black px-4 py-2 rounded-md"
                     >
                         Edit
-                    </button>
+                    </button> */}
 
                     {documentStatus === "COMPLETED" ?
                         <button

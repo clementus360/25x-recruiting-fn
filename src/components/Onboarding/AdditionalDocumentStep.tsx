@@ -216,7 +216,7 @@ const AdditionalDocumentsProcess: React.FC<PersonalInformationProcessProps> = ({
 
             await submitReferencesAndEmployment(professionalHistory, token)
             setSuccess("Professional history submitted successfully");
-            setStep(14)
+            setStep(4)
         } catch (err: any) {
             setError(err.message || "Failed to save Professional history");
         } finally {
